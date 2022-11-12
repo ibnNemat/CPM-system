@@ -1,0 +1,66 @@
+{
+  "applications": "*",
+  "changelogDate": "20221112075349",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "customers",
+  "fields": [
+    {
+      "fieldName": "fullName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "username",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "password",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "phoneNumber",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "email",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "account",
+      "fieldType": "Double",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Customers",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "role",
+      "relationshipName": "role",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "groups",
+      "otherEntityRelationshipName": "users",
+      "ownerSide": true,
+      "relationshipName": "groups",
+      "relationshipType": "many-to-many"
+    },
+    {
+      "otherEntityName": "services",
+      "otherEntityRelationshipName": "users",
+      "ownerSide": true,
+      "relationshipName": "services",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "service": "serviceImpl"
+}

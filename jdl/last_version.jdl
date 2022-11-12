@@ -1,0 +1,60 @@
+
+entity Customers {
+	fullName String required
+    username String required
+    password String required
+    phoneNumber String required
+    email String required
+    account Double required
+}
+
+entity Role {
+	name String required
+}
+
+entity Organization {
+	name String required
+}
+
+entity Groups {
+	name String required
+}
+
+entity Services {
+ 	name String required
+	price Double required
+    period String required
+    countPeriod Integer required
+}
+
+entity Payment {
+    paymentForPeriod Double required
+    isPayed Boolean required
+    createdAt LocalDate required
+}
+
+enum PeriodType {
+    ONETIME, REGULAR
+}
+
+relationship ManyToMany {
+	Customers{groups} to Groups{users}
+    Customers{services} to Services{users}
+}
+
+relationship ManyToOne {
+	Customers{role} to Role
+	Organization{orgOwner} to Customers
+    Groups{grOwner} to Customers
+    Payment{user} to Customers
+    Payment{service} to Services
+}
+
+relationship OneToMany {
+	Organization{groups} to Groups
+}
+
+paginate Payment, Customers, Groups with pagination
+
+service all with serviceImpl
+dto * with mapstruct

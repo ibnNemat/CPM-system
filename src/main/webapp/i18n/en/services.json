@@ -1,0 +1,28 @@
+{
+  "cpmSystemApp": {
+    "services": {
+      "home": {
+        "title": "Services",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Services",
+        "createOrEditLabel": "Create or edit a Services",
+        "notFound": "No Services found"
+      },
+      "created": "A new Services is created with identifier {{ param }}",
+      "updated": "A Services is updated with identifier {{ param }}",
+      "deleted": "A Services is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Services {{ id }}?"
+      },
+      "detail": {
+        "title": "Services"
+      },
+      "id": "ID",
+      "name": "Name",
+      "price": "Price",
+      "period": "Period",
+      "countPeriod": "Count Period",
+      "users": "Users"
+    }
+  }
+}

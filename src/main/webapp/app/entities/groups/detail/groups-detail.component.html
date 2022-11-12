@@ -1,0 +1,44 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <div *ngIf="groups">
+      <h2 data-cy="groupsDetailsHeading"><span jhiTranslate="cpmSystemApp.groups.detail.title">Groups</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="global.field.id">ID</span></dt>
+        <dd>
+          <span>{{ groups.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.groups.name">Name</span></dt>
+        <dd>
+          <span>{{ groups.name }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.groups.grOwner">Gr Owner</span></dt>
+        <dd>
+          <div *ngIf="groups.grOwner">
+            <a [routerLink]="['/customers', groups.grOwner.id, 'view']">{{ groups.grOwner.id }}</a>
+          </div>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.groups.organization">Organization</span></dt>
+        <dd>
+          <div *ngIf="groups.organization">
+            <a [routerLink]="['/organization', groups.organization.id, 'view']">{{ groups.organization.id }}</a>
+          </div>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/groups', groups.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+{
+  "cpmSystemApp": {
+    "services": {
+      "home": {
+        "title": "Services",
+        "refreshListLabel": "Обновить список",
+        "createLabel": "Создать новый Services",
+        "createOrEditLabel": "Создать или отредактировать Services",
+        "notFound": "Services не найдено"
+      },
+      "created": "Новый Services создан с идентификатором {{ param }}",
+      "updated": "Services обновлен с идентификатором {{ param }}",
+      "deleted": "Services удален с идентификатором {{ param }}",
+      "delete": {
+        "question": "Вы уверены что хотите удалить Services {{ id }}?"
+      },
+      "detail": {
+        "title": "Services"
+      },
+      "id": "ID",
+      "name": "Name",
+      "price": "Price",
+      "period": "Period",
+      "countPeriod": "Count Period",
+      "users": "Users"
+    }
+  }
+}

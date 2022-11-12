@@ -1,0 +1,24 @@
+{
+  "cpmSystemApp": {
+    "role": {
+      "home": {
+        "title": "Roles",
+        "refreshListLabel": "Обновить список",
+        "createLabel": "Создать новый Role",
+        "createOrEditLabel": "Создать или отредактировать Role",
+        "notFound": "Roles не найдено"
+      },
+      "created": "Новый Role создан с идентификатором {{ param }}",
+      "updated": "Role обновлен с идентификатором {{ param }}",
+      "deleted": "Role удален с идентификатором {{ param }}",
+      "delete": {
+        "question": "Вы уверены что хотите удалить Role {{ id }}?"
+      },
+      "detail": {
+        "title": "Role"
+      },
+      "id": "ID",
+      "name": "Name"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "cpmSystemApp": {
+    "payment": {
+      "home": {
+        "title": "Payments",
+        "refreshListLabel": "Обновить список",
+        "createLabel": "Создать новый Payment",
+        "createOrEditLabel": "Создать или отредактировать Payment",
+        "notFound": "Payments не найдено"
+      },
+      "created": "Новый Payment создан с идентификатором {{ param }}",
+      "updated": "Payment обновлен с идентификатором {{ param }}",
+      "deleted": "Payment удален с идентификатором {{ param }}",
+      "delete": {
+        "question": "Вы уверены что хотите удалить Payment {{ id }}?"
+      },
+      "detail": {
+        "title": "Payment"
+      },
+      "id": "ID",
+      "paymentForPeriod": "Payment For Period",
+      "isPayed": "Is Payed",
+      "createdAt": "Created At",
+      "user": "User",
+      "service": "Service"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "applications": "*",
+  "changelogDate": "20221112075351",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "organization",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Organization",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "groups",
+      "otherEntityRelationshipName": "organization",
+      "relationshipName": "groups",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "customers",
+      "relationshipName": "orgOwner",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "serviceImpl"
+}

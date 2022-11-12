@@ -1,0 +1,27 @@
+{
+  "cpmSystemApp": {
+    "groups": {
+      "home": {
+        "title": "Groups",
+        "refreshListLabel": "Обновить список",
+        "createLabel": "Создать новый Groups",
+        "createOrEditLabel": "Создать или отредактировать Groups",
+        "notFound": "Groups не найдено"
+      },
+      "created": "Новый Groups создан с идентификатором {{ param }}",
+      "updated": "Groups обновлен с идентификатором {{ param }}",
+      "deleted": "Groups удален с идентификатором {{ param }}",
+      "delete": {
+        "question": "Вы уверены что хотите удалить Groups {{ id }}?"
+      },
+      "detail": {
+        "title": "Groups"
+      },
+      "id": "ID",
+      "name": "Name",
+      "grOwner": "Gr Owner",
+      "organization": "Organization",
+      "users": "Users"
+    }
+  }
+}

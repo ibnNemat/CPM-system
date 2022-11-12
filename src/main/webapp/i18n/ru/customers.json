@@ -1,0 +1,32 @@
+{
+  "cpmSystemApp": {
+    "customers": {
+      "home": {
+        "title": "Customers",
+        "refreshListLabel": "Обновить список",
+        "createLabel": "Создать новый Customers",
+        "createOrEditLabel": "Создать или отредактировать Customers",
+        "notFound": "Customers не найдено"
+      },
+      "created": "Новый Customers создан с идентификатором {{ param }}",
+      "updated": "Customers обновлен с идентификатором {{ param }}",
+      "deleted": "Customers удален с идентификатором {{ param }}",
+      "delete": {
+        "question": "Вы уверены что хотите удалить Customers {{ id }}?"
+      },
+      "detail": {
+        "title": "Customers"
+      },
+      "id": "ID",
+      "fullName": "Full Name",
+      "username": "Username",
+      "password": "Password",
+      "phoneNumber": "Phone Number",
+      "email": "Email",
+      "account": "Account",
+      "role": "Role",
+      "groups": "Groups",
+      "services": "Services"
+    }
+  }
+}
