@@ -18,12 +18,6 @@
         <dd>
           <span>{{ organization.name }}</span>
         </dd>
-        <dt><span jhiTranslate="cpmSystemApp.organization.orgOwner">Org Owner</span></dt>
-        <dd>
-          <div *ngIf="organization.orgOwner">
-            <a [routerLink]="['/customers', organization.orgOwner.id, 'view']">{{ organization.orgOwner.id }}</a>
-          </div>
-        </dd>
       </dl>
 
       <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">

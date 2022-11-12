@@ -44,12 +44,6 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
-          <th scope="col" jhiSortBy="grOwner.id">
-            <div class="d-flex">
-              <span jhiTranslate="cpmSystemApp.groups.grOwner">Gr Owner</span>
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
           <th scope="col" jhiSortBy="organization.id">
             <div class="d-flex">
               <span jhiTranslate="cpmSystemApp.groups.organization">Organization</span>
@@ -65,11 +59,6 @@
             <a [routerLink]="['/groups', groups.id, 'view']">{{ groups.id }}</a>
           </td>
           <td>{{ groups.name }}</td>
-          <td>
-            <div *ngIf="groups.grOwner">
-              <a [routerLink]="['/customers', groups.grOwner.id, 'view']">{{ groups.grOwner.id }}</a>
-            </div>
-          </td>
           <td>
             <div *ngIf="groups.organization">
               <a [routerLink]="['/organization', groups.organization.id, 'view']">{{ groups.organization.id }}</a>

@@ -19,8 +19,7 @@
       },
       "id": "ID",
       "name": "Name",
-      "groups": "Groups",
-      "orgOwner": "Org Owner"
+      "groups": "Groups"
     }
   }
 }

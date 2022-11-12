@@ -22,11 +22,6 @@
       "otherEntityRelationshipName": "organization",
       "relationshipName": "groups",
       "relationshipType": "one-to-many"
-    },
-    {
-      "otherEntityName": "customers",
-      "relationshipName": "orgOwner",
-      "relationshipType": "many-to-one"
     }
   ],
   "service": "serviceImpl"

@@ -28,11 +28,7 @@ public class Groups implements Serializable {
     private String name;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = { "role", "groups", "services" }, allowSetters = true)
-    private Customers grOwner;
-
-    @ManyToOne
-    @JsonIgnoreProperties(value = { "groups", "orgOwner" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "groups" }, allowSetters = true)
     private Organization organization;
 
     @ManyToMany(mappedBy = "groups")
@@ -65,19 +61,6 @@ public class Groups implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Customers getGrOwner() {
-        return this.grOwner;
-    }
-
-    public void setGrOwner(Customers customers) {
-        this.grOwner = customers;
-    }
-
-    public Groups grOwner(Customers customers) {
-        this.setGrOwner(customers);
-        return this;
     }
 
     public Organization getOrganization() {

@@ -19,7 +19,6 @@ type GroupsFormDefaults = Pick<NewGroups, 'id' | 'users'>;
 type GroupsFormGroupContent = {
   id: FormControl<IGroups['id'] | NewGroups['id']>;
   name: FormControl<IGroups['name']>;
-  grOwner: FormControl<IGroups['grOwner']>;
   organization: FormControl<IGroups['organization']>;
   users: FormControl<IGroups['users']>;
 };
@@ -44,7 +43,6 @@ export class GroupsFormService {
       name: new FormControl(groupsRawValue.name, {
         validators: [Validators.required],
       }),
-      grOwner: new FormControl(groupsRawValue.grOwner),
       organization: new FormControl(groupsRawValue.organization),
       users: new FormControl(groupsRawValue.users ?? []),
     });

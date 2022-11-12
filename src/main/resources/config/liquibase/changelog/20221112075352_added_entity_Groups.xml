@@ -17,9 +17,6 @@
             <column name="name" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
-            <column name="gr_owner_id" type="bigint">
-                <constraints nullable="true" />
-            </column>
             <column name="organization_id" type="bigint">
                 <constraints nullable="true" />
             </column>

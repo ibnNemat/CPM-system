@@ -28,12 +28,8 @@ public class Organization implements Serializable {
     private String name;
 
     @OneToMany(mappedBy = "organization")
-    @JsonIgnoreProperties(value = { "grOwner", "organization", "users" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "organization", "users" }, allowSetters = true)
     private Set<Groups> groups = new HashSet<>();
-
-    @ManyToOne
-    @JsonIgnoreProperties(value = { "role", "groups", "services" }, allowSetters = true)
-    private Customers orgOwner;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -91,19 +87,6 @@ public class Organization implements Serializable {
     public Organization removeGroups(Groups groups) {
         this.groups.remove(groups);
         groups.setOrganization(null);
-        return this;
-    }
-
-    public Customers getOrgOwner() {
-        return this.orgOwner;
-    }
-
-    public void setOrgOwner(Customers customers) {
-        this.orgOwner = customers;
-    }
-
-    public Organization orgOwner(Customers customers) {
-        this.setOrgOwner(customers);
         return this;
     }
 

@@ -2,13 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { finalize, map } from 'rxjs/operators';
+import { finalize } from 'rxjs/operators';
 
 import { OrganizationFormService, OrganizationFormGroup } from './organization-form.service';
 import { IOrganization } from '../organization.model';
 import { OrganizationService } from '../service/organization.service';
-import { ICustomers } from 'app/entities/customers/customers.model';
-import { CustomersService } from 'app/entities/customers/service/customers.service';
 
 @Component({
   selector: 'jhi-organization-update',
@@ -18,18 +16,13 @@ export class OrganizationUpdateComponent implements OnInit {
   isSaving = false;
   organization: IOrganization | null = null;
 
-  customersSharedCollection: ICustomers[] = [];
-
   editForm: OrganizationFormGroup = this.organizationFormService.createOrganizationFormGroup();
 
   constructor(
     protected organizationService: OrganizationService,
     protected organizationFormService: OrganizationFormService,
-    protected customersService: CustomersService,
     protected activatedRoute: ActivatedRoute
   ) {}
-
-  compareCustomers = (o1: ICustomers | null, o2: ICustomers | null): boolean => this.customersService.compareCustomers(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ organization }) => {
@@ -37,8 +30,6 @@ export class OrganizationUpdateComponent implements OnInit {
       if (organization) {
         this.updateForm(organization);
       }
-
-      this.loadRelationshipsOptions();
     });
   }
 
@@ -78,22 +69,5 @@ export class OrganizationUpdateComponent implements OnInit {
   protected updateForm(organization: IOrganization): void {
     this.organization = organization;
     this.organizationFormService.resetForm(this.editForm, organization);
-
-    this.customersSharedCollection = this.customersService.addCustomersToCollectionIfMissing<ICustomers>(
-      this.customersSharedCollection,
-      organization.orgOwner
-    );
-  }
-
-  protected loadRelationshipsOptions(): void {
-    this.customersService
-      .query()
-      .pipe(map((res: HttpResponse<ICustomers[]>) => res.body ?? []))
-      .pipe(
-        map((customers: ICustomers[]) =>
-          this.customersService.addCustomersToCollectionIfMissing<ICustomers>(customers, this.organization?.orgOwner)
-        )
-      )
-      .subscribe((customers: ICustomers[]) => (this.customersSharedCollection = customers));
   }
 }

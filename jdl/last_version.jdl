@@ -44,8 +44,6 @@ relationship ManyToMany {
 
 relationship ManyToOne {
 	Customers{role} to Role
-	Organization{orgOwner} to Customers
-    Groups{grOwner} to Customers
     Payment{user} to Customers
     Payment{service} to Services
 }

@@ -13,12 +13,13 @@ import javax.validation.constraints.*;
 @Entity
 @Table(name = "customers")
 @SuppressWarnings("common-java:DuplicatedBlocks")
-
 public class Customers implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "customer_id_seq")
-    @SequenceGenerator(name = "sequenceGenerator", sequenceName = "customer_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator")
     @Column(name = "id")
     private Long id;
 
@@ -55,7 +56,7 @@ public class Customers implements Serializable {
         joinColumns = @JoinColumn(name = "customers_id"),
         inverseJoinColumns = @JoinColumn(name = "groups_id")
     )
-    @JsonIgnoreProperties(value = { "grOwner", "organization", "users" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "organization", "users" }, allowSetters = true)
     private Set<Groups> groups = new HashSet<>();
 
     @ManyToMany

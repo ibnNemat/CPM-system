@@ -19,7 +19,6 @@ type OrganizationFormDefaults = Pick<NewOrganization, 'id'>;
 type OrganizationFormGroupContent = {
   id: FormControl<IOrganization['id'] | NewOrganization['id']>;
   name: FormControl<IOrganization['name']>;
-  orgOwner: FormControl<IOrganization['orgOwner']>;
 };
 
 export type OrganizationFormGroup = FormGroup<OrganizationFormGroupContent>;
@@ -42,7 +41,6 @@ export class OrganizationFormService {
       name: new FormControl(organizationRawValue.name, {
         validators: [Validators.required],
       }),
-      orgOwner: new FormControl(organizationRawValue.orgOwner),
     });
   }
 

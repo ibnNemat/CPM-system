@@ -21,7 +21,6 @@ describe('Groups Form Service', () => {
           expect.objectContaining({
             id: expect.any(Object),
             name: expect.any(Object),
-            grOwner: expect.any(Object),
             organization: expect.any(Object),
             users: expect.any(Object),
           })
@@ -35,7 +34,6 @@ describe('Groups Form Service', () => {
           expect.objectContaining({
             id: expect.any(Object),
             name: expect.any(Object),
-            grOwner: expect.any(Object),
             organization: expect.any(Object),
             users: expect.any(Object),
           })

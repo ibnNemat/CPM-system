@@ -9,8 +9,6 @@ import { of, Subject, from } from 'rxjs';
 import { OrganizationFormService } from './organization-form.service';
 import { OrganizationService } from '../service/organization.service';
 import { IOrganization } from '../organization.model';
-import { ICustomers } from 'app/entities/customers/customers.model';
-import { CustomersService } from 'app/entities/customers/service/customers.service';
 
 import { OrganizationUpdateComponent } from './organization-update.component';
 
@@ -20,7 +18,6 @@ describe('Organization Management Update Component', () => {
   let activatedRoute: ActivatedRoute;
   let organizationFormService: OrganizationFormService;
   let organizationService: OrganizationService;
-  let customersService: CustomersService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -43,43 +40,17 @@ describe('Organization Management Update Component', () => {
     activatedRoute = TestBed.inject(ActivatedRoute);
     organizationFormService = TestBed.inject(OrganizationFormService);
     organizationService = TestBed.inject(OrganizationService);
-    customersService = TestBed.inject(CustomersService);
 
     comp = fixture.componentInstance;
   });
 
   describe('ngOnInit', () => {
-    it('Should call Customers query and add missing value', () => {
-      const organization: IOrganization = { id: 456 };
-      const orgOwner: ICustomers = { id: 75408 };
-      organization.orgOwner = orgOwner;
-
-      const customersCollection: ICustomers[] = [{ id: 48118 }];
-      jest.spyOn(customersService, 'query').mockReturnValue(of(new HttpResponse({ body: customersCollection })));
-      const additionalCustomers = [orgOwner];
-      const expectedCollection: ICustomers[] = [...additionalCustomers, ...customersCollection];
-      jest.spyOn(customersService, 'addCustomersToCollectionIfMissing').mockReturnValue(expectedCollection);
-
-      activatedRoute.data = of({ organization });
-      comp.ngOnInit();
-
-      expect(customersService.query).toHaveBeenCalled();
-      expect(customersService.addCustomersToCollectionIfMissing).toHaveBeenCalledWith(
-        customersCollection,
-        ...additionalCustomers.map(expect.objectContaining)
-      );
-      expect(comp.customersSharedCollection).toEqual(expectedCollection);
-    });
-
     it('Should update editForm', () => {
       const organization: IOrganization = { id: 456 };
-      const orgOwner: ICustomers = { id: 88250 };
-      organization.orgOwner = orgOwner;
 
       activatedRoute.data = of({ organization });
       comp.ngOnInit();
 
-      expect(comp.customersSharedCollection).toContain(orgOwner);
       expect(comp.organization).toEqual(organization);
     });
   });
@@ -149,18 +120,6 @@ describe('Organization Management Update Component', () => {
       expect(organizationService.update).toHaveBeenCalled();
       expect(comp.isSaving).toEqual(false);
       expect(comp.previousState).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('Compare relationships', () => {
-    describe('compareCustomers', () => {
-      it('Should forward to customersService', () => {
-        const entity = { id: 123 };
-        const entity2 = { id: 456 };
-        jest.spyOn(customersService, 'compareCustomers');
-        comp.compareCustomers(entity, entity2);
-        expect(customersService.compareCustomers).toHaveBeenCalledWith(entity, entity2);
-      });
     });
   });
 });

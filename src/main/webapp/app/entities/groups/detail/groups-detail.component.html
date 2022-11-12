@@ -18,12 +18,6 @@
         <dd>
           <span>{{ groups.name }}</span>
         </dd>
-        <dt><span jhiTranslate="cpmSystemApp.groups.grOwner">Gr Owner</span></dt>
-        <dd>
-          <div *ngIf="groups.grOwner">
-            <a [routerLink]="['/customers', groups.grOwner.id, 'view']">{{ groups.grOwner.id }}</a>
-          </div>
-        </dd>
         <dt><span jhiTranslate="cpmSystemApp.groups.organization">Organization</span></dt>
         <dd>
           <div *ngIf="groups.organization">

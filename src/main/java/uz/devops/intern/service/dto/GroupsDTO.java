@@ -15,8 +15,6 @@ public class GroupsDTO implements Serializable {
     @NotNull
     private String name;
 
-    private CustomersDTO grOwner;
-
     private OrganizationDTO organization;
 
     public Long getId() {
@@ -33,14 +31,6 @@ public class GroupsDTO implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public CustomersDTO getGrOwner() {
-        return grOwner;
-    }
-
-    public void setGrOwner(CustomersDTO grOwner) {
-        this.grOwner = grOwner;
     }
 
     public OrganizationDTO getOrganization() {
@@ -78,7 +68,6 @@ public class GroupsDTO implements Serializable {
         return "GroupsDTO{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
-            ", grOwner=" + getGrOwner() +
             ", organization=" + getOrganization() +
             "}";
     }

@@ -26,21 +26,6 @@
             </small>
           </div>
         </div>
-
-        <div class="row mb-3">
-          <label class="form-label" jhiTranslate="cpmSystemApp.organization.orgOwner" for="field_orgOwner">Org Owner</label>
-          <select
-            class="form-control"
-            id="field_orgOwner"
-            data-cy="orgOwner"
-            name="orgOwner"
-            formControlName="orgOwner"
-            [compareWith]="compareCustomers"
-          >
-            <option [ngValue]="null"></option>
-            <option [ngValue]="customersOption" *ngFor="let customersOption of customersSharedCollection">{{ customersOption.id }}</option>
-          </select>
-        </div>
       </div>
 
       <div>
