@@ -17,6 +17,7 @@ entity Organization {
 }
 
 entity Groups {
+    groupManagerId Integer required
 	name String required
 }
 

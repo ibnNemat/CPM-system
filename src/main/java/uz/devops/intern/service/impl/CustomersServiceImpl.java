@@ -75,6 +75,9 @@ public class CustomersServiceImpl implements CustomersService {
     }
 
     public Page<CustomersDTO> findAllWithEagerRelationships(Pageable pageable) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        System.out.println(user.getId() + ":" + user.getLogin());
         return customersRepository.findAllWithEagerRelationships(pageable).map(customersMapper::toDto);
     }
 
