@@ -23,7 +23,10 @@ spring:
     serialization:
       write-durations-as-timestamps: false
   mail:
-    host: localhost
+    host: smtp.gmail.com
+    port: 587
+    username: foundation240897@gmail.com
+    password: unforgettable97
   main:
     allow-bean-definition-overriding: true
   mvc:
@@ -89,4 +92,4 @@ jhipster:
 management:
   health:
     mail:
-      enabled: false
+      enabled: true

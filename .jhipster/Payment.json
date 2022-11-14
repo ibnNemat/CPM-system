@@ -11,6 +11,11 @@
       "fieldValidateRules": ["required"]
     },
     {
+      "fieldName": "totalPrice",
+      "fieldType": "Double",
+      "fieldValidateRules": ["required"]
+    },
+    {
       "fieldName": "isPayed",
       "fieldType": "Boolean",
       "fieldValidateRules": ["required"]
@@ -35,6 +40,11 @@
     {
       "otherEntityName": "services",
       "relationshipName": "service",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "groups",
+      "relationshipName": "group",
       "relationshipType": "many-to-one"
     }
   ],

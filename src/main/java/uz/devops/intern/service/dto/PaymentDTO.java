@@ -17,6 +17,9 @@ public class PaymentDTO implements Serializable {
     private Double paymentForPeriod;
 
     @NotNull
+    private Double totalPrice;
+
+    @NotNull
     private Boolean isPayed;
 
     @NotNull
@@ -25,6 +28,8 @@ public class PaymentDTO implements Serializable {
     private CustomersDTO user;
 
     private ServicesDTO service;
+
+    private GroupsDTO group;
 
     public Long getId() {
         return id;
@@ -40,6 +45,14 @@ public class PaymentDTO implements Serializable {
 
     public void setPaymentForPeriod(Double paymentForPeriod) {
         this.paymentForPeriod = paymentForPeriod;
+    }
+
+    public Double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public Boolean getIsPayed() {
@@ -74,6 +87,14 @@ public class PaymentDTO implements Serializable {
         this.service = service;
     }
 
+    public GroupsDTO getGroup() {
+        return group;
+    }
+
+    public void setGroup(GroupsDTO group) {
+        this.group = group;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -101,10 +122,12 @@ public class PaymentDTO implements Serializable {
         return "PaymentDTO{" +
             "id=" + getId() +
             ", paymentForPeriod=" + getPaymentForPeriod() +
+            ", totalPrice=" + getTotalPrice() +
             ", isPayed='" + getIsPayed() + "'" +
             ", createdAt='" + getCreatedAt() + "'" +
             ", user=" + getUser() +
             ", service=" + getService() +
+            ", group=" + getGroup() +
             "}";
     }
 }

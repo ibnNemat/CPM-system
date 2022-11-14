@@ -6,6 +6,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -32,8 +33,8 @@ public class MailService {
     private static final String BASE_URL = "baseUrl";
 
     private final JHipsterProperties jHipsterProperties;
-
-    private final JavaMailSender javaMailSender;
+    @Autowired
+    private JavaMailSender javaMailSender;
 
     private final MessageSource messageSource;
 
@@ -41,12 +42,10 @@ public class MailService {
 
     public MailService(
         JHipsterProperties jHipsterProperties,
-        JavaMailSender javaMailSender,
         MessageSource messageSource,
         SpringTemplateEngine templateEngine
     ) {
         this.jHipsterProperties = jHipsterProperties;
-        this.javaMailSender = javaMailSender;
         this.messageSource = messageSource;
         this.templateEngine = templateEngine;
     }

@@ -27,6 +27,10 @@ public class Payment implements Serializable {
     private Double paymentForPeriod;
 
     @NotNull
+    @Column(name = "total_price", nullable = false)
+    private Double totalPrice;
+
+    @NotNull
     @Column(name = "is_payed", nullable = false)
     private Boolean isPayed;
 
@@ -41,6 +45,10 @@ public class Payment implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties(value = { "users" }, allowSetters = true)
     private Services service;
+
+    @ManyToOne
+    @JsonIgnoreProperties(value = { "organization", "users" }, allowSetters = true)
+    private Groups group;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -68,6 +76,19 @@ public class Payment implements Serializable {
 
     public void setPaymentForPeriod(Double paymentForPeriod) {
         this.paymentForPeriod = paymentForPeriod;
+    }
+
+    public Double getTotalPrice() {
+        return this.totalPrice;
+    }
+
+    public Payment totalPrice(Double totalPrice) {
+        this.setTotalPrice(totalPrice);
+        return this;
+    }
+
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public Boolean getIsPayed() {
@@ -122,6 +143,19 @@ public class Payment implements Serializable {
         return this;
     }
 
+    public Groups getGroup() {
+        return this.group;
+    }
+
+    public void setGroup(Groups groups) {
+        this.group = groups;
+    }
+
+    public Payment group(Groups groups) {
+        this.setGroup(groups);
+        return this;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -147,6 +181,7 @@ public class Payment implements Serializable {
         return "Payment{" +
             "id=" + getId() +
             ", paymentForPeriod=" + getPaymentForPeriod() +
+            ", totalPrice=" + getTotalPrice() +
             ", isPayed='" + getIsPayed() + "'" +
             ", createdAt='" + getCreatedAt() + "'" +
             "}";

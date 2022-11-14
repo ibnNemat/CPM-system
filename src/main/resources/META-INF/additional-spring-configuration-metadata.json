@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "spring.mail.tls",
+      "type": "java.lang.String",
+      "description": "Description for spring.mail.tls."
+  }
+] }

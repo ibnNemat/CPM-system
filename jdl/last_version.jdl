@@ -29,6 +29,7 @@ entity Services {
 
 entity Payment {
     paymentForPeriod Double required
+    totalPrice Double required
     isPayed Boolean required
     createdAt LocalDate required
 }
@@ -46,6 +47,7 @@ relationship ManyToOne {
 	Customers{role} to Role
     Payment{user} to Customers
     Payment{service} to Services
+    Payment{group} to Groups
 }
 
 relationship OneToMany {

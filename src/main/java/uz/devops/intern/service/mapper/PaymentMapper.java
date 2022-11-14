@@ -2,9 +2,11 @@ package uz.devops.intern.service.mapper;
 
 import org.mapstruct.*;
 import uz.devops.intern.domain.Customers;
+import uz.devops.intern.domain.Groups;
 import uz.devops.intern.domain.Payment;
 import uz.devops.intern.domain.Services;
 import uz.devops.intern.service.dto.CustomersDTO;
+import uz.devops.intern.service.dto.GroupsDTO;
 import uz.devops.intern.service.dto.PaymentDTO;
 import uz.devops.intern.service.dto.ServicesDTO;
 
@@ -15,6 +17,7 @@ import uz.devops.intern.service.dto.ServicesDTO;
 public interface PaymentMapper extends EntityMapper<PaymentDTO, Payment> {
     @Mapping(target = "user", source = "user", qualifiedByName = "customersId")
     @Mapping(target = "service", source = "service", qualifiedByName = "servicesId")
+    @Mapping(target = "group", source = "group", qualifiedByName = "groupsId")
     PaymentDTO toDto(Payment s);
 
     @Named("customersId")
@@ -26,4 +29,9 @@ public interface PaymentMapper extends EntityMapper<PaymentDTO, Payment> {
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     ServicesDTO toDtoServicesId(Services services);
+
+    @Named("groupsId")
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "id", source = "id")
+    GroupsDTO toDtoGroupsId(Groups groups);
 }

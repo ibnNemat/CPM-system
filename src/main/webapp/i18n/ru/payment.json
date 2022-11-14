@@ -19,10 +19,12 @@
       },
       "id": "ID",
       "paymentForPeriod": "Payment For Period",
+      "totalPrice": "Total Price",
       "isPayed": "Is Payed",
       "createdAt": "Created At",
       "user": "User",
-      "service": "Service"
+      "service": "Service",
+      "group": "Group"
     }
   }
 }

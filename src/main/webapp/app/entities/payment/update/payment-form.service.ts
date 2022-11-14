@@ -19,10 +19,12 @@ type PaymentFormDefaults = Pick<NewPayment, 'id' | 'isPayed'>;
 type PaymentFormGroupContent = {
   id: FormControl<IPayment['id'] | NewPayment['id']>;
   paymentForPeriod: FormControl<IPayment['paymentForPeriod']>;
+  totalPrice: FormControl<IPayment['totalPrice']>;
   isPayed: FormControl<IPayment['isPayed']>;
   createdAt: FormControl<IPayment['createdAt']>;
   user: FormControl<IPayment['user']>;
   service: FormControl<IPayment['service']>;
+  group: FormControl<IPayment['group']>;
 };
 
 export type PaymentFormGroup = FormGroup<PaymentFormGroupContent>;
@@ -45,6 +47,9 @@ export class PaymentFormService {
       paymentForPeriod: new FormControl(paymentRawValue.paymentForPeriod, {
         validators: [Validators.required],
       }),
+      totalPrice: new FormControl(paymentRawValue.totalPrice, {
+        validators: [Validators.required],
+      }),
       isPayed: new FormControl(paymentRawValue.isPayed, {
         validators: [Validators.required],
       }),
@@ -53,6 +58,7 @@ export class PaymentFormService {
       }),
       user: new FormControl(paymentRawValue.user),
       service: new FormControl(paymentRawValue.service),
+      group: new FormControl(paymentRawValue.group),
     });
   }
 

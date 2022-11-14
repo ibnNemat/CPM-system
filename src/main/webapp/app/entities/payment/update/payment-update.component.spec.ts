@@ -13,6 +13,8 @@ import { ICustomers } from 'app/entities/customers/customers.model';
 import { CustomersService } from 'app/entities/customers/service/customers.service';
 import { IServices } from 'app/entities/services/services.model';
 import { ServicesService } from 'app/entities/services/service/services.service';
+import { IGroups } from 'app/entities/groups/groups.model';
+import { GroupsService } from 'app/entities/groups/service/groups.service';
 
 import { PaymentUpdateComponent } from './payment-update.component';
 
@@ -24,6 +26,7 @@ describe('Payment Management Update Component', () => {
   let paymentService: PaymentService;
   let customersService: CustomersService;
   let servicesService: ServicesService;
+  let groupsService: GroupsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -48,6 +51,7 @@ describe('Payment Management Update Component', () => {
     paymentService = TestBed.inject(PaymentService);
     customersService = TestBed.inject(CustomersService);
     servicesService = TestBed.inject(ServicesService);
+    groupsService = TestBed.inject(GroupsService);
 
     comp = fixture.componentInstance;
   });
@@ -97,18 +101,43 @@ describe('Payment Management Update Component', () => {
       expect(comp.servicesSharedCollection).toEqual(expectedCollection);
     });
 
+    it('Should call Groups query and add missing value', () => {
+      const payment: IPayment = { id: 456 };
+      const group: IGroups = { id: 46148 };
+      payment.group = group;
+
+      const groupsCollection: IGroups[] = [{ id: 11763 }];
+      jest.spyOn(groupsService, 'query').mockReturnValue(of(new HttpResponse({ body: groupsCollection })));
+      const additionalGroups = [group];
+      const expectedCollection: IGroups[] = [...additionalGroups, ...groupsCollection];
+      jest.spyOn(groupsService, 'addGroupsToCollectionIfMissing').mockReturnValue(expectedCollection);
+
+      activatedRoute.data = of({ payment });
+      comp.ngOnInit();
+
+      expect(groupsService.query).toHaveBeenCalled();
+      expect(groupsService.addGroupsToCollectionIfMissing).toHaveBeenCalledWith(
+        groupsCollection,
+        ...additionalGroups.map(expect.objectContaining)
+      );
+      expect(comp.groupsSharedCollection).toEqual(expectedCollection);
+    });
+
     it('Should update editForm', () => {
       const payment: IPayment = { id: 456 };
       const user: ICustomers = { id: 64191 };
       payment.user = user;
       const service: IServices = { id: 97403 };
       payment.service = service;
+      const group: IGroups = { id: 78383 };
+      payment.group = group;
 
       activatedRoute.data = of({ payment });
       comp.ngOnInit();
 
       expect(comp.customersSharedCollection).toContain(user);
       expect(comp.servicesSharedCollection).toContain(service);
+      expect(comp.groupsSharedCollection).toContain(group);
       expect(comp.payment).toEqual(payment);
     });
   });
@@ -199,6 +228,16 @@ describe('Payment Management Update Component', () => {
         jest.spyOn(servicesService, 'compareServices');
         comp.compareServices(entity, entity2);
         expect(servicesService.compareServices).toHaveBeenCalledWith(entity, entity2);
+      });
+    });
+
+    describe('compareGroups', () => {
+      it('Should forward to groupsService', () => {
+        const entity = { id: 123 };
+        const entity2 = { id: 456 };
+        jest.spyOn(groupsService, 'compareGroups');
+        comp.compareGroups(entity, entity2);
+        expect(groupsService.compareGroups).toHaveBeenCalledWith(entity, entity2);
       });
     });
   });

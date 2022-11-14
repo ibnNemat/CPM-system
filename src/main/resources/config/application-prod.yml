@@ -35,7 +35,7 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:postgresql://localhost:5432/cpm_system
     username: cpm_system
-    password:
+    password: 123
     hikari:
       poolName: Hikari
       auto-commit: false
@@ -45,10 +45,10 @@ spring:
   liquibase:
     contexts: prod
   mail:
-    host: localhost
-    port: 25
-    username:
-    password:
+    host: smtp.gmail.com
+    port: 587
+    username: foundation240897@gmail.com
+    password: unforgettable97
   thymeleaf:
     cache: true
 

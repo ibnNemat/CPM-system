@@ -49,6 +49,34 @@
         </div>
 
         <div class="row mb-3">
+          <label class="form-label" jhiTranslate="cpmSystemApp.payment.totalPrice" for="field_totalPrice">Total Price</label>
+          <input
+            type="number"
+            class="form-control"
+            name="totalPrice"
+            id="field_totalPrice"
+            data-cy="totalPrice"
+            formControlName="totalPrice"
+          />
+          <div *ngIf="editForm.get('totalPrice')!.invalid && (editForm.get('totalPrice')!.dirty || editForm.get('totalPrice')!.touched)">
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('totalPrice')?.errors?.required"
+              jhiTranslate="entity.validation.required"
+            >
+              This field is required.
+            </small>
+            <small
+              class="form-text text-danger"
+              [hidden]="!editForm.get('totalPrice')?.errors?.number"
+              jhiTranslate="entity.validation.number"
+            >
+              This field should be a number.
+            </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
           <label class="form-label" jhiTranslate="cpmSystemApp.payment.isPayed" for="field_isPayed">Is Payed</label>
           <input type="checkbox" class="form-check" name="isPayed" id="field_isPayed" data-cy="isPayed" formControlName="isPayed" />
           <div *ngIf="editForm.get('isPayed')!.invalid && (editForm.get('isPayed')!.dirty || editForm.get('isPayed')!.touched)">
@@ -108,6 +136,14 @@
           >
             <option [ngValue]="null"></option>
             <option [ngValue]="servicesOption" *ngFor="let servicesOption of servicesSharedCollection">{{ servicesOption.id }}</option>
+          </select>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="cpmSystemApp.payment.group" for="field_group">Group</label>
+          <select class="form-control" id="field_group" data-cy="group" name="group" formControlName="group" [compareWith]="compareGroups">
+            <option [ngValue]="null"></option>
+            <option [ngValue]="groupsOption" *ngFor="let groupsOption of groupsSharedCollection">{{ groupsOption.id }}</option>
           </select>
         </div>
       </div>
