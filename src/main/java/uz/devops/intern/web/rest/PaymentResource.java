@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
@@ -30,10 +31,9 @@ import uz.devops.intern.web.rest.errors.BadRequestAlertException;
  */
 @RestController
 @RequestMapping("/api")
+@PreAuthorize(value = "hasAnyAuthority('ROLE_ADMIN')")
 public class PaymentResource {
-
     private final Logger log = LoggerFactory.getLogger(PaymentResource.class);
-
     private static final String ENTITY_NAME = "payment";
 
     @Value("${jhipster.clientApp.name}")
@@ -145,6 +145,7 @@ public class PaymentResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of payments in body.
      */
     @GetMapping("/payments")
+    @PreAuthorize(value = "hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<List<PaymentDTO>> getAllPayments(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Payments");
         Page<PaymentDTO> page = paymentService.findAll(pageable);

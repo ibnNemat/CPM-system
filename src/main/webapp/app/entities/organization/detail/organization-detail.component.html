@@ -18,6 +18,10 @@
         <dd>
           <span>{{ organization.name }}</span>
         </dd>
+        <dt><span jhiTranslate="cpmSystemApp.organization.orgOwnerName">Org Owner Name</span></dt>
+        <dd>
+          <span>{{ organization.orgOwnerName }}</span>
+        </dd>
       </dl>
 
       <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">

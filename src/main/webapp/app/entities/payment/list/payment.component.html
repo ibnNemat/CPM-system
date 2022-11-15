@@ -44,21 +44,15 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
-          <th scope="col" jhiSortBy="totalPrice">
-            <div class="d-flex">
-              <span jhiTranslate="cpmSystemApp.payment.totalPrice">Total Price</span>
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
           <th scope="col" jhiSortBy="isPayed">
             <div class="d-flex">
               <span jhiTranslate="cpmSystemApp.payment.isPayed">Is Payed</span>
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
-          <th scope="col" jhiSortBy="createdAt">
+          <th scope="col" jhiSortBy="startPeriod">
             <div class="d-flex">
-              <span jhiTranslate="cpmSystemApp.payment.createdAt">Created At</span>
+              <span jhiTranslate="cpmSystemApp.payment.startPeriod">Start Period</span>
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
@@ -89,9 +83,8 @@
             <a [routerLink]="['/payment', payment.id, 'view']">{{ payment.id }}</a>
           </td>
           <td>{{ payment.paymentForPeriod }}</td>
-          <td>{{ payment.totalPrice }}</td>
           <td>{{ payment.isPayed }}</td>
-          <td>{{ payment.createdAt | formatMediumDate }}</td>
+          <td>{{ payment.startPeriod | formatMediumDate }}</td>
           <td>
             <div *ngIf="payment.user">
               <a [routerLink]="['/customers', payment.user.id, 'view']">{{ payment.user.id }}</a>

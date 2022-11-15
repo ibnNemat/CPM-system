@@ -36,14 +36,11 @@ class PaymentResourceIT {
     private static final Double DEFAULT_PAYMENT_FOR_PERIOD = 1D;
     private static final Double UPDATED_PAYMENT_FOR_PERIOD = 2D;
 
-    private static final Double DEFAULT_TOTAL_PRICE = 1D;
-    private static final Double UPDATED_TOTAL_PRICE = 2D;
-
     private static final Boolean DEFAULT_IS_PAYED = false;
     private static final Boolean UPDATED_IS_PAYED = true;
 
-    private static final LocalDate DEFAULT_CREATED_AT = LocalDate.ofEpochDay(0L);
-    private static final LocalDate UPDATED_CREATED_AT = LocalDate.now(ZoneId.systemDefault());
+    private static final LocalDate DEFAULT_START_PERIOD = LocalDate.ofEpochDay(0L);
+    private static final LocalDate UPDATED_START_PERIOD = LocalDate.now(ZoneId.systemDefault());
 
     private static final String ENTITY_API_URL = "/api/payments";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -74,9 +71,8 @@ class PaymentResourceIT {
     public static Payment createEntity(EntityManager em) {
         Payment payment = new Payment()
             .paymentForPeriod(DEFAULT_PAYMENT_FOR_PERIOD)
-            .totalPrice(DEFAULT_TOTAL_PRICE)
             .isPayed(DEFAULT_IS_PAYED)
-            .createdAt(DEFAULT_CREATED_AT);
+            .startPeriod(DEFAULT_START_PERIOD);
         return payment;
     }
 
@@ -89,9 +85,8 @@ class PaymentResourceIT {
     public static Payment createUpdatedEntity(EntityManager em) {
         Payment payment = new Payment()
             .paymentForPeriod(UPDATED_PAYMENT_FOR_PERIOD)
-            .totalPrice(UPDATED_TOTAL_PRICE)
             .isPayed(UPDATED_IS_PAYED)
-            .createdAt(UPDATED_CREATED_AT);
+            .startPeriod(UPDATED_START_PERIOD);
         return payment;
     }
 
@@ -115,9 +110,8 @@ class PaymentResourceIT {
         assertThat(paymentList).hasSize(databaseSizeBeforeCreate + 1);
         Payment testPayment = paymentList.get(paymentList.size() - 1);
         assertThat(testPayment.getPaymentForPeriod()).isEqualTo(DEFAULT_PAYMENT_FOR_PERIOD);
-        assertThat(testPayment.getTotalPrice()).isEqualTo(DEFAULT_TOTAL_PRICE);
         assertThat(testPayment.getIsPayed()).isEqualTo(DEFAULT_IS_PAYED);
-        assertThat(testPayment.getCreatedAt()).isEqualTo(DEFAULT_CREATED_AT);
+        assertThat(testPayment.getStartPeriod()).isEqualTo(DEFAULT_START_PERIOD);
     }
 
     @Test
@@ -159,24 +153,6 @@ class PaymentResourceIT {
 
     @Test
     @Transactional
-    void checkTotalPriceIsRequired() throws Exception {
-        int databaseSizeBeforeTest = paymentRepository.findAll().size();
-        // set the field null
-        payment.setTotalPrice(null);
-
-        // Create the Payment, which fails.
-        PaymentDTO paymentDTO = paymentMapper.toDto(payment);
-
-        restPaymentMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(paymentDTO)))
-            .andExpect(status().isBadRequest());
-
-        List<Payment> paymentList = paymentRepository.findAll();
-        assertThat(paymentList).hasSize(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
     void checkIsPayedIsRequired() throws Exception {
         int databaseSizeBeforeTest = paymentRepository.findAll().size();
         // set the field null
@@ -195,10 +171,10 @@ class PaymentResourceIT {
 
     @Test
     @Transactional
-    void checkCreatedAtIsRequired() throws Exception {
+    void checkStartPeriodIsRequired() throws Exception {
         int databaseSizeBeforeTest = paymentRepository.findAll().size();
         // set the field null
-        payment.setCreatedAt(null);
+        payment.setStartPeriod(null);
 
         // Create the Payment, which fails.
         PaymentDTO paymentDTO = paymentMapper.toDto(payment);
@@ -224,9 +200,8 @@ class PaymentResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(payment.getId().intValue())))
             .andExpect(jsonPath("$.[*].paymentForPeriod").value(hasItem(DEFAULT_PAYMENT_FOR_PERIOD.doubleValue())))
-            .andExpect(jsonPath("$.[*].totalPrice").value(hasItem(DEFAULT_TOTAL_PRICE.doubleValue())))
             .andExpect(jsonPath("$.[*].isPayed").value(hasItem(DEFAULT_IS_PAYED.booleanValue())))
-            .andExpect(jsonPath("$.[*].createdAt").value(hasItem(DEFAULT_CREATED_AT.toString())));
+            .andExpect(jsonPath("$.[*].startPeriod").value(hasItem(DEFAULT_START_PERIOD.toString())));
     }
 
     @Test
@@ -242,9 +217,8 @@ class PaymentResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(payment.getId().intValue()))
             .andExpect(jsonPath("$.paymentForPeriod").value(DEFAULT_PAYMENT_FOR_PERIOD.doubleValue()))
-            .andExpect(jsonPath("$.totalPrice").value(DEFAULT_TOTAL_PRICE.doubleValue()))
             .andExpect(jsonPath("$.isPayed").value(DEFAULT_IS_PAYED.booleanValue()))
-            .andExpect(jsonPath("$.createdAt").value(DEFAULT_CREATED_AT.toString()));
+            .andExpect(jsonPath("$.startPeriod").value(DEFAULT_START_PERIOD.toString()));
     }
 
     @Test
@@ -266,11 +240,7 @@ class PaymentResourceIT {
         Payment updatedPayment = paymentRepository.findById(payment.getId()).get();
         // Disconnect from session so that the updates on updatedPayment are not directly saved in db
         em.detach(updatedPayment);
-        updatedPayment
-            .paymentForPeriod(UPDATED_PAYMENT_FOR_PERIOD)
-            .totalPrice(UPDATED_TOTAL_PRICE)
-            .isPayed(UPDATED_IS_PAYED)
-            .createdAt(UPDATED_CREATED_AT);
+        updatedPayment.paymentForPeriod(UPDATED_PAYMENT_FOR_PERIOD).isPayed(UPDATED_IS_PAYED).startPeriod(UPDATED_START_PERIOD);
         PaymentDTO paymentDTO = paymentMapper.toDto(updatedPayment);
 
         restPaymentMockMvc
@@ -286,9 +256,8 @@ class PaymentResourceIT {
         assertThat(paymentList).hasSize(databaseSizeBeforeUpdate);
         Payment testPayment = paymentList.get(paymentList.size() - 1);
         assertThat(testPayment.getPaymentForPeriod()).isEqualTo(UPDATED_PAYMENT_FOR_PERIOD);
-        assertThat(testPayment.getTotalPrice()).isEqualTo(UPDATED_TOTAL_PRICE);
         assertThat(testPayment.getIsPayed()).isEqualTo(UPDATED_IS_PAYED);
-        assertThat(testPayment.getCreatedAt()).isEqualTo(UPDATED_CREATED_AT);
+        assertThat(testPayment.getStartPeriod()).isEqualTo(UPDATED_START_PERIOD);
     }
 
     @Test
@@ -368,7 +337,7 @@ class PaymentResourceIT {
         Payment partialUpdatedPayment = new Payment();
         partialUpdatedPayment.setId(payment.getId());
 
-        partialUpdatedPayment.totalPrice(UPDATED_TOTAL_PRICE);
+        partialUpdatedPayment.isPayed(UPDATED_IS_PAYED);
 
         restPaymentMockMvc
             .perform(
@@ -383,9 +352,8 @@ class PaymentResourceIT {
         assertThat(paymentList).hasSize(databaseSizeBeforeUpdate);
         Payment testPayment = paymentList.get(paymentList.size() - 1);
         assertThat(testPayment.getPaymentForPeriod()).isEqualTo(DEFAULT_PAYMENT_FOR_PERIOD);
-        assertThat(testPayment.getTotalPrice()).isEqualTo(UPDATED_TOTAL_PRICE);
-        assertThat(testPayment.getIsPayed()).isEqualTo(DEFAULT_IS_PAYED);
-        assertThat(testPayment.getCreatedAt()).isEqualTo(DEFAULT_CREATED_AT);
+        assertThat(testPayment.getIsPayed()).isEqualTo(UPDATED_IS_PAYED);
+        assertThat(testPayment.getStartPeriod()).isEqualTo(DEFAULT_START_PERIOD);
     }
 
     @Test
@@ -400,11 +368,7 @@ class PaymentResourceIT {
         Payment partialUpdatedPayment = new Payment();
         partialUpdatedPayment.setId(payment.getId());
 
-        partialUpdatedPayment
-            .paymentForPeriod(UPDATED_PAYMENT_FOR_PERIOD)
-            .totalPrice(UPDATED_TOTAL_PRICE)
-            .isPayed(UPDATED_IS_PAYED)
-            .createdAt(UPDATED_CREATED_AT);
+        partialUpdatedPayment.paymentForPeriod(UPDATED_PAYMENT_FOR_PERIOD).isPayed(UPDATED_IS_PAYED).startPeriod(UPDATED_START_PERIOD);
 
         restPaymentMockMvc
             .perform(
@@ -419,9 +383,8 @@ class PaymentResourceIT {
         assertThat(paymentList).hasSize(databaseSizeBeforeUpdate);
         Payment testPayment = paymentList.get(paymentList.size() - 1);
         assertThat(testPayment.getPaymentForPeriod()).isEqualTo(UPDATED_PAYMENT_FOR_PERIOD);
-        assertThat(testPayment.getTotalPrice()).isEqualTo(UPDATED_TOTAL_PRICE);
         assertThat(testPayment.getIsPayed()).isEqualTo(UPDATED_IS_PAYED);
-        assertThat(testPayment.getCreatedAt()).isEqualTo(UPDATED_CREATED_AT);
+        assertThat(testPayment.getStartPeriod()).isEqualTo(UPDATED_START_PERIOD);
     }
 
     @Test

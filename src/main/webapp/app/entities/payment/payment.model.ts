@@ -6,9 +6,8 @@ import { IGroups } from 'app/entities/groups/groups.model';
 export interface IPayment {
   id: number;
   paymentForPeriod?: number | null;
-  totalPrice?: number | null;
   isPayed?: boolean | null;
-  createdAt?: dayjs.Dayjs | null;
+  startPeriod?: dayjs.Dayjs | null;
   user?: Pick<ICustomers, 'id'> | null;
   service?: Pick<IServices, 'id'> | null;
   group?: Pick<IGroups, 'id'> | null;

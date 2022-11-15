@@ -91,9 +91,9 @@ public class TokenProvider {
             .map(SimpleGrantedAuthority::new)
             .collect(Collectors.toList());
 
-        User principal = new User(claims.getSubject(), "", authorities);
+       User principal = new User(claims.getSubject(), "", authorities);
 
-        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+       return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
     public boolean validateToken(String authToken) {

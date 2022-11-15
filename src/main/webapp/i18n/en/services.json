@@ -22,7 +22,8 @@
       "price": "Price",
       "period": "Period",
       "countPeriod": "Count Period",
-      "users": "Users"
+      "users": "Users",
+      "groups": "Groups"
     }
   }
 }

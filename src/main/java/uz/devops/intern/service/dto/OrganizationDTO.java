@@ -15,6 +15,9 @@ public class OrganizationDTO implements Serializable {
     @NotNull
     private String name;
 
+    @NotNull
+    private String orgOwnerName;
+
     public Long getId() {
         return id;
     }
@@ -29,6 +32,14 @@ public class OrganizationDTO implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getOrgOwnerName() {
+        return orgOwnerName;
+    }
+
+    public void setOrgOwnerName(String orgOwnerName) {
+        this.orgOwnerName = orgOwnerName;
     }
 
     @Override
@@ -58,6 +69,7 @@ public class OrganizationDTO implements Serializable {
         return "OrganizationDTO{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
+            ", orgOwnerName='" + getOrgOwnerName() + "'" +
             "}";
     }
 }

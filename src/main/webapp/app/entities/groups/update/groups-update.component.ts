@@ -7,6 +7,8 @@ import { finalize, map } from 'rxjs/operators';
 import { GroupsFormService, GroupsFormGroup } from './groups-form.service';
 import { IGroups } from '../groups.model';
 import { GroupsService } from '../service/groups.service';
+import { IServices } from 'app/entities/services/services.model';
+import { ServicesService } from 'app/entities/services/service/services.service';
 import { IOrganization } from 'app/entities/organization/organization.model';
 import { OrganizationService } from 'app/entities/organization/service/organization.service';
 
@@ -18,6 +20,7 @@ export class GroupsUpdateComponent implements OnInit {
   isSaving = false;
   groups: IGroups | null = null;
 
+  servicesSharedCollection: IServices[] = [];
   organizationsSharedCollection: IOrganization[] = [];
 
   editForm: GroupsFormGroup = this.groupsFormService.createGroupsFormGroup();
@@ -25,9 +28,12 @@ export class GroupsUpdateComponent implements OnInit {
   constructor(
     protected groupsService: GroupsService,
     protected groupsFormService: GroupsFormService,
+    protected servicesService: ServicesService,
     protected organizationService: OrganizationService,
     protected activatedRoute: ActivatedRoute
   ) {}
+
+  compareServices = (o1: IServices | null, o2: IServices | null): boolean => this.servicesService.compareServices(o1, o2);
 
   compareOrganization = (o1: IOrganization | null, o2: IOrganization | null): boolean =>
     this.organizationService.compareOrganization(o1, o2);
@@ -80,6 +86,10 @@ export class GroupsUpdateComponent implements OnInit {
     this.groups = groups;
     this.groupsFormService.resetForm(this.editForm, groups);
 
+    this.servicesSharedCollection = this.servicesService.addServicesToCollectionIfMissing<IServices>(
+      this.servicesSharedCollection,
+      ...(groups.services ?? [])
+    );
     this.organizationsSharedCollection = this.organizationService.addOrganizationToCollectionIfMissing<IOrganization>(
       this.organizationsSharedCollection,
       groups.organization
@@ -87,6 +97,16 @@ export class GroupsUpdateComponent implements OnInit {
   }
 
   protected loadRelationshipsOptions(): void {
+    this.servicesService
+      .query()
+      .pipe(map((res: HttpResponse<IServices[]>) => res.body ?? []))
+      .pipe(
+        map((services: IServices[]) =>
+          this.servicesService.addServicesToCollectionIfMissing<IServices>(services, ...(this.groups?.services ?? []))
+        )
+      )
+      .subscribe((services: IServices[]) => (this.servicesSharedCollection = services));
+
     this.organizationService
       .query()
       .pipe(map((res: HttpResponse<IOrganization[]>) => res.body ?? []))

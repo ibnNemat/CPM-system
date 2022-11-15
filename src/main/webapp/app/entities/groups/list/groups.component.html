@@ -38,9 +38,21 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
+          <th scope="col" jhiSortBy="groupManagerId">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.groups.groupManagerId">Group Manager Id</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
           <th scope="col" jhiSortBy="name">
             <div class="d-flex">
               <span jhiTranslate="cpmSystemApp.groups.name">Name</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="groupOwnerName">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.groups.groupOwnerName">Group Owner Name</span>
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
@@ -58,7 +70,9 @@
           <td>
             <a [routerLink]="['/groups', groups.id, 'view']">{{ groups.id }}</a>
           </td>
+          <td>{{ groups.groupManagerId }}</td>
           <td>{{ groups.name }}</td>
+          <td>{{ groups.groupOwnerName }}</td>
           <td>
             <div *ngIf="groups.organization">
               <a [routerLink]="['/organization', groups.organization.id, 'view']">{{ groups.organization.id }}</a>

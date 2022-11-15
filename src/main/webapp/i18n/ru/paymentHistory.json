@@ -1,0 +1,28 @@
+{
+  "cpmSystemApp": {
+    "paymentHistory": {
+      "home": {
+        "title": "Payment Histories",
+        "refreshListLabel": "Обновить список",
+        "createLabel": "Создать новый Payment History",
+        "createOrEditLabel": "Создать или отредактировать Payment History",
+        "notFound": "Payment Histories не найдено"
+      },
+      "created": "Новый Payment History создан с идентификатором {{ param }}",
+      "updated": "Payment History обновлен с идентификатором {{ param }}",
+      "deleted": "Payment History удален с идентификатором {{ param }}",
+      "delete": {
+        "question": "Вы уверены что хотите удалить Payment History {{ id }}?"
+      },
+      "detail": {
+        "title": "Payment History"
+      },
+      "id": "ID",
+      "organizationName": "Organization Name",
+      "serviceName": "Service Name",
+      "groupName": "Group Name",
+      "sum": "Sum",
+      "createdAt": "Created At"
+    }
+  }
+}

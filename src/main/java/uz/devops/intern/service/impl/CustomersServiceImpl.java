@@ -5,11 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.devops.intern.domain.Customers;
-import uz.devops.intern.domain.User;
 import uz.devops.intern.repository.CustomersRepository;
 import uz.devops.intern.service.CustomersService;
 import uz.devops.intern.service.dto.CustomersDTO;
@@ -68,16 +66,10 @@ public class CustomersServiceImpl implements CustomersService {
     @Transactional(readOnly = true)
     public Page<CustomersDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Customers");
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        System.out.println(user.getId() + ":" + user.getLogin());
         return customersRepository.findAll(pageable).map(customersMapper::toDto);
     }
 
     public Page<CustomersDTO> findAllWithEagerRelationships(Pageable pageable) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        System.out.println(user.getId() + ":" + user.getLogin());
         return customersRepository.findAllWithEagerRelationships(pageable).map(customersMapper::toDto);
     }
 

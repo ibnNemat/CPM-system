@@ -24,15 +24,32 @@ public class Groups implements Serializable {
     private Long id;
 
     @NotNull
+    @Column(name = "group_manager_id", nullable = false)
+    private Integer groupManagerId;
+
+    @NotNull
     @Column(name = "name", nullable = false)
     private String name;
+
+    @NotNull
+    @Column(name = "group_owner_name", nullable = false)
+    private String groupOwnerName;
+
+    @ManyToMany
+    @JoinTable(
+        name = "rel_groups__services",
+        joinColumns = @JoinColumn(name = "groups_id"),
+        inverseJoinColumns = @JoinColumn(name = "services_id")
+    )
+    @JsonIgnoreProperties(value = { "users", "groups" }, allowSetters = true)
+    private Set<Services> services = new HashSet<>();
 
     @ManyToOne
     @JsonIgnoreProperties(value = { "groups" }, allowSetters = true)
     private Organization organization;
 
     @ManyToMany(mappedBy = "groups")
-    @JsonIgnoreProperties(value = { "role", "groups", "services" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "groups", "services" }, allowSetters = true)
     private Set<Customers> users = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -50,6 +67,19 @@ public class Groups implements Serializable {
         this.id = id;
     }
 
+    public Integer getGroupManagerId() {
+        return this.groupManagerId;
+    }
+
+    public Groups groupManagerId(Integer groupManagerId) {
+        this.setGroupManagerId(groupManagerId);
+        return this;
+    }
+
+    public void setGroupManagerId(Integer groupManagerId) {
+        this.groupManagerId = groupManagerId;
+    }
+
     public String getName() {
         return this.name;
     }
@@ -61,6 +91,44 @@ public class Groups implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getGroupOwnerName() {
+        return this.groupOwnerName;
+    }
+
+    public Groups groupOwnerName(String groupOwnerName) {
+        this.setGroupOwnerName(groupOwnerName);
+        return this;
+    }
+
+    public void setGroupOwnerName(String groupOwnerName) {
+        this.groupOwnerName = groupOwnerName;
+    }
+
+    public Set<Services> getServices() {
+        return this.services;
+    }
+
+    public void setServices(Set<Services> services) {
+        this.services = services;
+    }
+
+    public Groups services(Set<Services> services) {
+        this.setServices(services);
+        return this;
+    }
+
+    public Groups addServices(Services services) {
+        this.services.add(services);
+        services.getGroups().add(this);
+        return this;
+    }
+
+    public Groups removeServices(Services services) {
+        this.services.remove(services);
+        services.getGroups().remove(this);
+        return this;
     }
 
     public Organization getOrganization() {
@@ -131,7 +199,9 @@ public class Groups implements Serializable {
     public String toString() {
         return "Groups{" +
             "id=" + getId() +
+            ", groupManagerId=" + getGroupManagerId() +
             ", name='" + getName() + "'" +
+            ", groupOwnerName='" + getGroupOwnerName() + "'" +
             "}";
     }
 }

@@ -43,11 +43,6 @@
   "readOnly": false,
   "relationships": [
     {
-      "otherEntityName": "role",
-      "relationshipName": "role",
-      "relationshipType": "many-to-one"
-    },
-    {
       "otherEntityName": "groups",
       "otherEntityRelationshipName": "users",
       "ownerSide": true,

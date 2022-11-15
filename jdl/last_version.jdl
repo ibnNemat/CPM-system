@@ -1,4 +1,3 @@
-
 entity Customers {
 	fullName String required
     username String required
@@ -8,17 +7,15 @@ entity Customers {
     account Double required
 }
 
-entity Role {
-	name String required
-}
-
 entity Organization {
 	name String required
+    orgOwnerName String required
 }
 
 entity Groups {
     groupManagerId Integer required
 	name String required
+    groupOwnerName String required
 }
 
 entity Services {
@@ -30,9 +27,16 @@ entity Services {
 
 entity Payment {
     paymentForPeriod Double required
-    totalPrice Double required
     isPayed Boolean required
-    createdAt LocalDate required
+    startPeriod LocalDate required
+}
+
+entity PaymentHistory{
+    organizationName String
+    serviceName String
+    GroupName String
+    sum Double
+    createdAt LocalDate
 }
 
 enum PeriodType {
@@ -42,10 +46,10 @@ enum PeriodType {
 relationship ManyToMany {
 	Customers{groups} to Groups{users}
     Customers{services} to Services{users}
+    Groups{services} to Services{groups}
 }
 
 relationship ManyToOne {
-	Customers{role} to Role
     Payment{user} to Customers
     Payment{service} to Services
     Payment{group} to Groups

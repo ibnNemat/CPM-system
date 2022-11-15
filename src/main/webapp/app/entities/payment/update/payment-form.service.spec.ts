@@ -21,9 +21,8 @@ describe('Payment Form Service', () => {
           expect.objectContaining({
             id: expect.any(Object),
             paymentForPeriod: expect.any(Object),
-            totalPrice: expect.any(Object),
             isPayed: expect.any(Object),
-            createdAt: expect.any(Object),
+            startPeriod: expect.any(Object),
             user: expect.any(Object),
             service: expect.any(Object),
             group: expect.any(Object),
@@ -38,9 +37,8 @@ describe('Payment Form Service', () => {
           expect.objectContaining({
             id: expect.any(Object),
             paymentForPeriod: expect.any(Object),
-            totalPrice: expect.any(Object),
             isPayed: expect.any(Object),
-            createdAt: expect.any(Object),
+            startPeriod: expect.any(Object),
             user: expect.any(Object),
             service: expect.any(Object),
             group: expect.any(Object),

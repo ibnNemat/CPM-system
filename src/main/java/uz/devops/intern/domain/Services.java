@@ -40,8 +40,12 @@ public class Services implements Serializable {
     private Integer countPeriod;
 
     @ManyToMany(mappedBy = "services")
-    @JsonIgnoreProperties(value = { "role", "groups", "services" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "groups", "services" }, allowSetters = true)
     private Set<Customers> users = new HashSet<>();
+
+    @ManyToMany(mappedBy = "services")
+    @JsonIgnoreProperties(value = { "services", "organization", "users" }, allowSetters = true)
+    private Set<Groups> groups = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -138,6 +142,37 @@ public class Services implements Serializable {
     public Services removeUsers(Customers customers) {
         this.users.remove(customers);
         customers.getServices().remove(this);
+        return this;
+    }
+
+    public Set<Groups> getGroups() {
+        return this.groups;
+    }
+
+    public void setGroups(Set<Groups> groups) {
+        if (this.groups != null) {
+            this.groups.forEach(i -> i.removeServices(this));
+        }
+        if (groups != null) {
+            groups.forEach(i -> i.addServices(this));
+        }
+        this.groups = groups;
+    }
+
+    public Services groups(Set<Groups> groups) {
+        this.setGroups(groups);
+        return this;
+    }
+
+    public Services addGroups(Groups groups) {
+        this.groups.add(groups);
+        groups.getServices().add(this);
+        return this;
+    }
+
+    public Services removeGroups(Groups groups) {
+        this.groups.remove(groups);
+        groups.getServices().remove(this);
         return this;
     }
 

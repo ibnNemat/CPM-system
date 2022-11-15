@@ -38,6 +38,13 @@
       "ownerSide": false,
       "relationshipName": "users",
       "relationshipType": "many-to-many"
+    },
+    {
+      "otherEntityName": "groups",
+      "otherEntityRelationshipName": "services",
+      "ownerSide": false,
+      "relationshipName": "groups",
+      "relationshipType": "many-to-many"
     }
   ],
   "service": "serviceImpl"

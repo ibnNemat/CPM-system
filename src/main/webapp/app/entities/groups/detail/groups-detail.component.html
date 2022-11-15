@@ -14,9 +14,24 @@
         <dd>
           <span>{{ groups.id }}</span>
         </dd>
+        <dt><span jhiTranslate="cpmSystemApp.groups.groupManagerId">Group Manager Id</span></dt>
+        <dd>
+          <span>{{ groups.groupManagerId }}</span>
+        </dd>
         <dt><span jhiTranslate="cpmSystemApp.groups.name">Name</span></dt>
         <dd>
           <span>{{ groups.name }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.groups.groupOwnerName">Group Owner Name</span></dt>
+        <dd>
+          <span>{{ groups.groupOwnerName }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.groups.services">Services</span></dt>
+        <dd>
+          <span *ngFor="let services of groups.services; let last = last">
+            <a [routerLink]="['/services', services.id, 'view']">{{ services.id }}</a
+            >{{ last ? '' : ', ' }}
+          </span>
         </dd>
         <dt><span jhiTranslate="cpmSystemApp.groups.organization">Organization</span></dt>
         <dd>

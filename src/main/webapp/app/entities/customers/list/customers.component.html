@@ -74,12 +74,6 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
-          <th scope="col" jhiSortBy="role.id">
-            <div class="d-flex">
-              <span jhiTranslate="cpmSystemApp.customers.role">Role</span>
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
           <th scope="col"></th>
         </tr>
       </thead>
@@ -94,11 +88,6 @@
           <td>{{ customers.phoneNumber }}</td>
           <td>{{ customers.email }}</td>
           <td>{{ customers.account }}</td>
-          <td>
-            <div *ngIf="customers.role">
-              <a [routerLink]="['/role', customers.role.id, 'view']">{{ customers.role.id }}</a>
-            </div>
-          </td>
           <td class="text-end">
             <div class="btn-group">
               <button

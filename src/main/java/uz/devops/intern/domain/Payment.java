@@ -27,27 +27,23 @@ public class Payment implements Serializable {
     private Double paymentForPeriod;
 
     @NotNull
-    @Column(name = "total_price", nullable = false)
-    private Double totalPrice;
-
-    @NotNull
     @Column(name = "is_payed", nullable = false)
     private Boolean isPayed;
 
     @NotNull
-    @Column(name = "created_at", nullable = false)
-    private LocalDate createdAt;
+    @Column(name = "start_period", nullable = false)
+    private LocalDate startPeriod;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = { "role", "groups", "services" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "groups", "services" }, allowSetters = true)
     private Customers user;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = { "users" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "users", "groups" }, allowSetters = true)
     private Services service;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = { "organization", "users" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "services", "organization", "users" }, allowSetters = true)
     private Groups group;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -78,19 +74,6 @@ public class Payment implements Serializable {
         this.paymentForPeriod = paymentForPeriod;
     }
 
-    public Double getTotalPrice() {
-        return this.totalPrice;
-    }
-
-    public Payment totalPrice(Double totalPrice) {
-        this.setTotalPrice(totalPrice);
-        return this;
-    }
-
-    public void setTotalPrice(Double totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
     public Boolean getIsPayed() {
         return this.isPayed;
     }
@@ -104,17 +87,17 @@ public class Payment implements Serializable {
         this.isPayed = isPayed;
     }
 
-    public LocalDate getCreatedAt() {
-        return this.createdAt;
+    public LocalDate getStartPeriod() {
+        return this.startPeriod;
     }
 
-    public Payment createdAt(LocalDate createdAt) {
-        this.setCreatedAt(createdAt);
+    public Payment startPeriod(LocalDate startPeriod) {
+        this.setStartPeriod(startPeriod);
         return this;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
-        this.createdAt = createdAt;
+    public void setStartPeriod(LocalDate startPeriod) {
+        this.startPeriod = startPeriod;
     }
 
     public Customers getUser() {
@@ -181,9 +164,8 @@ public class Payment implements Serializable {
         return "Payment{" +
             "id=" + getId() +
             ", paymentForPeriod=" + getPaymentForPeriod() +
-            ", totalPrice=" + getTotalPrice() +
             ", isPayed='" + getIsPayed() + "'" +
-            ", createdAt='" + getCreatedAt() + "'" +
+            ", startPeriod='" + getStartPeriod() + "'" +
             "}";
     }
 }

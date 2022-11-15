@@ -69,11 +69,15 @@ public class GroupsServiceImpl implements GroupsService {
         return groupsRepository.findAll(pageable).map(groupsMapper::toDto);
     }
 
+    public Page<GroupsDTO> findAllWithEagerRelationships(Pageable pageable) {
+        return groupsRepository.findAllWithEagerRelationships(pageable).map(groupsMapper::toDto);
+    }
+
     @Override
     @Transactional(readOnly = true)
     public Optional<GroupsDTO> findOne(Long id) {
         log.debug("Request to get Groups : {}", id);
-        return groupsRepository.findById(id).map(groupsMapper::toDto);
+        return groupsRepository.findOneWithEagerRelationships(id).map(groupsMapper::toDto);
     }
 
     @Override

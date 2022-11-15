@@ -5,12 +5,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class RoleMapperTest {
+class PaymentHistoryMapperTest {
 
-    private RoleMapper roleMapper;
+    private PaymentHistoryMapper paymentHistoryMapper;
 
     @BeforeEach
     public void setUp() {
-        roleMapper = new RoleMapperImpl();
+        paymentHistoryMapper = new PaymentHistoryMapperImpl();
     }
 }

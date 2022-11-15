@@ -34,6 +34,9 @@ class OrganizationResourceIT {
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
 
+    private static final String DEFAULT_ORG_OWNER_NAME = "AAAAAAAAAA";
+    private static final String UPDATED_ORG_OWNER_NAME = "BBBBBBBBBB";
+
     private static final String ENTITY_API_URL = "/api/organizations";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -61,7 +64,7 @@ class OrganizationResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Organization createEntity(EntityManager em) {
-        Organization organization = new Organization().name(DEFAULT_NAME);
+        Organization organization = new Organization().name(DEFAULT_NAME).orgOwnerName(DEFAULT_ORG_OWNER_NAME);
         return organization;
     }
 
@@ -72,7 +75,7 @@ class OrganizationResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Organization createUpdatedEntity(EntityManager em) {
-        Organization organization = new Organization().name(UPDATED_NAME);
+        Organization organization = new Organization().name(UPDATED_NAME).orgOwnerName(UPDATED_ORG_OWNER_NAME);
         return organization;
     }
 
@@ -98,6 +101,7 @@ class OrganizationResourceIT {
         assertThat(organizationList).hasSize(databaseSizeBeforeCreate + 1);
         Organization testOrganization = organizationList.get(organizationList.size() - 1);
         assertThat(testOrganization.getName()).isEqualTo(DEFAULT_NAME);
+        assertThat(testOrganization.getOrgOwnerName()).isEqualTo(DEFAULT_ORG_OWNER_NAME);
     }
 
     @Test
@@ -143,6 +147,26 @@ class OrganizationResourceIT {
 
     @Test
     @Transactional
+    void checkOrgOwnerNameIsRequired() throws Exception {
+        int databaseSizeBeforeTest = organizationRepository.findAll().size();
+        // set the field null
+        organization.setOrgOwnerName(null);
+
+        // Create the Organization, which fails.
+        OrganizationDTO organizationDTO = organizationMapper.toDto(organization);
+
+        restOrganizationMockMvc
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(organizationDTO))
+            )
+            .andExpect(status().isBadRequest());
+
+        List<Organization> organizationList = organizationRepository.findAll();
+        assertThat(organizationList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     void getAllOrganizations() throws Exception {
         // Initialize the database
         organizationRepository.saveAndFlush(organization);
@@ -153,7 +177,8 @@ class OrganizationResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(organization.getId().intValue())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
+            .andExpect(jsonPath("$.[*].orgOwnerName").value(hasItem(DEFAULT_ORG_OWNER_NAME)));
     }
 
     @Test
@@ -168,7 +193,8 @@ class OrganizationResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(organization.getId().intValue()))
-            .andExpect(jsonPath("$.name").value(DEFAULT_NAME));
+            .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
+            .andExpect(jsonPath("$.orgOwnerName").value(DEFAULT_ORG_OWNER_NAME));
     }
 
     @Test
@@ -190,7 +216,7 @@ class OrganizationResourceIT {
         Organization updatedOrganization = organizationRepository.findById(organization.getId()).get();
         // Disconnect from session so that the updates on updatedOrganization are not directly saved in db
         em.detach(updatedOrganization);
-        updatedOrganization.name(UPDATED_NAME);
+        updatedOrganization.name(UPDATED_NAME).orgOwnerName(UPDATED_ORG_OWNER_NAME);
         OrganizationDTO organizationDTO = organizationMapper.toDto(updatedOrganization);
 
         restOrganizationMockMvc
@@ -206,6 +232,7 @@ class OrganizationResourceIT {
         assertThat(organizationList).hasSize(databaseSizeBeforeUpdate);
         Organization testOrganization = organizationList.get(organizationList.size() - 1);
         assertThat(testOrganization.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testOrganization.getOrgOwnerName()).isEqualTo(UPDATED_ORG_OWNER_NAME);
     }
 
     @Test
@@ -302,6 +329,7 @@ class OrganizationResourceIT {
         assertThat(organizationList).hasSize(databaseSizeBeforeUpdate);
         Organization testOrganization = organizationList.get(organizationList.size() - 1);
         assertThat(testOrganization.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testOrganization.getOrgOwnerName()).isEqualTo(DEFAULT_ORG_OWNER_NAME);
     }
 
     @Test
@@ -316,7 +344,7 @@ class OrganizationResourceIT {
         Organization partialUpdatedOrganization = new Organization();
         partialUpdatedOrganization.setId(organization.getId());
 
-        partialUpdatedOrganization.name(UPDATED_NAME);
+        partialUpdatedOrganization.name(UPDATED_NAME).orgOwnerName(UPDATED_ORG_OWNER_NAME);
 
         restOrganizationMockMvc
             .perform(
@@ -331,6 +359,7 @@ class OrganizationResourceIT {
         assertThat(organizationList).hasSize(databaseSizeBeforeUpdate);
         Organization testOrganization = organizationList.get(organizationList.size() - 1);
         assertThat(testOrganization.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testOrganization.getOrgOwnerName()).isEqualTo(UPDATED_ORG_OWNER_NAME);
     }
 
     @Test

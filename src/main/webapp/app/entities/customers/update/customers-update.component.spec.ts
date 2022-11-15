@@ -9,8 +9,6 @@ import { of, Subject, from } from 'rxjs';
 import { CustomersFormService } from './customers-form.service';
 import { CustomersService } from '../service/customers.service';
 import { ICustomers } from '../customers.model';
-import { IRole } from 'app/entities/role/role.model';
-import { RoleService } from 'app/entities/role/service/role.service';
 import { IGroups } from 'app/entities/groups/groups.model';
 import { GroupsService } from 'app/entities/groups/service/groups.service';
 import { IServices } from 'app/entities/services/services.model';
@@ -24,7 +22,6 @@ describe('Customers Management Update Component', () => {
   let activatedRoute: ActivatedRoute;
   let customersFormService: CustomersFormService;
   let customersService: CustomersService;
-  let roleService: RoleService;
   let groupsService: GroupsService;
   let servicesService: ServicesService;
 
@@ -49,7 +46,6 @@ describe('Customers Management Update Component', () => {
     activatedRoute = TestBed.inject(ActivatedRoute);
     customersFormService = TestBed.inject(CustomersFormService);
     customersService = TestBed.inject(CustomersService);
-    roleService = TestBed.inject(RoleService);
     groupsService = TestBed.inject(GroupsService);
     servicesService = TestBed.inject(ServicesService);
 
@@ -57,28 +53,6 @@ describe('Customers Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('Should call Role query and add missing value', () => {
-      const customers: ICustomers = { id: 456 };
-      const role: IRole = { id: 64506 };
-      customers.role = role;
-
-      const roleCollection: IRole[] = [{ id: 64142 }];
-      jest.spyOn(roleService, 'query').mockReturnValue(of(new HttpResponse({ body: roleCollection })));
-      const additionalRoles = [role];
-      const expectedCollection: IRole[] = [...additionalRoles, ...roleCollection];
-      jest.spyOn(roleService, 'addRoleToCollectionIfMissing').mockReturnValue(expectedCollection);
-
-      activatedRoute.data = of({ customers });
-      comp.ngOnInit();
-
-      expect(roleService.query).toHaveBeenCalled();
-      expect(roleService.addRoleToCollectionIfMissing).toHaveBeenCalledWith(
-        roleCollection,
-        ...additionalRoles.map(expect.objectContaining)
-      );
-      expect(comp.rolesSharedCollection).toEqual(expectedCollection);
-    });
-
     it('Should call Groups query and add missing value', () => {
       const customers: ICustomers = { id: 456 };
       const groups: IGroups[] = [{ id: 27496 }];
@@ -125,8 +99,6 @@ describe('Customers Management Update Component', () => {
 
     it('Should update editForm', () => {
       const customers: ICustomers = { id: 456 };
-      const role: IRole = { id: 37537 };
-      customers.role = role;
       const groups: IGroups = { id: 17548 };
       customers.groups = [groups];
       const services: IServices = { id: 65202 };
@@ -135,7 +107,6 @@ describe('Customers Management Update Component', () => {
       activatedRoute.data = of({ customers });
       comp.ngOnInit();
 
-      expect(comp.rolesSharedCollection).toContain(role);
       expect(comp.groupsSharedCollection).toContain(groups);
       expect(comp.servicesSharedCollection).toContain(services);
       expect(comp.customers).toEqual(customers);
@@ -211,16 +182,6 @@ describe('Customers Management Update Component', () => {
   });
 
   describe('Compare relationships', () => {
-    describe('compareRole', () => {
-      it('Should forward to roleService', () => {
-        const entity = { id: 123 };
-        const entity2 = { id: 456 };
-        jest.spyOn(roleService, 'compareRole');
-        comp.compareRole(entity, entity2);
-        expect(roleService.compareRole).toHaveBeenCalledWith(entity, entity2);
-      });
-    });
-
     describe('compareGroups', () => {
       it('Should forward to groupsService', () => {
         const entity = { id: 123 };

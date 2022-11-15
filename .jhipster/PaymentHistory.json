@@ -1,0 +1,36 @@
+{
+  "applications": "*",
+  "changelogDate": "20221114110950",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "payment_history",
+  "fields": [
+    {
+      "fieldName": "organizationName",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "serviceName",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "groupName",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "sum",
+      "fieldType": "Double"
+    },
+    {
+      "fieldName": "createdAt",
+      "fieldType": "LocalDate"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "PaymentHistory",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [],
+  "service": "serviceImpl"
+}

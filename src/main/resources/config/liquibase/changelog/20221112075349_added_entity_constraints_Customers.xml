@@ -8,12 +8,6 @@
     -->
     <changeSet id="20221112075349-2" author="jhipster">
 
-        <addForeignKeyConstraint baseColumnNames="role_id"
-                                 baseTableName="customers"
-                                 constraintName="fk_customers__role_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="role"/>
-
         <addForeignKeyConstraint baseColumnNames="customers_id"
                                  baseTableName="rel_customers__groups"
                                  constraintName="fk_rel_customers__groups__customers_id"

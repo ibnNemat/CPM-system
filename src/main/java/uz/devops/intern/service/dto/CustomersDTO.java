@@ -32,8 +32,6 @@ public class CustomersDTO implements Serializable {
     @NotNull
     private Double account;
 
-    private RoleDTO role;
-
     private Set<GroupsDTO> groups = new HashSet<>();
 
     private Set<ServicesDTO> services = new HashSet<>();
@@ -94,14 +92,6 @@ public class CustomersDTO implements Serializable {
         this.account = account;
     }
 
-    public RoleDTO getRole() {
-        return role;
-    }
-
-    public void setRole(RoleDTO role) {
-        this.role = role;
-    }
-
     public Set<GroupsDTO> getGroups() {
         return groups;
     }
@@ -150,7 +140,6 @@ public class CustomersDTO implements Serializable {
             ", phoneNumber='" + getPhoneNumber() + "'" +
             ", email='" + getEmail() + "'" +
             ", account=" + getAccount() +
-            ", role=" + getRole() +
             ", groups=" + getGroups() +
             ", services=" + getServices() +
             "}";

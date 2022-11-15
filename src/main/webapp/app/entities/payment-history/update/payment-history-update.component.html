@@ -1,0 +1,91 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="jhi-payment-history-heading"
+        data-cy="PaymentHistoryCreateUpdateHeading"
+        jhiTranslate="cpmSystemApp.paymentHistory.home.createOrEditLabel"
+      >
+        Create or edit a Payment History
+      </h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        <div class="row mb-3" *ngIf="editForm.controls.id.value !== null">
+          <label class="form-label" jhiTranslate="global.field.id" for="field_id">ID</label>
+          <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="cpmSystemApp.paymentHistory.organizationName" for="field_organizationName"
+            >Organization Name</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="organizationName"
+            id="field_organizationName"
+            data-cy="organizationName"
+            formControlName="organizationName"
+          />
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="cpmSystemApp.paymentHistory.serviceName" for="field_serviceName">Service Name</label>
+          <input
+            type="text"
+            class="form-control"
+            name="serviceName"
+            id="field_serviceName"
+            data-cy="serviceName"
+            formControlName="serviceName"
+          />
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="cpmSystemApp.paymentHistory.groupName" for="field_groupName">Group Name</label>
+          <input type="text" class="form-control" name="groupName" id="field_groupName" data-cy="groupName" formControlName="groupName" />
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="cpmSystemApp.paymentHistory.sum" for="field_sum">Sum</label>
+          <input type="number" class="form-control" name="sum" id="field_sum" data-cy="sum" formControlName="sum" />
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="cpmSystemApp.paymentHistory.createdAt" for="field_createdAt">Created At</label>
+          <div class="input-group">
+            <input
+              id="field_createdAt"
+              data-cy="createdAt"
+              type="text"
+              class="form-control"
+              name="createdAt"
+              ngbDatepicker
+              #createdAtDp="ngbDatepicker"
+              formControlName="createdAt"
+            />
+            <button type="button" class="btn btn-secondary" (click)="createdAtDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

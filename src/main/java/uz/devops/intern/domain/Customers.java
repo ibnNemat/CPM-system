@@ -47,16 +47,13 @@ public class Customers implements Serializable {
     @Column(name = "account", nullable = false)
     private Double account;
 
-    @ManyToOne
-    private Role role;
-
     @ManyToMany
     @JoinTable(
         name = "rel_customers__groups",
         joinColumns = @JoinColumn(name = "customers_id"),
         inverseJoinColumns = @JoinColumn(name = "groups_id")
     )
-    @JsonIgnoreProperties(value = { "organization", "users" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "services", "organization", "users" }, allowSetters = true)
     private Set<Groups> groups = new HashSet<>();
 
     @ManyToMany
@@ -65,7 +62,7 @@ public class Customers implements Serializable {
         joinColumns = @JoinColumn(name = "customers_id"),
         inverseJoinColumns = @JoinColumn(name = "services_id")
     )
-    @JsonIgnoreProperties(value = { "users" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "users", "groups" }, allowSetters = true)
     private Set<Services> services = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -159,19 +156,6 @@ public class Customers implements Serializable {
 
     public void setAccount(Double account) {
         this.account = account;
-    }
-
-    public Role getRole() {
-        return this.role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public Customers role(Role role) {
-        this.setRole(role);
-        return this;
     }
 
     public Set<Groups> getGroups() {

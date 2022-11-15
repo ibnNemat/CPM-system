@@ -11,17 +11,12 @@
       "fieldValidateRules": ["required"]
     },
     {
-      "fieldName": "totalPrice",
-      "fieldType": "Double",
-      "fieldValidateRules": ["required"]
-    },
-    {
       "fieldName": "isPayed",
       "fieldType": "Boolean",
       "fieldValidateRules": ["required"]
     },
     {
-      "fieldName": "createdAt",
+      "fieldName": "startPeriod",
       "fieldType": "LocalDate",
       "fieldValidateRules": ["required"]
     }

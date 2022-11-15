@@ -13,6 +13,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
+import org.springframework.security.core.userdetails.UserDetails;
 import uz.devops.intern.config.Constants;
 
 /**

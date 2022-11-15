@@ -59,7 +59,6 @@ import uz.devops.intern.web.rest.errors.LoginAlreadyUsedException;
 @RestController
 @RequestMapping("/api/admin")
 public class UserResource {
-
     private static final List<String> ALLOWED_ORDERED_PROPERTIES = Collections.unmodifiableList(
         Arrays.asList(
             "id",

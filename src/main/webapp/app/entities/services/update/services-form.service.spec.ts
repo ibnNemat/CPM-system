@@ -25,6 +25,7 @@ describe('Services Form Service', () => {
             period: expect.any(Object),
             countPeriod: expect.any(Object),
             users: expect.any(Object),
+            groups: expect.any(Object),
           })
         );
       });
@@ -40,6 +41,7 @@ describe('Services Form Service', () => {
             period: expect.any(Object),
             countPeriod: expect.any(Object),
             users: expect.any(Object),
+            groups: expect.any(Object),
           })
         );
       });

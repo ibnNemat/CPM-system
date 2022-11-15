@@ -24,7 +24,6 @@
       "phoneNumber": "Phone Number",
       "email": "Email",
       "account": "Account",
-      "role": "Role",
       "groups": "Groups",
       "services": "Services"
     }

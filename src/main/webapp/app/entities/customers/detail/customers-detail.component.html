@@ -38,12 +38,6 @@
         <dd>
           <span>{{ customers.account }}</span>
         </dd>
-        <dt><span jhiTranslate="cpmSystemApp.customers.role">Role</span></dt>
-        <dd>
-          <div *ngIf="customers.role">
-            <a [routerLink]="['/role', customers.role.id, 'view']">{{ customers.role.id }}</a>
-          </div>
-        </dd>
         <dt><span jhiTranslate="cpmSystemApp.customers.groups">Groups</span></dt>
         <dd>
           <span *ngFor="let groups of customers.groups; let last = last">

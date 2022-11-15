@@ -142,12 +142,21 @@ public class GroupsResource {
      * {@code GET  /groups} : get all the groups.
      *
      * @param pageable the pagination information.
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of groups in body.
      */
     @GetMapping("/groups")
-    public ResponseEntity<List<GroupsDTO>> getAllGroups(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<GroupsDTO>> getAllGroups(
+        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false, defaultValue = "false") boolean eagerload
+    ) {
         log.debug("REST request to get a page of Groups");
-        Page<GroupsDTO> page = groupsService.findAll(pageable);
+        Page<GroupsDTO> page;
+        if (eagerload) {
+            page = groupsService.findAllWithEagerRelationships(pageable);
+        } else {
+            page = groupsService.findAll(pageable);
+        }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

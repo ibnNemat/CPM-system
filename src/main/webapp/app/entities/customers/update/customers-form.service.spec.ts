@@ -26,7 +26,6 @@ describe('Customers Form Service', () => {
             phoneNumber: expect.any(Object),
             email: expect.any(Object),
             account: expect.any(Object),
-            role: expect.any(Object),
             groups: expect.any(Object),
             services: expect.any(Object),
           })
@@ -45,7 +44,6 @@ describe('Customers Form Service', () => {
             phoneNumber: expect.any(Object),
             email: expect.any(Object),
             account: expect.any(Object),
-            role: expect.any(Object),
             groups: expect.any(Object),
             services: expect.any(Object),
           })

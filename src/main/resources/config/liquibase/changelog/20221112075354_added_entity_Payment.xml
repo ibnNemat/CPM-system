@@ -17,13 +17,10 @@
             <column name="payment_for_period" type="double">
                 <constraints nullable="false" />
             </column>
-            <column name="total_price" type="double">
-                <constraints nullable="false" />
-            </column>
             <column name="is_payed" type="boolean">
                 <constraints nullable="false" />
             </column>
-            <column name="created_at" type="date">
+            <column name="start_period" type="date">
                 <constraints nullable="false" />
             </column>
             <column name="user_id" type="bigint">
@@ -57,9 +54,8 @@
                   usePreparedStatements="true">
             <column name="id" type="numeric"/>
             <column name="payment_for_period" type="numeric"/>
-            <column name="total_price" type="numeric"/>
             <column name="is_payed" type="boolean"/>
-            <column name="created_at" type="date"/>
+            <column name="start_period" type="date"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

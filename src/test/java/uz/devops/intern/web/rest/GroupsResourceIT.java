@@ -2,17 +2,25 @@ package uz.devops.intern.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uz.devops.intern.IntegrationTest;
 import uz.devops.intern.domain.Groups;
 import uz.devops.intern.repository.GroupsRepository;
+import uz.devops.intern.service.GroupsService;
 import uz.devops.intern.service.dto.GroupsDTO;
 import uz.devops.intern.service.mapper.GroupsMapper;
 
@@ -27,12 +36,19 @@ import uz.devops.intern.service.mapper.GroupsMapper;
  * Integration tests for the {@link GroupsResource} REST controller.
  */
 @IntegrationTest
+@ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
 class GroupsResourceIT {
 
+    private static final Integer DEFAULT_GROUP_MANAGER_ID = 1;
+    private static final Integer UPDATED_GROUP_MANAGER_ID = 2;
+
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
+
+    private static final String DEFAULT_GROUP_OWNER_NAME = "AAAAAAAAAA";
+    private static final String UPDATED_GROUP_OWNER_NAME = "BBBBBBBBBB";
 
     private static final String ENTITY_API_URL = "/api/groups";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -43,8 +59,14 @@ class GroupsResourceIT {
     @Autowired
     private GroupsRepository groupsRepository;
 
+    @Mock
+    private GroupsRepository groupsRepositoryMock;
+
     @Autowired
     private GroupsMapper groupsMapper;
+
+    @Mock
+    private GroupsService groupsServiceMock;
 
     @Autowired
     private EntityManager em;
@@ -61,7 +83,7 @@ class GroupsResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Groups createEntity(EntityManager em) {
-        Groups groups = new Groups().name(DEFAULT_NAME);
+        Groups groups = new Groups().groupManagerId(DEFAULT_GROUP_MANAGER_ID).name(DEFAULT_NAME).groupOwnerName(DEFAULT_GROUP_OWNER_NAME);
         return groups;
     }
 
@@ -72,7 +94,7 @@ class GroupsResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Groups createUpdatedEntity(EntityManager em) {
-        Groups groups = new Groups().name(UPDATED_NAME);
+        Groups groups = new Groups().groupManagerId(UPDATED_GROUP_MANAGER_ID).name(UPDATED_NAME).groupOwnerName(UPDATED_GROUP_OWNER_NAME);
         return groups;
     }
 
@@ -95,7 +117,9 @@ class GroupsResourceIT {
         List<Groups> groupsList = groupsRepository.findAll();
         assertThat(groupsList).hasSize(databaseSizeBeforeCreate + 1);
         Groups testGroups = groupsList.get(groupsList.size() - 1);
+        assertThat(testGroups.getGroupManagerId()).isEqualTo(DEFAULT_GROUP_MANAGER_ID);
         assertThat(testGroups.getName()).isEqualTo(DEFAULT_NAME);
+        assertThat(testGroups.getGroupOwnerName()).isEqualTo(DEFAULT_GROUP_OWNER_NAME);
     }
 
     @Test
@@ -119,10 +143,46 @@ class GroupsResourceIT {
 
     @Test
     @Transactional
+    void checkGroupManagerIdIsRequired() throws Exception {
+        int databaseSizeBeforeTest = groupsRepository.findAll().size();
+        // set the field null
+        groups.setGroupManagerId(null);
+
+        // Create the Groups, which fails.
+        GroupsDTO groupsDTO = groupsMapper.toDto(groups);
+
+        restGroupsMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(groupsDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Groups> groupsList = groupsRepository.findAll();
+        assertThat(groupsList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     void checkNameIsRequired() throws Exception {
         int databaseSizeBeforeTest = groupsRepository.findAll().size();
         // set the field null
         groups.setName(null);
+
+        // Create the Groups, which fails.
+        GroupsDTO groupsDTO = groupsMapper.toDto(groups);
+
+        restGroupsMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(groupsDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Groups> groupsList = groupsRepository.findAll();
+        assertThat(groupsList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkGroupOwnerNameIsRequired() throws Exception {
+        int databaseSizeBeforeTest = groupsRepository.findAll().size();
+        // set the field null
+        groups.setGroupOwnerName(null);
 
         // Create the Groups, which fails.
         GroupsDTO groupsDTO = groupsMapper.toDto(groups);
@@ -147,7 +207,26 @@ class GroupsResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(groups.getId().intValue())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+            .andExpect(jsonPath("$.[*].groupManagerId").value(hasItem(DEFAULT_GROUP_MANAGER_ID)))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
+            .andExpect(jsonPath("$.[*].groupOwnerName").value(hasItem(DEFAULT_GROUP_OWNER_NAME)));
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    void getAllGroupsWithEagerRelationshipsIsEnabled() throws Exception {
+        when(groupsServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
+
+        restGroupsMockMvc.perform(get(ENTITY_API_URL + "?eagerload=true")).andExpect(status().isOk());
+
+        verify(groupsServiceMock, times(1)).findAllWithEagerRelationships(any());
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    void getAllGroupsWithEagerRelationshipsIsNotEnabled() throws Exception {
+        when(groupsServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
+
+        restGroupsMockMvc.perform(get(ENTITY_API_URL + "?eagerload=false")).andExpect(status().isOk());
+        verify(groupsRepositoryMock, times(1)).findAll(any(Pageable.class));
     }
 
     @Test
@@ -162,7 +241,9 @@ class GroupsResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(groups.getId().intValue()))
-            .andExpect(jsonPath("$.name").value(DEFAULT_NAME));
+            .andExpect(jsonPath("$.groupManagerId").value(DEFAULT_GROUP_MANAGER_ID))
+            .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
+            .andExpect(jsonPath("$.groupOwnerName").value(DEFAULT_GROUP_OWNER_NAME));
     }
 
     @Test
@@ -184,7 +265,7 @@ class GroupsResourceIT {
         Groups updatedGroups = groupsRepository.findById(groups.getId()).get();
         // Disconnect from session so that the updates on updatedGroups are not directly saved in db
         em.detach(updatedGroups);
-        updatedGroups.name(UPDATED_NAME);
+        updatedGroups.groupManagerId(UPDATED_GROUP_MANAGER_ID).name(UPDATED_NAME).groupOwnerName(UPDATED_GROUP_OWNER_NAME);
         GroupsDTO groupsDTO = groupsMapper.toDto(updatedGroups);
 
         restGroupsMockMvc
@@ -199,7 +280,9 @@ class GroupsResourceIT {
         List<Groups> groupsList = groupsRepository.findAll();
         assertThat(groupsList).hasSize(databaseSizeBeforeUpdate);
         Groups testGroups = groupsList.get(groupsList.size() - 1);
+        assertThat(testGroups.getGroupManagerId()).isEqualTo(UPDATED_GROUP_MANAGER_ID);
         assertThat(testGroups.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testGroups.getGroupOwnerName()).isEqualTo(UPDATED_GROUP_OWNER_NAME);
     }
 
     @Test
@@ -279,6 +362,8 @@ class GroupsResourceIT {
         Groups partialUpdatedGroups = new Groups();
         partialUpdatedGroups.setId(groups.getId());
 
+        partialUpdatedGroups.name(UPDATED_NAME).groupOwnerName(UPDATED_GROUP_OWNER_NAME);
+
         restGroupsMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedGroups.getId())
@@ -291,7 +376,9 @@ class GroupsResourceIT {
         List<Groups> groupsList = groupsRepository.findAll();
         assertThat(groupsList).hasSize(databaseSizeBeforeUpdate);
         Groups testGroups = groupsList.get(groupsList.size() - 1);
-        assertThat(testGroups.getName()).isEqualTo(DEFAULT_NAME);
+        assertThat(testGroups.getGroupManagerId()).isEqualTo(DEFAULT_GROUP_MANAGER_ID);
+        assertThat(testGroups.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testGroups.getGroupOwnerName()).isEqualTo(UPDATED_GROUP_OWNER_NAME);
     }
 
     @Test
@@ -306,7 +393,7 @@ class GroupsResourceIT {
         Groups partialUpdatedGroups = new Groups();
         partialUpdatedGroups.setId(groups.getId());
 
-        partialUpdatedGroups.name(UPDATED_NAME);
+        partialUpdatedGroups.groupManagerId(UPDATED_GROUP_MANAGER_ID).name(UPDATED_NAME).groupOwnerName(UPDATED_GROUP_OWNER_NAME);
 
         restGroupsMockMvc
             .perform(
@@ -320,7 +407,9 @@ class GroupsResourceIT {
         List<Groups> groupsList = groupsRepository.findAll();
         assertThat(groupsList).hasSize(databaseSizeBeforeUpdate);
         Groups testGroups = groupsList.get(groupsList.size() - 1);
+        assertThat(testGroups.getGroupManagerId()).isEqualTo(UPDATED_GROUP_MANAGER_ID);
         assertThat(testGroups.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testGroups.getGroupOwnerName()).isEqualTo(UPDATED_GROUP_OWNER_NAME);
     }
 
     @Test

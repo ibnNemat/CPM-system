@@ -21,6 +21,7 @@ describe('Organization Form Service', () => {
           expect.objectContaining({
             id: expect.any(Object),
             name: expect.any(Object),
+            orgOwnerName: expect.any(Object),
           })
         );
       });
@@ -32,6 +33,7 @@ describe('Organization Form Service', () => {
           expect.objectContaining({
             id: expect.any(Object),
             name: expect.any(Object),
+            orgOwnerName: expect.any(Object),
           })
         );
       });

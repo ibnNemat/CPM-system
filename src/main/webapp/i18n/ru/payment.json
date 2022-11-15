@@ -19,9 +19,8 @@
       },
       "id": "ID",
       "paymentForPeriod": "Payment For Period",
-      "totalPrice": "Total Price",
       "isPayed": "Is Payed",
-      "createdAt": "Created At",
+      "startPeriod": "Start Period",
       "user": "User",
       "service": "Service",
       "group": "Group"

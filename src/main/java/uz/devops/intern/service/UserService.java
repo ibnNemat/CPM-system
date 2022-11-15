@@ -146,6 +146,7 @@ public class UserService {
             user.setLangKey(userDTO.getLangKey());
         }
         String encryptedPassword = passwordEncoder.encode(RandomUtil.generatePassword());
+
         user.setPassword(encryptedPassword);
         user.setResetKey(RandomUtil.generateResetKey());
         user.setResetDate(Instant.now());
@@ -160,6 +161,7 @@ public class UserService {
                 .collect(Collectors.toSet());
             user.setAuthorities(authorities);
         }
+
         userRepository.save(user);
         log.debug("Created Information for User: {}", user);
         return user;

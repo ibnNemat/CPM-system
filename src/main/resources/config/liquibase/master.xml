@@ -12,11 +12,11 @@
 
     <include file="config/liquibase/changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20221112075349_added_entity_Customers.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20221112075350_added_entity_Role.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20221112075351_added_entity_Organization.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20221112075352_added_entity_Groups.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20221112075353_added_entity_Services.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20221112075354_added_entity_Payment.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20221114110950_added_entity_PaymentHistory.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <include file="config/liquibase/changelog/20221112075349_added_entity_constraints_Customers.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20221112075354_added_entity_constraints_Payment.xml" relativeToChangelogFile="false"/>

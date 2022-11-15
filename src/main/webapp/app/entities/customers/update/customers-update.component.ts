@@ -7,8 +7,6 @@ import { finalize, map } from 'rxjs/operators';
 import { CustomersFormService, CustomersFormGroup } from './customers-form.service';
 import { ICustomers } from '../customers.model';
 import { CustomersService } from '../service/customers.service';
-import { IRole } from 'app/entities/role/role.model';
-import { RoleService } from 'app/entities/role/service/role.service';
 import { IGroups } from 'app/entities/groups/groups.model';
 import { GroupsService } from 'app/entities/groups/service/groups.service';
 import { IServices } from 'app/entities/services/services.model';
@@ -22,7 +20,6 @@ export class CustomersUpdateComponent implements OnInit {
   isSaving = false;
   customers: ICustomers | null = null;
 
-  rolesSharedCollection: IRole[] = [];
   groupsSharedCollection: IGroups[] = [];
   servicesSharedCollection: IServices[] = [];
 
@@ -31,13 +28,10 @@ export class CustomersUpdateComponent implements OnInit {
   constructor(
     protected customersService: CustomersService,
     protected customersFormService: CustomersFormService,
-    protected roleService: RoleService,
     protected groupsService: GroupsService,
     protected servicesService: ServicesService,
     protected activatedRoute: ActivatedRoute
   ) {}
-
-  compareRole = (o1: IRole | null, o2: IRole | null): boolean => this.roleService.compareRole(o1, o2);
 
   compareGroups = (o1: IGroups | null, o2: IGroups | null): boolean => this.groupsService.compareGroups(o1, o2);
 
@@ -91,7 +85,6 @@ export class CustomersUpdateComponent implements OnInit {
     this.customers = customers;
     this.customersFormService.resetForm(this.editForm, customers);
 
-    this.rolesSharedCollection = this.roleService.addRoleToCollectionIfMissing<IRole>(this.rolesSharedCollection, customers.role);
     this.groupsSharedCollection = this.groupsService.addGroupsToCollectionIfMissing<IGroups>(
       this.groupsSharedCollection,
       ...(customers.groups ?? [])
@@ -103,12 +96,6 @@ export class CustomersUpdateComponent implements OnInit {
   }
 
   protected loadRelationshipsOptions(): void {
-    this.roleService
-      .query()
-      .pipe(map((res: HttpResponse<IRole[]>) => res.body ?? []))
-      .pipe(map((roles: IRole[]) => this.roleService.addRoleToCollectionIfMissing<IRole>(roles, this.customers?.role)))
-      .subscribe((roles: IRole[]) => (this.rolesSharedCollection = roles));
-
     this.groupsService
       .query()
       .pipe(map((res: HttpResponse<IGroups[]>) => res.body ?? []))

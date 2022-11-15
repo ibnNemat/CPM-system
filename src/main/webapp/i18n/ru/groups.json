@@ -18,7 +18,10 @@
         "title": "Groups"
       },
       "id": "ID",
+      "groupManagerId": "Group Manager Id",
       "name": "Name",
+      "groupOwnerName": "Group Owner Name",
+      "services": "Services",
       "organization": "Organization",
       "users": "Users"
     }

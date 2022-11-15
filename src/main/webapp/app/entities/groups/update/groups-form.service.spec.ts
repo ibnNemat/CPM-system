@@ -20,7 +20,10 @@ describe('Groups Form Service', () => {
         expect(formGroup.controls).toEqual(
           expect.objectContaining({
             id: expect.any(Object),
+            groupManagerId: expect.any(Object),
             name: expect.any(Object),
+            groupOwnerName: expect.any(Object),
+            services: expect.any(Object),
             organization: expect.any(Object),
             users: expect.any(Object),
           })
@@ -33,7 +36,10 @@ describe('Groups Form Service', () => {
         expect(formGroup.controls).toEqual(
           expect.objectContaining({
             id: expect.any(Object),
+            groupManagerId: expect.any(Object),
             name: expect.any(Object),
+            groupOwnerName: expect.any(Object),
+            services: expect.any(Object),
             organization: expect.any(Object),
             users: expect.any(Object),
           })

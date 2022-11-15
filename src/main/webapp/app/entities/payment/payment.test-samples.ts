@@ -5,32 +5,28 @@ import { IPayment, NewPayment } from './payment.model';
 export const sampleWithRequiredData: IPayment = {
   id: 47537,
   paymentForPeriod: 72336,
-  totalPrice: 74412,
-  isPayed: false,
-  createdAt: dayjs('2022-11-11'),
+  isPayed: true,
+  startPeriod: dayjs('2022-11-11'),
 };
 
 export const sampleWithPartialData: IPayment = {
-  id: 88670,
-  paymentForPeriod: 46452,
-  totalPrice: 39655,
+  id: 34993,
+  paymentForPeriod: 88670,
   isPayed: false,
-  createdAt: dayjs('2022-11-12'),
+  startPeriod: dayjs('2022-11-11'),
 };
 
 export const sampleWithFullData: IPayment = {
-  id: 53029,
-  paymentForPeriod: 63797,
-  totalPrice: 44057,
+  id: 28713,
+  paymentForPeriod: 32065,
   isPayed: true,
-  createdAt: dayjs('2022-11-11'),
+  startPeriod: dayjs('2022-11-11'),
 };
 
 export const sampleWithNewData: NewPayment = {
-  paymentForPeriod: 60161,
-  totalPrice: 49401,
+  paymentForPeriod: 44057,
   isPayed: true,
-  createdAt: dayjs('2022-11-12'),
+  startPeriod: dayjs('2022-11-11'),
   id: null,
 };
 

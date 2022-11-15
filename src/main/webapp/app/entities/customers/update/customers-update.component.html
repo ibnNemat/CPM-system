@@ -108,14 +108,6 @@
         </div>
 
         <div class="row mb-3">
-          <label class="form-label" jhiTranslate="cpmSystemApp.customers.role" for="field_role">Role</label>
-          <select class="form-control" id="field_role" data-cy="role" name="role" formControlName="role" [compareWith]="compareRole">
-            <option [ngValue]="null"></option>
-            <option [ngValue]="roleOption" *ngFor="let roleOption of rolesSharedCollection">{{ roleOption.id }}</option>
-          </select>
-        </div>
-
-        <div class="row mb-3">
           <label jhiTranslate="cpmSystemApp.customers.groups" for="field_groups">Groups</label>
           <select
             class="form-control"

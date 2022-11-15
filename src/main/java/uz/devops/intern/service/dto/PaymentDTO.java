@@ -17,13 +17,10 @@ public class PaymentDTO implements Serializable {
     private Double paymentForPeriod;
 
     @NotNull
-    private Double totalPrice;
-
-    @NotNull
     private Boolean isPayed;
 
     @NotNull
-    private LocalDate createdAt;
+    private LocalDate startPeriod;
 
     private CustomersDTO user;
 
@@ -47,14 +44,6 @@ public class PaymentDTO implements Serializable {
         this.paymentForPeriod = paymentForPeriod;
     }
 
-    public Double getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(Double totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
     public Boolean getIsPayed() {
         return isPayed;
     }
@@ -63,12 +52,12 @@ public class PaymentDTO implements Serializable {
         this.isPayed = isPayed;
     }
 
-    public LocalDate getCreatedAt() {
-        return createdAt;
+    public LocalDate getStartPeriod() {
+        return startPeriod;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
-        this.createdAt = createdAt;
+    public void setStartPeriod(LocalDate startPeriod) {
+        this.startPeriod = startPeriod;
     }
 
     public CustomersDTO getUser() {
@@ -122,9 +111,8 @@ public class PaymentDTO implements Serializable {
         return "PaymentDTO{" +
             "id=" + getId() +
             ", paymentForPeriod=" + getPaymentForPeriod() +
-            ", totalPrice=" + getTotalPrice() +
             ", isPayed='" + getIsPayed() + "'" +
-            ", createdAt='" + getCreatedAt() + "'" +
+            ", startPeriod='" + getStartPeriod() + "'" +
             ", user=" + getUser() +
             ", service=" + getService() +
             ", group=" + getGroup() +

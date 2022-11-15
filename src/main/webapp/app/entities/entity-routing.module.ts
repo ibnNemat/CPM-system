@@ -34,6 +34,11 @@ import { RouterModule } from '@angular/router';
         data: { pageTitle: 'cpmSystemApp.payment.home.title' },
         loadChildren: () => import('./payment/payment.module').then(m => m.PaymentModule),
       },
+      {
+        path: 'payment-history',
+        data: { pageTitle: 'cpmSystemApp.paymentHistory.home.title' },
+        loadChildren: () => import('./payment-history/payment-history.module').then(m => m.PaymentHistoryModule),
+      },
       /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
     ]),
   ],
