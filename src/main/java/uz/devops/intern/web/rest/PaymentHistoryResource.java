@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
@@ -38,6 +39,12 @@ public class PaymentHistoryResource {
     public PaymentHistoryResource(PaymentHistoryService paymentHistoryService, PaymentHistoryRepository paymentHistoryRepository) {
         this.paymentHistoryService = paymentHistoryService;
         this.paymentHistoryRepository = paymentHistoryRepository;
+    }
+
+    @GetMapping("/getAllHistoryForEmail")
+    public List<PaymentHistoryDTO> getAllHistory(){
+        log.debug("Rest request to get all History for email");
+        return paymentHistoryService.findAllForEmail();
     }
 
     /**

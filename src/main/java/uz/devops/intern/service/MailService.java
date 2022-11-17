@@ -1,13 +1,16 @@
 package uz.devops.intern.service;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -49,6 +52,30 @@ public class MailService {
         this.messageSource = messageSource;
         this.templateEngine = templateEngine;
     }
+
+
+    public void sendMessageWithMail(
+        String to, String subject, String text, String pathToAttachment
+    ) throws MessagingException {
+
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        helper.setFrom("dayer010010@gmail.com");
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(text);
+
+        FileSystemResource file
+            = new FileSystemResource(new File(pathToAttachment));
+
+//        File file = new File("src/main/resources/templates/hello.pdf");
+        helper.addAttachment("sayHello.pdf", file);
+
+        javaMailSender.send(message);
+    }
+
 
     @Async
     public void sendEmail(String to, String subject, String content, boolean isMultipart, boolean isHtml) {

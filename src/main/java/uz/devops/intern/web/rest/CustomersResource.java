@@ -5,15 +5,16 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -22,6 +23,7 @@ import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
 import uz.devops.intern.repository.CustomersRepository;
 import uz.devops.intern.service.CustomersService;
+import uz.devops.intern.service.MailService;
 import uz.devops.intern.service.dto.CustomersDTO;
 import uz.devops.intern.web.rest.errors.BadRequestAlertException;
 
@@ -43,9 +45,24 @@ public class CustomersResource {
 
     private final CustomersRepository customersRepository;
 
-    public CustomersResource(CustomersService customersService, CustomersRepository customersRepository) {
+    private final MailService mailService;
+
+    public CustomersResource(CustomersService customersService, CustomersRepository customersRepository, MailService mailService) {
         this.customersService = customersService;
         this.customersRepository = customersRepository;
+        this.mailService = mailService;
+    }
+
+
+    @GetMapping("/email")
+    public ResponseEntity<?> sendEmailMessage() throws MessagingException {
+        mailService.sendMessageWithMail(
+            "dayerjabborov@gmail.com",
+            "First message for email",
+            "Salom nima gap polvon tinchmisan chachamay",
+            "src/main/resources/templates/hello.pdf"
+        );
+        return ResponseEntity.ok("SUCCESS");
     }
 
     /**
@@ -71,7 +88,7 @@ public class CustomersResource {
     /**
      * {@code PUT  /customers/:id} : Updates an existing customers.
      *
-     * @param id the id of the customersDTO to save.
+     * @param id           the id of the customersDTO to save.
      * @param customersDTO the customersDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated customersDTO,
      * or with status {@code 400 (Bad Request)} if the customersDTO is not valid,
@@ -105,7 +122,7 @@ public class CustomersResource {
     /**
      * {@code PATCH  /customers/:id} : Partial updates given fields of an existing customers, field will ignore if it is null
      *
-     * @param id the id of the customersDTO to save.
+     * @param id           the id of the customersDTO to save.
      * @param customersDTO the customersDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated customersDTO,
      * or with status {@code 400 (Bad Request)} if the customersDTO is not valid,
@@ -113,7 +130,7 @@ public class CustomersResource {
      * or with status {@code 500 (Internal Server Error)} if the customersDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/customers/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/customers/{id}", consumes = {"application/json", "application/merge-patch+json"})
     public ResponseEntity<CustomersDTO> partialUpdateCustomers(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody CustomersDTO customersDTO
@@ -141,7 +158,7 @@ public class CustomersResource {
     /**
      * {@code GET  /customers} : get all the customers.
      *
-     * @param pageable the pagination information.
+     * @param pageable  the pagination information.
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of customers in body.
      */

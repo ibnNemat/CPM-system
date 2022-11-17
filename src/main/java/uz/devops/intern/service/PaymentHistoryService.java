@@ -53,4 +53,6 @@ public interface PaymentHistoryService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    List<PaymentHistoryDTO> findAllForEmail();
 }
