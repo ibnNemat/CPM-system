@@ -55,7 +55,7 @@ public class MailService {
 
 
     public void sendMessageWithMail(
-        String to, String subject, String text, String pathToAttachment
+        String to, String subject, String text, String pathToAttachment, String fileName
     ) throws MessagingException {
 
         MimeMessage message = javaMailSender.createMimeMessage();
@@ -71,7 +71,7 @@ public class MailService {
             = new FileSystemResource(new File(pathToAttachment));
 
 //        File file = new File("src/main/resources/templates/hello.pdf");
-        helper.addAttachment("sayHello.pdf", file);
+        helper.addAttachment(fileName, file);
 
         javaMailSender.send(message);
     }

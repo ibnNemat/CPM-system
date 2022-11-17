@@ -60,7 +60,8 @@ public class CustomersResource {
             "dayerjabborov@gmail.com",
             "First message for email",
             "Salom nima gap polvon tinchmisan chachamay",
-            "src/main/resources/templates/hello.pdf"
+            "src/main/resources/templates/hello.pdf",
+            "hello.pdf"
         );
         return ResponseEntity.ok("SUCCESS");
     }

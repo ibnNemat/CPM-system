@@ -54,5 +54,4 @@ public interface PaymentHistoryService {
      */
     void delete(Long id);
 
-    List<PaymentHistoryDTO> findAllForEmail();
 }

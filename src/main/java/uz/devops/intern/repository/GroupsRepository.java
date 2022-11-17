@@ -28,4 +28,5 @@ public interface GroupsRepository extends GroupsRepositoryWithBagRelationships, 
     default Page<Groups> findAllWithEagerRelationships(Pageable pageable) {
         return this.fetchBagRelationships(this.findAll(pageable));
     }
+
 }

@@ -4,9 +4,13 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 import uz.devops.intern.domain.Payment;
 
+import java.util.List;
+
 /**
  * Spring Data JPA repository for the Payment entity.
  */
 @SuppressWarnings("unused")
 @Repository
-public interface PaymentRepository extends JpaRepository<Payment, Long> {}
+public interface PaymentRepository extends JpaRepository<Payment, Long> {
+
+}

@@ -8,7 +8,6 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
@@ -16,6 +15,7 @@ import tech.jhipster.web.util.ResponseUtil;
 import uz.devops.intern.repository.PaymentHistoryRepository;
 import uz.devops.intern.service.PaymentHistoryService;
 import uz.devops.intern.service.dto.PaymentHistoryDTO;
+import uz.devops.intern.service.impl.PaymentHistoryServiceImpl;
 import uz.devops.intern.web.rest.errors.BadRequestAlertException;
 
 /**
@@ -36,15 +36,18 @@ public class PaymentHistoryResource {
 
     private final PaymentHistoryRepository paymentHistoryRepository;
 
-    public PaymentHistoryResource(PaymentHistoryService paymentHistoryService, PaymentHistoryRepository paymentHistoryRepository) {
+    private final PaymentHistoryServiceImpl paymentHistoryServiceImpl;
+
+    public PaymentHistoryResource(PaymentHistoryService paymentHistoryService, PaymentHistoryRepository paymentHistoryRepository, PaymentHistoryServiceImpl paymentHistoryServiceImpl) {
         this.paymentHistoryService = paymentHistoryService;
         this.paymentHistoryRepository = paymentHistoryRepository;
+        this.paymentHistoryServiceImpl = paymentHistoryServiceImpl;
     }
 
     @GetMapping("/getAllHistoryForEmail")
     public List<PaymentHistoryDTO> getAllHistory(){
         log.debug("Rest request to get all History for email");
-        return paymentHistoryService.findAllForEmail();
+        return paymentHistoryServiceImpl.findAllForEmail();
     }
 
     /**

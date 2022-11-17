@@ -1,6 +1,5 @@
 package uz.devops.intern.service.impl;
 
-import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -22,9 +21,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.devops.intern.domain.PaymentHistory;
 import uz.devops.intern.repository.PaymentHistoryRepository;
+import uz.devops.intern.service.MailService;
 import uz.devops.intern.service.PaymentHistoryService;
 import uz.devops.intern.service.dto.PaymentHistoryDTO;
 import uz.devops.intern.service.mapper.PaymentHistoryMapper;
+
+import javax.mail.MessagingException;
 
 /**
  * Service Implementation for managing {@link PaymentHistory}.
@@ -39,13 +41,14 @@ public class PaymentHistoryServiceImpl implements PaymentHistoryService {
 
     private final PaymentHistoryMapper paymentHistoryMapper;
 
-    public PaymentHistoryServiceImpl(PaymentHistoryRepository paymentHistoryRepository, PaymentHistoryMapper paymentHistoryMapper) {
+    private final MailService mailService;
+
+    public PaymentHistoryServiceImpl(PaymentHistoryRepository paymentHistoryRepository, PaymentHistoryMapper paymentHistoryMapper, MailService mailService) {
         this.paymentHistoryRepository = paymentHistoryRepository;
         this.paymentHistoryMapper = paymentHistoryMapper;
+        this.mailService = mailService;
     }
 
-    @Override
-    @Transactional(readOnly = true)
     public List<PaymentHistoryDTO> findAllForEmail() {
         log.debug("Request to get all PaymentHistories for email");
         List<PaymentHistoryDTO> historyList = paymentHistoryRepository
@@ -59,14 +62,14 @@ public class PaymentHistoryServiceImpl implements PaymentHistoryService {
 
         XSSFWorkbook workbook = new XSSFWorkbook();
 
-        try (FileOutputStream out = new FileOutputStream(file, true)) {
+        try (FileOutputStream out = new FileOutputStream(file)) {
 
             XSSFSheet sheet = workbook.createSheet("All History");
 
             Row row1 = sheet.createRow(0);
             Cell cell = row1.createCell(1);
             cell.setCellValue("Show all payment history");
-            sheet.addMergedRegion(new CellRangeAddress(0,0,1,4));
+            sheet.addMergedRegion(new CellRangeAddress(0, 0, 1, 5));
 
             XSSFRow headerRow = sheet.createRow(1);
             headerRow.createCell(0).setCellValue("ID");
@@ -96,10 +99,18 @@ public class PaymentHistoryServiceImpl implements PaymentHistoryService {
             workbook.write(out);
             workbook.close();
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            mailService.sendMessageWithMail(
+                "dayerjabborov@gmail.com",
+                "First message for email",
+                "Salom nima gap polvon tinchmisan chachamay",
+                path,
+                "histories.xlsx"
+            );
+
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
         }
 
         return historyList;
@@ -159,4 +170,5 @@ public class PaymentHistoryServiceImpl implements PaymentHistoryService {
         log.debug("Request to delete PaymentHistory : {}", id);
         paymentHistoryRepository.deleteById(id);
     }
+
 }
