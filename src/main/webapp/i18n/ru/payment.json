@@ -18,10 +18,12 @@
         "title": "Payment"
       },
       "id": "ID",
+      "payedMoney": "Payed Money",
       "paymentForPeriod": "Payment For Period",
       "isPayed": "Is Payed",
-      "startPeriod": "Start Period",
-      "user": "User",
+      "startedPeriod": "Started Period",
+      "finishedPeriod": "Finished Period",
+      "customer": "Customer",
       "service": "Service",
       "group": "Group"
     }

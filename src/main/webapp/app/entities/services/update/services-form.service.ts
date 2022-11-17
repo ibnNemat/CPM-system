@@ -14,16 +14,16 @@ type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>
  */
 type ServicesFormGroupInput = IServices | PartialWithRequiredKeyOf<NewServices>;
 
-type ServicesFormDefaults = Pick<NewServices, 'id' | 'users' | 'groups'>;
+type ServicesFormDefaults = Pick<NewServices, 'id' | 'users'>;
 
 type ServicesFormGroupContent = {
   id: FormControl<IServices['id'] | NewServices['id']>;
-  name: FormControl<IServices['name']>;
+  serviceType: FormControl<IServices['serviceType']>;
   price: FormControl<IServices['price']>;
-  period: FormControl<IServices['period']>;
+  periodType: FormControl<IServices['periodType']>;
   countPeriod: FormControl<IServices['countPeriod']>;
+  group: FormControl<IServices['group']>;
   users: FormControl<IServices['users']>;
-  groups: FormControl<IServices['groups']>;
 };
 
 export type ServicesFormGroup = FormGroup<ServicesFormGroupContent>;
@@ -43,20 +43,20 @@ export class ServicesFormService {
           validators: [Validators.required],
         }
       ),
-      name: new FormControl(servicesRawValue.name, {
+      serviceType: new FormControl(servicesRawValue.serviceType, {
         validators: [Validators.required],
       }),
       price: new FormControl(servicesRawValue.price, {
         validators: [Validators.required],
       }),
-      period: new FormControl(servicesRawValue.period, {
+      periodType: new FormControl(servicesRawValue.periodType, {
         validators: [Validators.required],
       }),
       countPeriod: new FormControl(servicesRawValue.countPeriod, {
         validators: [Validators.required],
       }),
+      group: new FormControl(servicesRawValue.group),
       users: new FormControl(servicesRawValue.users ?? []),
-      groups: new FormControl(servicesRawValue.groups ?? []),
     });
   }
 
@@ -78,7 +78,6 @@ export class ServicesFormService {
     return {
       id: null,
       users: [],
-      groups: [],
     };
   }
 }

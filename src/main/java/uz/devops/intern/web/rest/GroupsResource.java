@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -142,23 +141,25 @@ public class GroupsResource {
      * {@code GET  /groups} : get all the groups.
      *
      * @param pageable the pagination information.
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of groups in body.
      */
     @GetMapping("/groups")
-    public ResponseEntity<List<GroupsDTO>> getAllGroups(
-        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
-        @RequestParam(required = false, defaultValue = "false") boolean eagerload
-    ) {
+    public ResponseEntity<List<GroupsDTO>> getAllGroups(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Groups");
-        Page<GroupsDTO> page;
-        if (eagerload) {
-            page = groupsService.findAllWithEagerRelationships(pageable);
-        } else {
-            page = groupsService.findAll(pageable);
-        }
+        Page<GroupsDTO> page = groupsService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/manager-groups")
+    public ResponseEntity<List<GroupsDTO>> findAl(){
+        List<GroupsDTO> groupsDTOList = groupsService.findOnlyManagerGroups();
+        return ResponseEntity.ok(groupsDTOList);
+    }
+
+    @GetMapping("/groups-relationship")
+    public ResponseEntity<Page<GroupsDTO>> findAllWithEagerRelationships(Pageable pageable){
+        return ResponseEntity.ok(groupsService.findAllWithEagerRelationships(pageable));
     }
 
     /**

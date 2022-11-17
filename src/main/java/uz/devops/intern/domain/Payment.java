@@ -23,6 +23,10 @@ public class Payment implements Serializable {
     private Long id;
 
     @NotNull
+    @Column(name = "payed_money", nullable = false)
+    private Double payedMoney;
+
+    @NotNull
     @Column(name = "payment_for_period", nullable = false)
     private Double paymentForPeriod;
 
@@ -31,19 +35,23 @@ public class Payment implements Serializable {
     private Boolean isPayed;
 
     @NotNull
-    @Column(name = "start_period", nullable = false)
-    private LocalDate startPeriod;
+    @Column(name = "started_period", nullable = false)
+    private LocalDate startedPeriod;
+
+    @NotNull
+    @Column(name = "finished_period", nullable = false)
+    private LocalDate finishedPeriod;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = { "groups", "services" }, allowSetters = true)
-    private Customers user;
+    @JsonIgnoreProperties(value = { "user", "groups", "services" }, allowSetters = true)
+    private Customers customer;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = { "users", "groups" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "group", "users" }, allowSetters = true)
     private Services service;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = { "services", "organization", "users" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "organization", "users" }, allowSetters = true)
     private Groups group;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -59,6 +67,19 @@ public class Payment implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Double getPayedMoney() {
+        return this.payedMoney;
+    }
+
+    public Payment payedMoney(Double payedMoney) {
+        this.setPayedMoney(payedMoney);
+        return this;
+    }
+
+    public void setPayedMoney(Double payedMoney) {
+        this.payedMoney = payedMoney;
     }
 
     public Double getPaymentForPeriod() {
@@ -87,29 +108,42 @@ public class Payment implements Serializable {
         this.isPayed = isPayed;
     }
 
-    public LocalDate getStartPeriod() {
-        return this.startPeriod;
+    public LocalDate getStartedPeriod() {
+        return this.startedPeriod;
     }
 
-    public Payment startPeriod(LocalDate startPeriod) {
-        this.setStartPeriod(startPeriod);
+    public Payment startedPeriod(LocalDate startedPeriod) {
+        this.setStartedPeriod(startedPeriod);
         return this;
     }
 
-    public void setStartPeriod(LocalDate startPeriod) {
-        this.startPeriod = startPeriod;
+    public void setStartedPeriod(LocalDate startedPeriod) {
+        this.startedPeriod = startedPeriod;
     }
 
-    public Customers getUser() {
-        return this.user;
+    public LocalDate getFinishedPeriod() {
+        return this.finishedPeriod;
     }
 
-    public void setUser(Customers customers) {
-        this.user = customers;
+    public Payment finishedPeriod(LocalDate finishedPeriod) {
+        this.setFinishedPeriod(finishedPeriod);
+        return this;
     }
 
-    public Payment user(Customers customers) {
-        this.setUser(customers);
+    public void setFinishedPeriod(LocalDate finishedPeriod) {
+        this.finishedPeriod = finishedPeriod;
+    }
+
+    public Customers getCustomer() {
+        return this.customer;
+    }
+
+    public void setCustomer(Customers customers) {
+        this.customer = customers;
+    }
+
+    public Payment customer(Customers customers) {
+        this.setCustomer(customers);
         return this;
     }
 
@@ -163,9 +197,11 @@ public class Payment implements Serializable {
     public String toString() {
         return "Payment{" +
             "id=" + getId() +
+            ", payedMoney=" + getPayedMoney() +
             ", paymentForPeriod=" + getPaymentForPeriod() +
             ", isPayed='" + getIsPayed() + "'" +
-            ", startPeriod='" + getStartPeriod() + "'" +
+            ", startedPeriod='" + getStartedPeriod() + "'" +
+            ", finishedPeriod='" + getFinishedPeriod() + "'" +
             "}";
     }
 }

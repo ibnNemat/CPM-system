@@ -14,38 +14,6 @@
         </div>
 
         <div class="row mb-3">
-          <label class="form-label" jhiTranslate="cpmSystemApp.groups.groupManagerId" for="field_groupManagerId">Group Manager Id</label>
-          <input
-            type="number"
-            class="form-control"
-            name="groupManagerId"
-            id="field_groupManagerId"
-            data-cy="groupManagerId"
-            formControlName="groupManagerId"
-          />
-          <div
-            *ngIf="
-              editForm.get('groupManagerId')!.invalid && (editForm.get('groupManagerId')!.dirty || editForm.get('groupManagerId')!.touched)
-            "
-          >
-            <small
-              class="form-text text-danger"
-              *ngIf="editForm.get('groupManagerId')?.errors?.required"
-              jhiTranslate="entity.validation.required"
-            >
-              This field is required.
-            </small>
-            <small
-              class="form-text text-danger"
-              [hidden]="!editForm.get('groupManagerId')?.errors?.number"
-              jhiTranslate="entity.validation.number"
-            >
-              This field should be a number.
-            </small>
-          </div>
-        </div>
-
-        <div class="row mb-3">
           <label class="form-label" jhiTranslate="cpmSystemApp.groups.name" for="field_name">Name</label>
           <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name" />
           <div *ngIf="editForm.get('name')!.invalid && (editForm.get('name')!.dirty || editForm.get('name')!.touched)">
@@ -78,21 +46,6 @@
               This field is required.
             </small>
           </div>
-        </div>
-
-        <div class="row mb-3">
-          <label jhiTranslate="cpmSystemApp.groups.services" for="field_services">Services</label>
-          <select
-            class="form-control"
-            id="field_services"
-            data-cy="services"
-            multiple
-            name="services"
-            formControlName="services"
-            [compareWith]="compareServices"
-          >
-            <option [ngValue]="servicesOption" *ngFor="let servicesOption of servicesSharedCollection">{{ servicesOption.id }}</option>
-          </select>
         </div>
 
         <div class="row mb-3">

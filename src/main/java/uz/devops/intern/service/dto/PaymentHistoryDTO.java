@@ -14,13 +14,15 @@ public class PaymentHistoryDTO implements Serializable {
 
     private String organizationName;
 
-    private String serviceName;
-
     private String groupName;
+
+    private String serviceName;
 
     private Double sum;
 
     private LocalDate createdAt;
+
+    private CustomersDTO customer;
 
     public Long getId() {
         return id;
@@ -38,20 +40,20 @@ public class PaymentHistoryDTO implements Serializable {
         this.organizationName = organizationName;
     }
 
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
-
     public String getGroupName() {
         return groupName;
     }
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 
     public Double getSum() {
@@ -68,6 +70,14 @@ public class PaymentHistoryDTO implements Serializable {
 
     public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public CustomersDTO getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(CustomersDTO customer) {
+        this.customer = customer;
     }
 
     @Override
@@ -97,10 +107,11 @@ public class PaymentHistoryDTO implements Serializable {
         return "PaymentHistoryDTO{" +
             "id=" + getId() +
             ", organizationName='" + getOrganizationName() + "'" +
-            ", serviceName='" + getServiceName() + "'" +
             ", groupName='" + getGroupName() + "'" +
+            ", serviceName='" + getServiceName() + "'" +
             ", sum=" + getSum() +
             ", createdAt='" + getCreatedAt() + "'" +
+            ", customer=" + getCustomer() +
             "}";
     }
 }

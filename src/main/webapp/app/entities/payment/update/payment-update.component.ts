@@ -93,7 +93,7 @@ export class PaymentUpdateComponent implements OnInit {
 
     this.customersSharedCollection = this.customersService.addCustomersToCollectionIfMissing<ICustomers>(
       this.customersSharedCollection,
-      payment.user
+      payment.customer
     );
     this.servicesSharedCollection = this.servicesService.addServicesToCollectionIfMissing<IServices>(
       this.servicesSharedCollection,
@@ -107,7 +107,9 @@ export class PaymentUpdateComponent implements OnInit {
       .query()
       .pipe(map((res: HttpResponse<ICustomers[]>) => res.body ?? []))
       .pipe(
-        map((customers: ICustomers[]) => this.customersService.addCustomersToCollectionIfMissing<ICustomers>(customers, this.payment?.user))
+        map((customers: ICustomers[]) =>
+          this.customersService.addCustomersToCollectionIfMissing<ICustomers>(customers, this.payment?.customer)
+        )
       )
       .subscribe((customers: ICustomers[]) => (this.customersSharedCollection = customers));
 

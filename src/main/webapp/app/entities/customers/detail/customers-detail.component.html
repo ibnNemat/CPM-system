@@ -14,10 +14,6 @@
         <dd>
           <span>{{ customers.id }}</span>
         </dd>
-        <dt><span jhiTranslate="cpmSystemApp.customers.fullName">Full Name</span></dt>
-        <dd>
-          <span>{{ customers.fullName }}</span>
-        </dd>
         <dt><span jhiTranslate="cpmSystemApp.customers.username">Username</span></dt>
         <dd>
           <span>{{ customers.username }}</span>
@@ -30,13 +26,13 @@
         <dd>
           <span>{{ customers.phoneNumber }}</span>
         </dd>
-        <dt><span jhiTranslate="cpmSystemApp.customers.email">Email</span></dt>
-        <dd>
-          <span>{{ customers.email }}</span>
-        </dd>
         <dt><span jhiTranslate="cpmSystemApp.customers.account">Account</span></dt>
         <dd>
           <span>{{ customers.account }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.customers.user">User</span></dt>
+        <dd>
+          <span>{{ customers.user?.id }}</span>
         </dd>
         <dt><span jhiTranslate="cpmSystemApp.customers.groups">Groups</span></dt>
         <dd>

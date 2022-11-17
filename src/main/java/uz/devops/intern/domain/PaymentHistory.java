@@ -1,5 +1,6 @@
 package uz.devops.intern.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.time.LocalDate;
 import javax.persistence.*;
@@ -23,17 +24,21 @@ public class PaymentHistory implements Serializable {
     @Column(name = "organization_name")
     private String organizationName;
 
-    @Column(name = "service_name")
-    private String serviceName;
-
     @Column(name = "group_name")
     private String groupName;
+
+    @Column(name = "service_name")
+    private String serviceName;
 
     @Column(name = "sum")
     private Double sum;
 
     @Column(name = "created_at")
     private LocalDate createdAt;
+
+    @ManyToOne
+    @JsonIgnoreProperties(value = { "user", "groups", "services" }, allowSetters = true)
+    private Customers customer;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -63,19 +68,6 @@ public class PaymentHistory implements Serializable {
         this.organizationName = organizationName;
     }
 
-    public String getServiceName() {
-        return this.serviceName;
-    }
-
-    public PaymentHistory serviceName(String serviceName) {
-        this.setServiceName(serviceName);
-        return this;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
-
     public String getGroupName() {
         return this.groupName;
     }
@@ -87,6 +79,19 @@ public class PaymentHistory implements Serializable {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public String getServiceName() {
+        return this.serviceName;
+    }
+
+    public PaymentHistory serviceName(String serviceName) {
+        this.setServiceName(serviceName);
+        return this;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 
     public Double getSum() {
@@ -115,6 +120,19 @@ public class PaymentHistory implements Serializable {
         this.createdAt = createdAt;
     }
 
+    public Customers getCustomer() {
+        return this.customer;
+    }
+
+    public void setCustomer(Customers customers) {
+        this.customer = customers;
+    }
+
+    public PaymentHistory customer(Customers customers) {
+        this.setCustomer(customers);
+        return this;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -140,8 +158,8 @@ public class PaymentHistory implements Serializable {
         return "PaymentHistory{" +
             "id=" + getId() +
             ", organizationName='" + getOrganizationName() + "'" +
-            ", serviceName='" + getServiceName() + "'" +
             ", groupName='" + getGroupName() + "'" +
+            ", serviceName='" + getServiceName() + "'" +
             ", sum=" + getSum() +
             ", createdAt='" + getCreatedAt() + "'" +
             "}";

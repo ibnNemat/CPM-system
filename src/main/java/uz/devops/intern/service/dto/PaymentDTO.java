@@ -14,15 +14,21 @@ public class PaymentDTO implements Serializable {
     private Long id;
 
     @NotNull
+    private Double payedMoney;
+
+    @NotNull
     private Double paymentForPeriod;
 
     @NotNull
     private Boolean isPayed;
 
     @NotNull
-    private LocalDate startPeriod;
+    private LocalDate startedPeriod;
 
-    private CustomersDTO user;
+    @NotNull
+    private LocalDate finishedPeriod;
+
+    private CustomersDTO customer;
 
     private ServicesDTO service;
 
@@ -34,6 +40,14 @@ public class PaymentDTO implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Double getPayedMoney() {
+        return payedMoney;
+    }
+
+    public void setPayedMoney(Double payedMoney) {
+        this.payedMoney = payedMoney;
     }
 
     public Double getPaymentForPeriod() {
@@ -52,20 +66,28 @@ public class PaymentDTO implements Serializable {
         this.isPayed = isPayed;
     }
 
-    public LocalDate getStartPeriod() {
-        return startPeriod;
+    public LocalDate getStartedPeriod() {
+        return startedPeriod;
     }
 
-    public void setStartPeriod(LocalDate startPeriod) {
-        this.startPeriod = startPeriod;
+    public void setStartedPeriod(LocalDate startedPeriod) {
+        this.startedPeriod = startedPeriod;
     }
 
-    public CustomersDTO getUser() {
-        return user;
+    public LocalDate getFinishedPeriod() {
+        return finishedPeriod;
     }
 
-    public void setUser(CustomersDTO user) {
-        this.user = user;
+    public void setFinishedPeriod(LocalDate finishedPeriod) {
+        this.finishedPeriod = finishedPeriod;
+    }
+
+    public CustomersDTO getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(CustomersDTO customer) {
+        this.customer = customer;
     }
 
     public ServicesDTO getService() {
@@ -110,10 +132,12 @@ public class PaymentDTO implements Serializable {
     public String toString() {
         return "PaymentDTO{" +
             "id=" + getId() +
+            ", payedMoney=" + getPayedMoney() +
             ", paymentForPeriod=" + getPaymentForPeriod() +
             ", isPayed='" + getIsPayed() + "'" +
-            ", startPeriod='" + getStartPeriod() + "'" +
-            ", user=" + getUser() +
+            ", startedPeriod='" + getStartedPeriod() + "'" +
+            ", finishedPeriod='" + getFinishedPeriod() + "'" +
+            ", customer=" + getCustomer() +
             ", service=" + getService() +
             ", group=" + getGroup() +
             "}";

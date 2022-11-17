@@ -14,6 +14,34 @@
         </div>
 
         <div class="row mb-3">
+          <label class="form-label" jhiTranslate="cpmSystemApp.payment.payedMoney" for="field_payedMoney">Payed Money</label>
+          <input
+            type="number"
+            class="form-control"
+            name="payedMoney"
+            id="field_payedMoney"
+            data-cy="payedMoney"
+            formControlName="payedMoney"
+          />
+          <div *ngIf="editForm.get('payedMoney')!.invalid && (editForm.get('payedMoney')!.dirty || editForm.get('payedMoney')!.touched)">
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('payedMoney')?.errors?.required"
+              jhiTranslate="entity.validation.required"
+            >
+              This field is required.
+            </small>
+            <small
+              class="form-text text-danger"
+              [hidden]="!editForm.get('payedMoney')?.errors?.number"
+              jhiTranslate="entity.validation.number"
+            >
+              This field should be a number.
+            </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
           <label class="form-label" jhiTranslate="cpmSystemApp.payment.paymentForPeriod" for="field_paymentForPeriod"
             >Payment For Period</label
           >
@@ -63,26 +91,30 @@
         </div>
 
         <div class="row mb-3">
-          <label class="form-label" jhiTranslate="cpmSystemApp.payment.startPeriod" for="field_startPeriod">Start Period</label>
+          <label class="form-label" jhiTranslate="cpmSystemApp.payment.startedPeriod" for="field_startedPeriod">Started Period</label>
           <div class="input-group">
             <input
-              id="field_startPeriod"
-              data-cy="startPeriod"
+              id="field_startedPeriod"
+              data-cy="startedPeriod"
               type="text"
               class="form-control"
-              name="startPeriod"
+              name="startedPeriod"
               ngbDatepicker
-              #startPeriodDp="ngbDatepicker"
-              formControlName="startPeriod"
+              #startedPeriodDp="ngbDatepicker"
+              formControlName="startedPeriod"
             />
-            <button type="button" class="btn btn-secondary" (click)="startPeriodDp.toggle()">
+            <button type="button" class="btn btn-secondary" (click)="startedPeriodDp.toggle()">
               <fa-icon icon="calendar-alt"></fa-icon>
             </button>
           </div>
-          <div *ngIf="editForm.get('startPeriod')!.invalid && (editForm.get('startPeriod')!.dirty || editForm.get('startPeriod')!.touched)">
+          <div
+            *ngIf="
+              editForm.get('startedPeriod')!.invalid && (editForm.get('startedPeriod')!.dirty || editForm.get('startedPeriod')!.touched)
+            "
+          >
             <small
               class="form-text text-danger"
-              *ngIf="editForm.get('startPeriod')?.errors?.required"
+              *ngIf="editForm.get('startedPeriod')?.errors?.required"
               jhiTranslate="entity.validation.required"
             >
               This field is required.
@@ -91,8 +123,47 @@
         </div>
 
         <div class="row mb-3">
-          <label class="form-label" jhiTranslate="cpmSystemApp.payment.user" for="field_user">User</label>
-          <select class="form-control" id="field_user" data-cy="user" name="user" formControlName="user" [compareWith]="compareCustomers">
+          <label class="form-label" jhiTranslate="cpmSystemApp.payment.finishedPeriod" for="field_finishedPeriod">Finished Period</label>
+          <div class="input-group">
+            <input
+              id="field_finishedPeriod"
+              data-cy="finishedPeriod"
+              type="text"
+              class="form-control"
+              name="finishedPeriod"
+              ngbDatepicker
+              #finishedPeriodDp="ngbDatepicker"
+              formControlName="finishedPeriod"
+            />
+            <button type="button" class="btn btn-secondary" (click)="finishedPeriodDp.toggle()">
+              <fa-icon icon="calendar-alt"></fa-icon>
+            </button>
+          </div>
+          <div
+            *ngIf="
+              editForm.get('finishedPeriod')!.invalid && (editForm.get('finishedPeriod')!.dirty || editForm.get('finishedPeriod')!.touched)
+            "
+          >
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('finishedPeriod')?.errors?.required"
+              jhiTranslate="entity.validation.required"
+            >
+              This field is required.
+            </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="cpmSystemApp.payment.customer" for="field_customer">Customer</label>
+          <select
+            class="form-control"
+            id="field_customer"
+            data-cy="customer"
+            name="customer"
+            formControlName="customer"
+            [compareWith]="compareCustomers"
+          >
             <option [ngValue]="null"></option>
             <option [ngValue]="customersOption" *ngFor="let customersOption of customersSharedCollection">{{ customersOption.id }}</option>
           </select>

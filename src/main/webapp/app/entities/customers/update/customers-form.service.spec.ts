@@ -20,12 +20,11 @@ describe('Customers Form Service', () => {
         expect(formGroup.controls).toEqual(
           expect.objectContaining({
             id: expect.any(Object),
-            fullName: expect.any(Object),
             username: expect.any(Object),
             password: expect.any(Object),
             phoneNumber: expect.any(Object),
-            email: expect.any(Object),
             account: expect.any(Object),
+            user: expect.any(Object),
             groups: expect.any(Object),
             services: expect.any(Object),
           })
@@ -38,12 +37,11 @@ describe('Customers Form Service', () => {
         expect(formGroup.controls).toEqual(
           expect.objectContaining({
             id: expect.any(Object),
-            fullName: expect.any(Object),
             username: expect.any(Object),
             password: expect.any(Object),
             phoneNumber: expect.any(Object),
-            email: expect.any(Object),
             account: expect.any(Object),
+            user: expect.any(Object),
             groups: expect.any(Object),
             services: expect.any(Object),
           })

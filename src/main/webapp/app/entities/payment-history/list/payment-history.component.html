@@ -44,15 +44,15 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
-          <th scope="col" jhiSortBy="serviceName">
-            <div class="d-flex">
-              <span jhiTranslate="cpmSystemApp.paymentHistory.serviceName">Service Name</span>
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
           <th scope="col" jhiSortBy="groupName">
             <div class="d-flex">
               <span jhiTranslate="cpmSystemApp.paymentHistory.groupName">Group Name</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="serviceName">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.paymentHistory.serviceName">Service Name</span>
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
@@ -68,6 +68,12 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
+          <th scope="col" jhiSortBy="customer.id">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.paymentHistory.customer">Customer</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
           <th scope="col"></th>
         </tr>
       </thead>
@@ -77,10 +83,15 @@
             <a [routerLink]="['/payment-history', paymentHistory.id, 'view']">{{ paymentHistory.id }}</a>
           </td>
           <td>{{ paymentHistory.organizationName }}</td>
-          <td>{{ paymentHistory.serviceName }}</td>
           <td>{{ paymentHistory.groupName }}</td>
+          <td>{{ paymentHistory.serviceName }}</td>
           <td>{{ paymentHistory.sum }}</td>
           <td>{{ paymentHistory.createdAt | formatMediumDate }}</td>
+          <td>
+            <div *ngIf="paymentHistory.customer">
+              <a [routerLink]="['/customers', paymentHistory.customer.id, 'view']">{{ paymentHistory.customer.id }}</a>
+            </div>
+          </td>
           <td class="text-end">
             <div class="btn-group">
               <button

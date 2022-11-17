@@ -9,14 +9,14 @@ export const sampleWithRequiredData: IPaymentHistory = {
 export const sampleWithPartialData: IPaymentHistory = {
   id: 79322,
   organizationName: 'Steel',
-  groupName: 'Lev Cloned invoice',
+  serviceName: 'Lev Cloned invoice',
 };
 
 export const sampleWithFullData: IPaymentHistory = {
   id: 8897,
   organizationName: 'Legacy',
-  serviceName: 'Small end-to-end Object-based',
-  groupName: 'cyan B2C COM',
+  groupName: 'Small end-to-end Object-based',
+  serviceName: 'cyan B2C COM',
   sum: 61749,
   createdAt: dayjs('2022-11-13'),
 };

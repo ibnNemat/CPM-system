@@ -1,62 +1,70 @@
 entity Customers {
-	fullName String required
-    username String required
+    username String required unique
     password String required
     phoneNumber String required
-    email String required
     account Double required
 }
 
 entity Organization {
-	name String required
+    name String required unique
     orgOwnerName String required
 }
 
 entity Groups {
-    groupManagerId Integer required
-	name String required
+    name String required unique
     groupOwnerName String required
 }
 
 entity Services {
- 	name String required
-	price Double required
-    period String required
+    serviceType ServiceType required
+    price Double required
+    periodType PeriodType required
     countPeriod Integer required
 }
 
 entity Payment {
+    payedMoney Double required
     paymentForPeriod Double required
     isPayed Boolean required
-    startPeriod LocalDate required
+    startedPeriod LocalDate required
+    finishedPeriod LocalDate required
 }
 
 entity PaymentHistory{
     organizationName String
-    serviceName String
     GroupName String
+    serviceName String
     sum Double
     createdAt LocalDate
 }
 
 enum PeriodType {
-    ONETIME, REGULAR
+    ONETIME, DAY, WEEK, MONTH, YEAR
+}
+
+enum ServiceType{
+    KNOWLEDGE, FOOD, ACCOMMODATION, MEDICAL
 }
 
 relationship ManyToMany {
-	Customers{groups} to Groups{users}
+    Customers{groups} to Groups{users}
     Customers{services} to Services{users}
-    Groups{services} to Services{groups}
 }
 
 relationship ManyToOne {
-    Payment{user} to Customers
+    Payment{customer} to Customers
     Payment{service} to Services
     Payment{group} to Groups
+    PaymentHistory{customer} to Customers
+    Services{group} to Groups
 }
 
 relationship OneToMany {
-	Organization{groups} to Groups
+    Organization{groups} to Groups
+}
+
+relationship OneToOne {
+    Customers{user} to User
 }
 
 paginate Payment, Customers, Groups with pagination

@@ -2,29 +2,25 @@ import { IGroups, NewGroups } from './groups.model';
 
 export const sampleWithRequiredData: IGroups = {
   id: 3292,
-  groupManagerId: 73459,
-  name: 'Credit',
-  groupOwnerName: 'Senegal program SDD',
+  name: 'modular Fish wireless',
+  groupOwnerName: 'Bolivar navigate matrix',
 };
 
 export const sampleWithPartialData: IGroups = {
-  id: 34064,
-  groupManagerId: 1490,
-  name: 'Orchestrator Steel index',
-  groupOwnerName: 'Western middleware',
+  id: 1818,
+  name: 'Movies',
+  groupOwnerName: 'navigating Supervisor',
 };
 
 export const sampleWithFullData: IGroups = {
-  id: 64663,
-  groupManagerId: 14890,
-  name: 'Communications',
+  id: 62164,
+  name: 'deposit Communications',
   groupOwnerName: 'Multi-layered',
 };
 
 export const sampleWithNewData: NewGroups = {
-  groupManagerId: 69018,
-  name: 'Account Metal Cambridgeshire',
-  groupOwnerName: 'Dakota',
+  name: 'Communications Direct withdrawal',
+  groupOwnerName: 'plum AI generate',
   id: null,
 };
 

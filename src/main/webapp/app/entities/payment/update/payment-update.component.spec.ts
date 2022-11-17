@@ -59,12 +59,12 @@ describe('Payment Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call Customers query and add missing value', () => {
       const payment: IPayment = { id: 456 };
-      const user: ICustomers = { id: 34510 };
-      payment.user = user;
+      const customer: ICustomers = { id: 34510 };
+      payment.customer = customer;
 
       const customersCollection: ICustomers[] = [{ id: 44459 }];
       jest.spyOn(customersService, 'query').mockReturnValue(of(new HttpResponse({ body: customersCollection })));
-      const additionalCustomers = [user];
+      const additionalCustomers = [customer];
       const expectedCollection: ICustomers[] = [...additionalCustomers, ...customersCollection];
       jest.spyOn(customersService, 'addCustomersToCollectionIfMissing').mockReturnValue(expectedCollection);
 
@@ -125,8 +125,8 @@ describe('Payment Management Update Component', () => {
 
     it('Should update editForm', () => {
       const payment: IPayment = { id: 456 };
-      const user: ICustomers = { id: 64191 };
-      payment.user = user;
+      const customer: ICustomers = { id: 64191 };
+      payment.customer = customer;
       const service: IServices = { id: 97403 };
       payment.service = service;
       const group: IGroups = { id: 78383 };
@@ -135,7 +135,7 @@ describe('Payment Management Update Component', () => {
       activatedRoute.data = of({ payment });
       comp.ngOnInit();
 
-      expect(comp.customersSharedCollection).toContain(user);
+      expect(comp.customersSharedCollection).toContain(customer);
       expect(comp.servicesSharedCollection).toContain(service);
       expect(comp.groupsSharedCollection).toContain(group);
       expect(comp.payment).toEqual(payment);

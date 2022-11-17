@@ -9,6 +9,8 @@ import { of, Subject, from } from 'rxjs';
 import { ServicesFormService } from './services-form.service';
 import { ServicesService } from '../service/services.service';
 import { IServices } from '../services.model';
+import { IGroups } from 'app/entities/groups/groups.model';
+import { GroupsService } from 'app/entities/groups/service/groups.service';
 
 import { ServicesUpdateComponent } from './services-update.component';
 
@@ -18,6 +20,7 @@ describe('Services Management Update Component', () => {
   let activatedRoute: ActivatedRoute;
   let servicesFormService: ServicesFormService;
   let servicesService: ServicesService;
+  let groupsService: GroupsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -40,17 +43,43 @@ describe('Services Management Update Component', () => {
     activatedRoute = TestBed.inject(ActivatedRoute);
     servicesFormService = TestBed.inject(ServicesFormService);
     servicesService = TestBed.inject(ServicesService);
+    groupsService = TestBed.inject(GroupsService);
 
     comp = fixture.componentInstance;
   });
 
   describe('ngOnInit', () => {
-    it('Should update editForm', () => {
+    it('Should call Groups query and add missing value', () => {
       const services: IServices = { id: 456 };
+      const group: IGroups = { id: 7809 };
+      services.group = group;
+
+      const groupsCollection: IGroups[] = [{ id: 67615 }];
+      jest.spyOn(groupsService, 'query').mockReturnValue(of(new HttpResponse({ body: groupsCollection })));
+      const additionalGroups = [group];
+      const expectedCollection: IGroups[] = [...additionalGroups, ...groupsCollection];
+      jest.spyOn(groupsService, 'addGroupsToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ services });
       comp.ngOnInit();
 
+      expect(groupsService.query).toHaveBeenCalled();
+      expect(groupsService.addGroupsToCollectionIfMissing).toHaveBeenCalledWith(
+        groupsCollection,
+        ...additionalGroups.map(expect.objectContaining)
+      );
+      expect(comp.groupsSharedCollection).toEqual(expectedCollection);
+    });
+
+    it('Should update editForm', () => {
+      const services: IServices = { id: 456 };
+      const group: IGroups = { id: 97153 };
+      services.group = group;
+
+      activatedRoute.data = of({ services });
+      comp.ngOnInit();
+
+      expect(comp.groupsSharedCollection).toContain(group);
       expect(comp.services).toEqual(services);
     });
   });
@@ -120,6 +149,18 @@ describe('Services Management Update Component', () => {
       expect(servicesService.update).toHaveBeenCalled();
       expect(comp.isSaving).toEqual(false);
       expect(comp.previousState).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Compare relationships', () => {
+    describe('compareGroups', () => {
+      it('Should forward to groupsService', () => {
+        const entity = { id: 123 };
+        const entity2 = { id: 456 };
+        jest.spyOn(groupsService, 'compareGroups');
+        comp.compareGroups(entity, entity2);
+        expect(groupsService.compareGroups).toHaveBeenCalledWith(entity, entity2);
+      });
     });
   });
 });

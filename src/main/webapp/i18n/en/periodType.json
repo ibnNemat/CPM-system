@@ -1,0 +1,12 @@
+{
+  "cpmSystemApp": {
+    "PeriodType": {
+      "null": "",
+      "ONETIME": "ONETIME",
+      "DAY": "DAY",
+      "WEEK": "WEEK",
+      "MONTH": "MONTH",
+      "YEAR": "YEAR"
+    }
+  }
+}

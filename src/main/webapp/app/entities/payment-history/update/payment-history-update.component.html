@@ -32,6 +32,11 @@
         </div>
 
         <div class="row mb-3">
+          <label class="form-label" jhiTranslate="cpmSystemApp.paymentHistory.groupName" for="field_groupName">Group Name</label>
+          <input type="text" class="form-control" name="groupName" id="field_groupName" data-cy="groupName" formControlName="groupName" />
+        </div>
+
+        <div class="row mb-3">
           <label class="form-label" jhiTranslate="cpmSystemApp.paymentHistory.serviceName" for="field_serviceName">Service Name</label>
           <input
             type="text"
@@ -41,11 +46,6 @@
             data-cy="serviceName"
             formControlName="serviceName"
           />
-        </div>
-
-        <div class="row mb-3">
-          <label class="form-label" jhiTranslate="cpmSystemApp.paymentHistory.groupName" for="field_groupName">Group Name</label>
-          <input type="text" class="form-control" name="groupName" id="field_groupName" data-cy="groupName" formControlName="groupName" />
         </div>
 
         <div class="row mb-3">
@@ -68,6 +68,21 @@
             />
             <button type="button" class="btn btn-secondary" (click)="createdAtDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
           </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="cpmSystemApp.paymentHistory.customer" for="field_customer">Customer</label>
+          <select
+            class="form-control"
+            id="field_customer"
+            data-cy="customer"
+            name="customer"
+            formControlName="customer"
+            [compareWith]="compareCustomers"
+          >
+            <option [ngValue]="null"></option>
+            <option [ngValue]="customersOption" *ngFor="let customersOption of customersSharedCollection">{{ customersOption.id }}</option>
+          </select>
         </div>
       </div>
 

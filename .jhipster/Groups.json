@@ -6,14 +6,9 @@
   "entityTableName": "groups",
   "fields": [
     {
-      "fieldName": "groupManagerId",
-      "fieldType": "Integer",
-      "fieldValidateRules": ["required"]
-    },
-    {
       "fieldName": "name",
       "fieldType": "String",
-      "fieldValidateRules": ["required"]
+      "fieldValidateRules": ["required", "unique"]
     },
     {
       "fieldName": "groupOwnerName",
@@ -27,13 +22,6 @@
   "pagination": "pagination",
   "readOnly": false,
   "relationships": [
-    {
-      "otherEntityName": "services",
-      "otherEntityRelationshipName": "groups",
-      "ownerSide": true,
-      "relationshipName": "services",
-      "relationshipType": "many-to-many"
-    },
     {
       "otherEntityName": "organization",
       "otherEntityRelationshipName": "groups",

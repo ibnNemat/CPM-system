@@ -3,6 +3,8 @@ package uz.devops.intern.service.dto;
 import java.io.Serializable;
 import java.util.Objects;
 import javax.validation.constraints.*;
+import uz.devops.intern.domain.enumeration.PeriodType;
+import uz.devops.intern.domain.enumeration.ServiceType;
 
 /**
  * A DTO for the {@link uz.devops.intern.domain.Services} entity.
@@ -13,16 +15,18 @@ public class ServicesDTO implements Serializable {
     private Long id;
 
     @NotNull
-    private String name;
+    private ServiceType serviceType;
 
     @NotNull
     private Double price;
 
     @NotNull
-    private String period;
+    private PeriodType periodType;
 
     @NotNull
     private Integer countPeriod;
+
+    private GroupsDTO group;
 
     public Long getId() {
         return id;
@@ -32,12 +36,12 @@ public class ServicesDTO implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public ServiceType getServiceType() {
+        return serviceType;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setServiceType(ServiceType serviceType) {
+        this.serviceType = serviceType;
     }
 
     public Double getPrice() {
@@ -48,12 +52,12 @@ public class ServicesDTO implements Serializable {
         this.price = price;
     }
 
-    public String getPeriod() {
-        return period;
+    public PeriodType getPeriodType() {
+        return periodType;
     }
 
-    public void setPeriod(String period) {
-        this.period = period;
+    public void setPeriodType(PeriodType periodType) {
+        this.periodType = periodType;
     }
 
     public Integer getCountPeriod() {
@@ -62,6 +66,14 @@ public class ServicesDTO implements Serializable {
 
     public void setCountPeriod(Integer countPeriod) {
         this.countPeriod = countPeriod;
+    }
+
+    public GroupsDTO getGroup() {
+        return group;
+    }
+
+    public void setGroup(GroupsDTO group) {
+        this.group = group;
     }
 
     @Override
@@ -90,10 +102,11 @@ public class ServicesDTO implements Serializable {
     public String toString() {
         return "ServicesDTO{" +
             "id=" + getId() +
-            ", name='" + getName() + "'" +
+            ", serviceType='" + getServiceType() + "'" +
             ", price=" + getPrice() +
-            ", period='" + getPeriod() + "'" +
+            ", periodType='" + getPeriodType() + "'" +
             ", countPeriod=" + getCountPeriod() +
+            ", group=" + getGroup() +
             "}";
     }
 }

@@ -1,34 +1,37 @@
+import { ServiceType } from 'app/entities/enumerations/service-type.model';
+import { PeriodType } from 'app/entities/enumerations/period-type.model';
+
 import { IServices, NewServices } from './services.model';
 
 export const sampleWithRequiredData: IServices = {
   id: 10413,
-  name: 'Buckinghamshire maroon indexing',
-  price: 70316,
-  period: 'Computers',
-  countPeriod: 28337,
+  serviceType: ServiceType['MEDICAL'],
+  price: 50885,
+  periodType: PeriodType['MONTH'],
+  countPeriod: 95265,
 };
 
 export const sampleWithPartialData: IServices = {
-  id: 60542,
-  name: 'Rico',
-  price: 84393,
-  period: 'Tunisia panel Avon',
-  countPeriod: 72759,
+  id: 18772,
+  serviceType: ServiceType['FOOD'],
+  price: 13790,
+  periodType: PeriodType['YEAR'],
+  countPeriod: 47844,
 };
 
 export const sampleWithFullData: IServices = {
-  id: 31841,
-  name: 'Internal Account Consultant',
-  price: 49208,
-  period: 'Games',
-  countPeriod: 80324,
+  id: 43040,
+  serviceType: ServiceType['ACCOMMODATION'],
+  price: 25657,
+  periodType: PeriodType['ONETIME'],
+  countPeriod: 24136,
 };
 
 export const sampleWithNewData: NewServices = {
-  name: 'Egyptian RAM',
-  price: 50252,
-  period: 'revolutionary Handcrafted Borders',
-  countPeriod: 9217,
+  serviceType: ServiceType['ACCOMMODATION'],
+  price: 28337,
+  periodType: PeriodType['MONTH'],
+  countPeriod: 30159,
   id: null,
 };
 

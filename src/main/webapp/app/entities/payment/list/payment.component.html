@@ -38,6 +38,12 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
+          <th scope="col" jhiSortBy="payedMoney">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.payment.payedMoney">Payed Money</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
           <th scope="col" jhiSortBy="paymentForPeriod">
             <div class="d-flex">
               <span jhiTranslate="cpmSystemApp.payment.paymentForPeriod">Payment For Period</span>
@@ -50,15 +56,21 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
-          <th scope="col" jhiSortBy="startPeriod">
+          <th scope="col" jhiSortBy="startedPeriod">
             <div class="d-flex">
-              <span jhiTranslate="cpmSystemApp.payment.startPeriod">Start Period</span>
+              <span jhiTranslate="cpmSystemApp.payment.startedPeriod">Started Period</span>
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
-          <th scope="col" jhiSortBy="user.id">
+          <th scope="col" jhiSortBy="finishedPeriod">
             <div class="d-flex">
-              <span jhiTranslate="cpmSystemApp.payment.user">User</span>
+              <span jhiTranslate="cpmSystemApp.payment.finishedPeriod">Finished Period</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="customer.id">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.payment.customer">Customer</span>
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
@@ -82,12 +94,14 @@
           <td>
             <a [routerLink]="['/payment', payment.id, 'view']">{{ payment.id }}</a>
           </td>
+          <td>{{ payment.payedMoney }}</td>
           <td>{{ payment.paymentForPeriod }}</td>
           <td>{{ payment.isPayed }}</td>
-          <td>{{ payment.startPeriod | formatMediumDate }}</td>
+          <td>{{ payment.startedPeriod | formatMediumDate }}</td>
+          <td>{{ payment.finishedPeriod | formatMediumDate }}</td>
           <td>
-            <div *ngIf="payment.user">
-              <a [routerLink]="['/customers', payment.user.id, 'view']">{{ payment.user.id }}</a>
+            <div *ngIf="payment.customer">
+              <a [routerLink]="['/customers', payment.customer.id, 'view']">{{ payment.customer.id }}</a>
             </div>
           </td>
           <td>

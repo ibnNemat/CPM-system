@@ -6,6 +6,11 @@
   "entityTableName": "payment",
   "fields": [
     {
+      "fieldName": "payedMoney",
+      "fieldType": "Double",
+      "fieldValidateRules": ["required"]
+    },
+    {
       "fieldName": "paymentForPeriod",
       "fieldType": "Double",
       "fieldValidateRules": ["required"]
@@ -16,7 +21,12 @@
       "fieldValidateRules": ["required"]
     },
     {
-      "fieldName": "startPeriod",
+      "fieldName": "startedPeriod",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "finishedPeriod",
       "fieldType": "LocalDate",
       "fieldValidateRules": ["required"]
     }
@@ -29,7 +39,7 @@
   "relationships": [
     {
       "otherEntityName": "customers",
-      "relationshipName": "user",
+      "relationshipName": "customer",
       "relationshipType": "many-to-one"
     },
     {

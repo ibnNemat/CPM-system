@@ -12,8 +12,9 @@ import { IPayment, NewPayment } from '../payment.model';
 
 export type PartialUpdatePayment = Partial<IPayment> & Pick<IPayment, 'id'>;
 
-type RestOf<T extends IPayment | NewPayment> = Omit<T, 'startPeriod'> & {
-  startPeriod?: string | null;
+type RestOf<T extends IPayment | NewPayment> = Omit<T, 'startedPeriod' | 'finishedPeriod'> & {
+  startedPeriod?: string | null;
+  finishedPeriod?: string | null;
 };
 
 export type RestPayment = RestOf<IPayment>;
@@ -100,14 +101,16 @@ export class PaymentService {
   protected convertDateFromClient<T extends IPayment | NewPayment | PartialUpdatePayment>(payment: T): RestOf<T> {
     return {
       ...payment,
-      startPeriod: payment.startPeriod?.format(DATE_FORMAT) ?? null,
+      startedPeriod: payment.startedPeriod?.format(DATE_FORMAT) ?? null,
+      finishedPeriod: payment.finishedPeriod?.format(DATE_FORMAT) ?? null,
     };
   }
 
   protected convertDateFromServer(restPayment: RestPayment): IPayment {
     return {
       ...restPayment,
-      startPeriod: restPayment.startPeriod ? dayjs(restPayment.startPeriod) : undefined,
+      startedPeriod: restPayment.startedPeriod ? dayjs(restPayment.startedPeriod) : undefined,
+      finishedPeriod: restPayment.finishedPeriod ? dayjs(restPayment.finishedPeriod) : undefined,
     };
   }
 

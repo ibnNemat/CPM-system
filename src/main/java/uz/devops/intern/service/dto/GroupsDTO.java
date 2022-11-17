@@ -1,9 +1,7 @@
 package uz.devops.intern.service.dto;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import javax.validation.constraints.*;
 
 /**
@@ -15,15 +13,10 @@ public class GroupsDTO implements Serializable {
     private Long id;
 
     @NotNull
-    private Integer groupManagerId;
-
-    @NotNull
     private String name;
 
     @NotNull
     private String groupOwnerName;
-
-    private Set<ServicesDTO> services = new HashSet<>();
 
     private OrganizationDTO organization;
 
@@ -33,14 +26,6 @@ public class GroupsDTO implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Integer getGroupManagerId() {
-        return groupManagerId;
-    }
-
-    public void setGroupManagerId(Integer groupManagerId) {
-        this.groupManagerId = groupManagerId;
     }
 
     public String getName() {
@@ -57,14 +42,6 @@ public class GroupsDTO implements Serializable {
 
     public void setGroupOwnerName(String groupOwnerName) {
         this.groupOwnerName = groupOwnerName;
-    }
-
-    public Set<ServicesDTO> getServices() {
-        return services;
-    }
-
-    public void setServices(Set<ServicesDTO> services) {
-        this.services = services;
     }
 
     public OrganizationDTO getOrganization() {
@@ -101,10 +78,8 @@ public class GroupsDTO implements Serializable {
     public String toString() {
         return "GroupsDTO{" +
             "id=" + getId() +
-            ", groupManagerId=" + getGroupManagerId() +
             ", name='" + getName() + "'" +
             ", groupOwnerName='" + getGroupOwnerName() + "'" +
-            ", services=" + getServices() +
             ", organization=" + getOrganization() +
             "}";
     }

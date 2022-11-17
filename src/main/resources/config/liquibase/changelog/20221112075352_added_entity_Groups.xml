@@ -14,11 +14,8 @@
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="group_manager_id" type="integer">
-                <constraints nullable="false" />
-            </column>
             <column name="name" type="varchar(255)">
-                <constraints nullable="false" />
+                <constraints nullable="false" unique="true" uniqueConstraintName="ux_groups__name" />
             </column>
             <column name="group_owner_name" type="varchar(255)">
                 <constraints nullable="false" />
@@ -28,20 +25,6 @@
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-    </changeSet>
-
-    <changeSet id="20221112075352-1-relations" author="jhipster">
-
-        <createTable tableName="rel_groups__services">
-            <column name="services_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="groups_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addPrimaryKey columnNames="groups_id, services_id" tableName="rel_groups__services"/>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
@@ -61,7 +44,6 @@
                   tableName="groups"
                   usePreparedStatements="true">
             <column name="id" type="numeric"/>
-            <column name="group_manager_id" type="numeric"/>
             <column name="name" type="string"/>
             <column name="group_owner_name" type="string"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->

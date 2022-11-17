@@ -6,9 +6,10 @@
   "entityTableName": "services",
   "fields": [
     {
-      "fieldName": "name",
-      "fieldType": "String",
-      "fieldValidateRules": ["required"]
+      "fieldName": "serviceType",
+      "fieldType": "ServiceType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "KNOWLEDGE,FOOD,ACCOMMODATION,MEDICAL"
     },
     {
       "fieldName": "price",
@@ -16,9 +17,10 @@
       "fieldValidateRules": ["required"]
     },
     {
-      "fieldName": "period",
-      "fieldType": "String",
-      "fieldValidateRules": ["required"]
+      "fieldName": "periodType",
+      "fieldType": "PeriodType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "ONETIME,DAY,WEEK,MONTH,YEAR"
     },
     {
       "fieldName": "countPeriod",
@@ -33,17 +35,15 @@
   "readOnly": false,
   "relationships": [
     {
+      "otherEntityName": "groups",
+      "relationshipName": "group",
+      "relationshipType": "many-to-one"
+    },
+    {
       "otherEntityName": "customers",
       "otherEntityRelationshipName": "services",
       "ownerSide": false,
       "relationshipName": "users",
-      "relationshipType": "many-to-many"
-    },
-    {
-      "otherEntityName": "groups",
-      "otherEntityRelationshipName": "services",
-      "ownerSide": false,
-      "relationshipName": "groups",
       "relationshipType": "many-to-many"
     }
   ],

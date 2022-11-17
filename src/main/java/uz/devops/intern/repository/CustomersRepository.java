@@ -28,4 +28,6 @@ public interface CustomersRepository extends CustomersRepositoryWithBagRelations
     default Page<Customers> findAllWithEagerRelationships(Pageable pageable) {
         return this.fetchBagRelationships(this.findAll(pageable));
     }
+
+    List<Customers> findAllByUsername(String username);
 }

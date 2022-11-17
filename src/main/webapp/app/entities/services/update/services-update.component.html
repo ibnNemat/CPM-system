@@ -14,10 +14,19 @@
         </div>
 
         <div class="row mb-3">
-          <label class="form-label" jhiTranslate="cpmSystemApp.services.name" for="field_name">Name</label>
-          <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name" />
-          <div *ngIf="editForm.get('name')!.invalid && (editForm.get('name')!.dirty || editForm.get('name')!.touched)">
-            <small class="form-text text-danger" *ngIf="editForm.get('name')?.errors?.required" jhiTranslate="entity.validation.required">
+          <label class="form-label" jhiTranslate="cpmSystemApp.services.serviceType" for="field_serviceType">Service Type</label>
+          <select class="form-control" name="serviceType" formControlName="serviceType" id="field_serviceType" data-cy="serviceType">
+            <option [ngValue]="null">{{ 'cpmSystemApp.ServiceType.null' | translate }}</option>
+            <option *ngFor="let serviceType of serviceTypeValues" [value]="serviceType">
+              {{ 'cpmSystemApp.ServiceType.' + serviceType | translate }}
+            </option>
+          </select>
+          <div *ngIf="editForm.get('serviceType')!.invalid && (editForm.get('serviceType')!.dirty || editForm.get('serviceType')!.touched)">
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('serviceType')?.errors?.required"
+              jhiTranslate="entity.validation.required"
+            >
               This field is required.
             </small>
           </div>
@@ -37,10 +46,19 @@
         </div>
 
         <div class="row mb-3">
-          <label class="form-label" jhiTranslate="cpmSystemApp.services.period" for="field_period">Period</label>
-          <input type="text" class="form-control" name="period" id="field_period" data-cy="period" formControlName="period" />
-          <div *ngIf="editForm.get('period')!.invalid && (editForm.get('period')!.dirty || editForm.get('period')!.touched)">
-            <small class="form-text text-danger" *ngIf="editForm.get('period')?.errors?.required" jhiTranslate="entity.validation.required">
+          <label class="form-label" jhiTranslate="cpmSystemApp.services.periodType" for="field_periodType">Period Type</label>
+          <select class="form-control" name="periodType" formControlName="periodType" id="field_periodType" data-cy="periodType">
+            <option [ngValue]="null">{{ 'cpmSystemApp.PeriodType.null' | translate }}</option>
+            <option *ngFor="let periodType of periodTypeValues" [value]="periodType">
+              {{ 'cpmSystemApp.PeriodType.' + periodType | translate }}
+            </option>
+          </select>
+          <div *ngIf="editForm.get('periodType')!.invalid && (editForm.get('periodType')!.dirty || editForm.get('periodType')!.touched)">
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('periodType')?.errors?.required"
+              jhiTranslate="entity.validation.required"
+            >
               This field is required.
             </small>
           </div>
@@ -72,6 +90,14 @@
               This field should be a number.
             </small>
           </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="cpmSystemApp.services.group" for="field_group">Group</label>
+          <select class="form-control" id="field_group" data-cy="group" name="group" formControlName="group" [compareWith]="compareGroups">
+            <option [ngValue]="null"></option>
+            <option [ngValue]="groupsOption" *ngFor="let groupsOption of groupsSharedCollection">{{ groupsOption.id }}</option>
+          </select>
         </div>
       </div>
 

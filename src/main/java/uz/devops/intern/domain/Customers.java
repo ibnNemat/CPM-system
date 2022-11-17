@@ -24,11 +24,7 @@ public class Customers implements Serializable {
     private Long id;
 
     @NotNull
-    @Column(name = "full_name", nullable = false)
-    private String fullName;
-
-    @NotNull
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
     @NotNull
@@ -40,12 +36,12 @@ public class Customers implements Serializable {
     private String phoneNumber;
 
     @NotNull
-    @Column(name = "email", nullable = false)
-    private String email;
-
-    @NotNull
     @Column(name = "account", nullable = false)
     private Double account;
+
+    @OneToOne
+    @JoinColumn(unique = true)
+    private User user;
 
     @ManyToMany
     @JoinTable(
@@ -53,7 +49,7 @@ public class Customers implements Serializable {
         joinColumns = @JoinColumn(name = "customers_id"),
         inverseJoinColumns = @JoinColumn(name = "groups_id")
     )
-    @JsonIgnoreProperties(value = { "services", "organization", "users" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "organization", "users" }, allowSetters = true)
     private Set<Groups> groups = new HashSet<>();
 
     @ManyToMany
@@ -62,7 +58,7 @@ public class Customers implements Serializable {
         joinColumns = @JoinColumn(name = "customers_id"),
         inverseJoinColumns = @JoinColumn(name = "services_id")
     )
-    @JsonIgnoreProperties(value = { "users", "groups" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "group", "users" }, allowSetters = true)
     private Set<Services> services = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -78,19 +74,6 @@ public class Customers implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getFullName() {
-        return this.fullName;
-    }
-
-    public Customers fullName(String fullName) {
-        this.setFullName(fullName);
-        return this;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
     }
 
     public String getUsername() {
@@ -132,19 +115,6 @@ public class Customers implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getEmail() {
-        return this.email;
-    }
-
-    public Customers email(String email) {
-        this.setEmail(email);
-        return this;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public Double getAccount() {
         return this.account;
     }
@@ -156,6 +126,19 @@ public class Customers implements Serializable {
 
     public void setAccount(Double account) {
         this.account = account;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Customers user(User user) {
+        this.setUser(user);
+        return this;
     }
 
     public Set<Groups> getGroups() {
@@ -232,11 +215,9 @@ public class Customers implements Serializable {
     public String toString() {
         return "Customers{" +
             "id=" + getId() +
-            ", fullName='" + getFullName() + "'" +
             ", username='" + getUsername() + "'" +
             ", password='" + getPassword() + "'" +
             ", phoneNumber='" + getPhoneNumber() + "'" +
-            ", email='" + getEmail() + "'" +
             ", account=" + getAccount() +
             "}";
     }

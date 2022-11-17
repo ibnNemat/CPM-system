@@ -21,6 +21,7 @@ import uz.devops.intern.repository.UserRepository;
 import uz.devops.intern.security.AuthoritiesConstants;
 import uz.devops.intern.security.SecurityUtils;
 import uz.devops.intern.service.dto.AdminUserDTO;
+import uz.devops.intern.service.dto.CustomersDTO;
 import uz.devops.intern.service.dto.UserDTO;
 
 /**
@@ -37,11 +38,13 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final AuthorityRepository authorityRepository;
+    private final CustomersService customersService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CustomersService customersService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
+        this.customersService = customersService;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -130,16 +133,9 @@ public class UserService {
         userRepository.flush();
         return true;
     }
-
     public User createUser(AdminUserDTO userDTO) {
         User user = new User();
-        user.setLogin(userDTO.getLogin().toLowerCase());
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        if (userDTO.getEmail() != null) {
-            user.setEmail(userDTO.getEmail().toLowerCase());
-        }
-        user.setImageUrl(userDTO.getImageUrl());
+        setLogin(userDTO, user);
         if (userDTO.getLangKey() == null) {
             user.setLangKey(Constants.DEFAULT_LANGUAGE); // default language
         } else {
@@ -151,6 +147,7 @@ public class UserService {
         user.setResetKey(RandomUtil.generateResetKey());
         user.setResetDate(Instant.now());
         user.setActivated(true);
+
         if (userDTO.getAuthorities() != null) {
             Set<Authority> authorities = userDTO
                 .getAuthorities()
@@ -160,11 +157,32 @@ public class UserService {
                 .map(Optional::get)
                 .collect(Collectors.toSet());
             user.setAuthorities(authorities);
+
+            saveCustomerIfExistsCustomerAuthority(authorities);
         }
 
         userRepository.save(user);
         log.debug("Created Information for User: {}", user);
         return user;
+    }
+
+    private void saveCustomerIfExistsCustomerAuthority(Set<Authority> authorities) {
+        Authority authority = new Authority();
+        authority.setName("ROLE_CUSTOMER");
+        if (authorities.contains(authority)){
+            CustomersDTO customersDTO = new CustomersDTO();
+
+        }
+    }
+
+    private void setLogin(AdminUserDTO userDTO, User user) {
+        user.setLogin(userDTO.getLogin().toLowerCase());
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        if (userDTO.getEmail() != null) {
+            user.setEmail(userDTO.getEmail().toLowerCase());
+        }
+        user.setImageUrl(userDTO.getImageUrl());
     }
 
     /**
@@ -179,13 +197,7 @@ public class UserService {
             .filter(Optional::isPresent)
             .map(Optional::get)
             .map(user -> {
-                user.setLogin(userDTO.getLogin().toLowerCase());
-                user.setFirstName(userDTO.getFirstName());
-                user.setLastName(userDTO.getLastName());
-                if (userDTO.getEmail() != null) {
-                    user.setEmail(userDTO.getEmail().toLowerCase());
-                }
-                user.setImageUrl(userDTO.getImageUrl());
+                setLogin(userDTO, user);
                 user.setActivated(userDTO.isActivated());
                 user.setLangKey(userDTO.getLangKey());
                 Set<Authority> managedAuthorities = user.getAuthorities();

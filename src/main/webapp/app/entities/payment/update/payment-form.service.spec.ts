@@ -20,10 +20,12 @@ describe('Payment Form Service', () => {
         expect(formGroup.controls).toEqual(
           expect.objectContaining({
             id: expect.any(Object),
+            payedMoney: expect.any(Object),
             paymentForPeriod: expect.any(Object),
             isPayed: expect.any(Object),
-            startPeriod: expect.any(Object),
-            user: expect.any(Object),
+            startedPeriod: expect.any(Object),
+            finishedPeriod: expect.any(Object),
+            customer: expect.any(Object),
             service: expect.any(Object),
             group: expect.any(Object),
           })
@@ -36,10 +38,12 @@ describe('Payment Form Service', () => {
         expect(formGroup.controls).toEqual(
           expect.objectContaining({
             id: expect.any(Object),
+            payedMoney: expect.any(Object),
             paymentForPeriod: expect.any(Object),
             isPayed: expect.any(Object),
-            startPeriod: expect.any(Object),
-            user: expect.any(Object),
+            startedPeriod: expect.any(Object),
+            finishedPeriod: expect.any(Object),
+            customer: expect.any(Object),
             service: expect.any(Object),
             group: expect.any(Object),
           })

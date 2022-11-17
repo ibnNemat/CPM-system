@@ -21,10 +21,11 @@ describe('PaymentHistory Form Service', () => {
           expect.objectContaining({
             id: expect.any(Object),
             organizationName: expect.any(Object),
-            serviceName: expect.any(Object),
             groupName: expect.any(Object),
+            serviceName: expect.any(Object),
             sum: expect.any(Object),
             createdAt: expect.any(Object),
+            customer: expect.any(Object),
           })
         );
       });
@@ -36,10 +37,11 @@ describe('PaymentHistory Form Service', () => {
           expect.objectContaining({
             id: expect.any(Object),
             organizationName: expect.any(Object),
-            serviceName: expect.any(Object),
             groupName: expect.any(Object),
+            serviceName: expect.any(Object),
             sum: expect.any(Object),
             createdAt: expect.any(Object),
+            customer: expect.any(Object),
           })
         );
       });

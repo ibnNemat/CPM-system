@@ -1,11 +1,11 @@
-id;name;price;period;count_period
-1;Cotton Helena Jewelery;80954;Handmade customized applications;17282
-2;Cambridgeshire Car Regional;95903;Outdoors deposit;65838
-3;SQL copy;98594;Operations Salad methodologies;62177
-4;olive Chicken;30634;SSL;15335
-5;quantify Small superstructure;54602;Universal;92059
-6;multi-byte;4460;Direct;31026
-7;Buckinghamshire Buckinghamshire neural;87856;Fresh auxiliary;81681
-8;Automotive Savings;39410;Gloves;52943
-9;Frozen database;53945;Riyal SMTP District;26230
-10;generation methodology Michigan;75218;Mandatory;40597
+id;service_type;price;period_type;count_period
+1;ACCOMMODATION;14349;WEEK;60912
+2;ACCOMMODATION;72799;DAY;1720
+3;MEDICAL;28031;YEAR;84816
+4;KNOWLEDGE;71611;WEEK;35014
+5;MEDICAL;50996;WEEK;83570
+6;ACCOMMODATION;17282;MONTH;49943
+7;MEDICAL;52496;ONETIME;7742
+8;ACCOMMODATION;91671;DAY;1030
+9;MEDICAL;64892;ONETIME;90225
+10;ACCOMMODATION;64272;ONETIME;70290

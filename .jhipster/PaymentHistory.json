@@ -10,11 +10,11 @@
       "fieldType": "String"
     },
     {
-      "fieldName": "serviceName",
+      "fieldName": "groupName",
       "fieldType": "String"
     },
     {
-      "fieldName": "groupName",
+      "fieldName": "serviceName",
       "fieldType": "String"
     },
     {
@@ -31,6 +31,12 @@
   "name": "PaymentHistory",
   "pagination": "no",
   "readOnly": false,
-  "relationships": [],
+  "relationships": [
+    {
+      "otherEntityName": "customers",
+      "relationshipName": "customer",
+      "relationshipType": "many-to-one"
+    }
+  ],
   "service": "serviceImpl"
 }

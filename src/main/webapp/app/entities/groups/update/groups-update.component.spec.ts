@@ -9,8 +9,6 @@ import { of, Subject, from } from 'rxjs';
 import { GroupsFormService } from './groups-form.service';
 import { GroupsService } from '../service/groups.service';
 import { IGroups } from '../groups.model';
-import { IServices } from 'app/entities/services/services.model';
-import { ServicesService } from 'app/entities/services/service/services.service';
 import { IOrganization } from 'app/entities/organization/organization.model';
 import { OrganizationService } from 'app/entities/organization/service/organization.service';
 
@@ -22,7 +20,6 @@ describe('Groups Management Update Component', () => {
   let activatedRoute: ActivatedRoute;
   let groupsFormService: GroupsFormService;
   let groupsService: GroupsService;
-  let servicesService: ServicesService;
   let organizationService: OrganizationService;
 
   beforeEach(() => {
@@ -46,35 +43,12 @@ describe('Groups Management Update Component', () => {
     activatedRoute = TestBed.inject(ActivatedRoute);
     groupsFormService = TestBed.inject(GroupsFormService);
     groupsService = TestBed.inject(GroupsService);
-    servicesService = TestBed.inject(ServicesService);
     organizationService = TestBed.inject(OrganizationService);
 
     comp = fixture.componentInstance;
   });
 
   describe('ngOnInit', () => {
-    it('Should call Services query and add missing value', () => {
-      const groups: IGroups = { id: 456 };
-      const services: IServices[] = [{ id: 10620 }];
-      groups.services = services;
-
-      const servicesCollection: IServices[] = [{ id: 63458 }];
-      jest.spyOn(servicesService, 'query').mockReturnValue(of(new HttpResponse({ body: servicesCollection })));
-      const additionalServices = [...services];
-      const expectedCollection: IServices[] = [...additionalServices, ...servicesCollection];
-      jest.spyOn(servicesService, 'addServicesToCollectionIfMissing').mockReturnValue(expectedCollection);
-
-      activatedRoute.data = of({ groups });
-      comp.ngOnInit();
-
-      expect(servicesService.query).toHaveBeenCalled();
-      expect(servicesService.addServicesToCollectionIfMissing).toHaveBeenCalledWith(
-        servicesCollection,
-        ...additionalServices.map(expect.objectContaining)
-      );
-      expect(comp.servicesSharedCollection).toEqual(expectedCollection);
-    });
-
     it('Should call Organization query and add missing value', () => {
       const groups: IGroups = { id: 456 };
       const organization: IOrganization = { id: 50891 };
@@ -99,15 +73,12 @@ describe('Groups Management Update Component', () => {
 
     it('Should update editForm', () => {
       const groups: IGroups = { id: 456 };
-      const services: IServices = { id: 23635 };
-      groups.services = [services];
       const organization: IOrganization = { id: 87226 };
       groups.organization = organization;
 
       activatedRoute.data = of({ groups });
       comp.ngOnInit();
 
-      expect(comp.servicesSharedCollection).toContain(services);
       expect(comp.organizationsSharedCollection).toContain(organization);
       expect(comp.groups).toEqual(groups);
     });
@@ -182,16 +153,6 @@ describe('Groups Management Update Component', () => {
   });
 
   describe('Compare relationships', () => {
-    describe('compareServices', () => {
-      it('Should forward to servicesService', () => {
-        const entity = { id: 123 };
-        const entity2 = { id: 456 };
-        jest.spyOn(servicesService, 'compareServices');
-        comp.compareServices(entity, entity2);
-        expect(servicesService.compareServices).toHaveBeenCalledWith(entity, entity2);
-      });
-    });
-
     describe('compareOrganization', () => {
       it('Should forward to organizationService', () => {
         const entity = { id: 123 };

@@ -19,10 +19,11 @@
       },
       "id": "ID",
       "organizationName": "Organization Name",
-      "serviceName": "Service Name",
       "groupName": "Group Name",
+      "serviceName": "Service Name",
       "sum": "Sum",
-      "createdAt": "Created At"
+      "createdAt": "Created At",
+      "customer": "Customer"
     }
   }
 }

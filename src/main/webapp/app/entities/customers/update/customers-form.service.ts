@@ -18,12 +18,11 @@ type CustomersFormDefaults = Pick<NewCustomers, 'id' | 'groups' | 'services'>;
 
 type CustomersFormGroupContent = {
   id: FormControl<ICustomers['id'] | NewCustomers['id']>;
-  fullName: FormControl<ICustomers['fullName']>;
   username: FormControl<ICustomers['username']>;
   password: FormControl<ICustomers['password']>;
   phoneNumber: FormControl<ICustomers['phoneNumber']>;
-  email: FormControl<ICustomers['email']>;
   account: FormControl<ICustomers['account']>;
+  user: FormControl<ICustomers['user']>;
   groups: FormControl<ICustomers['groups']>;
   services: FormControl<ICustomers['services']>;
 };
@@ -45,9 +44,6 @@ export class CustomersFormService {
           validators: [Validators.required],
         }
       ),
-      fullName: new FormControl(customersRawValue.fullName, {
-        validators: [Validators.required],
-      }),
       username: new FormControl(customersRawValue.username, {
         validators: [Validators.required],
       }),
@@ -57,12 +53,10 @@ export class CustomersFormService {
       phoneNumber: new FormControl(customersRawValue.phoneNumber, {
         validators: [Validators.required],
       }),
-      email: new FormControl(customersRawValue.email, {
-        validators: [Validators.required],
-      }),
       account: new FormControl(customersRawValue.account, {
         validators: [Validators.required],
       }),
+      user: new FormControl(customersRawValue.user),
       groups: new FormControl(customersRawValue.groups ?? []),
       services: new FormControl(customersRawValue.services ?? []),
     });

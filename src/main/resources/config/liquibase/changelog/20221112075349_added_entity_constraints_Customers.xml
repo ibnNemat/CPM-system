@@ -8,6 +8,12 @@
     -->
     <changeSet id="20221112075349-2" author="jhipster">
 
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="customers"
+                                 constraintName="fk_customers__user_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="jhi_user"/>
+
         <addForeignKeyConstraint baseColumnNames="customers_id"
                                  baseTableName="rel_customers__groups"
                                  constraintName="fk_rel_customers__groups__customers_id"

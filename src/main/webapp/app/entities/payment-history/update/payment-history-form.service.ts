@@ -19,10 +19,11 @@ type PaymentHistoryFormDefaults = Pick<NewPaymentHistory, 'id'>;
 type PaymentHistoryFormGroupContent = {
   id: FormControl<IPaymentHistory['id'] | NewPaymentHistory['id']>;
   organizationName: FormControl<IPaymentHistory['organizationName']>;
-  serviceName: FormControl<IPaymentHistory['serviceName']>;
   groupName: FormControl<IPaymentHistory['groupName']>;
+  serviceName: FormControl<IPaymentHistory['serviceName']>;
   sum: FormControl<IPaymentHistory['sum']>;
   createdAt: FormControl<IPaymentHistory['createdAt']>;
+  customer: FormControl<IPaymentHistory['customer']>;
 };
 
 export type PaymentHistoryFormGroup = FormGroup<PaymentHistoryFormGroupContent>;
@@ -43,10 +44,11 @@ export class PaymentHistoryFormService {
         }
       ),
       organizationName: new FormControl(paymentHistoryRawValue.organizationName),
-      serviceName: new FormControl(paymentHistoryRawValue.serviceName),
       groupName: new FormControl(paymentHistoryRawValue.groupName),
+      serviceName: new FormControl(paymentHistoryRawValue.serviceName),
       sum: new FormControl(paymentHistoryRawValue.sum),
       createdAt: new FormControl(paymentHistoryRawValue.createdAt),
+      customer: new FormControl(paymentHistoryRawValue.customer),
     });
   }
 

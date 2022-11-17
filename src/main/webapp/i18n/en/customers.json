@@ -18,12 +18,11 @@
         "title": "Customers"
       },
       "id": "ID",
-      "fullName": "Full Name",
       "username": "Username",
       "password": "Password",
       "phoneNumber": "Phone Number",
-      "email": "Email",
       "account": "Account",
+      "user": "User",
       "groups": "Groups",
       "services": "Services"
     }

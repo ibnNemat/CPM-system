@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import uz.devops.intern.domain.enumeration.PeriodType;
+import uz.devops.intern.domain.enumeration.ServiceType;
 
 /**
  * A Services.
@@ -24,28 +26,30 @@ public class Services implements Serializable {
     private Long id;
 
     @NotNull
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "service_type", nullable = false)
+    private ServiceType serviceType;
 
     @NotNull
     @Column(name = "price", nullable = false)
     private Double price;
 
     @NotNull
-    @Column(name = "period", nullable = false)
-    private String period;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "period_type", nullable = false)
+    private PeriodType periodType;
 
     @NotNull
     @Column(name = "count_period", nullable = false)
     private Integer countPeriod;
 
-    @ManyToMany(mappedBy = "services")
-    @JsonIgnoreProperties(value = { "groups", "services" }, allowSetters = true)
-    private Set<Customers> users = new HashSet<>();
+    @ManyToOne
+    @JsonIgnoreProperties(value = { "organization", "users" }, allowSetters = true)
+    private Groups group;
 
     @ManyToMany(mappedBy = "services")
-    @JsonIgnoreProperties(value = { "services", "organization", "users" }, allowSetters = true)
-    private Set<Groups> groups = new HashSet<>();
+    @JsonIgnoreProperties(value = { "user", "groups", "services" }, allowSetters = true)
+    private Set<Customers> users = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -62,17 +66,17 @@ public class Services implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return this.name;
+    public ServiceType getServiceType() {
+        return this.serviceType;
     }
 
-    public Services name(String name) {
-        this.setName(name);
+    public Services serviceType(ServiceType serviceType) {
+        this.setServiceType(serviceType);
         return this;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setServiceType(ServiceType serviceType) {
+        this.serviceType = serviceType;
     }
 
     public Double getPrice() {
@@ -88,17 +92,17 @@ public class Services implements Serializable {
         this.price = price;
     }
 
-    public String getPeriod() {
-        return this.period;
+    public PeriodType getPeriodType() {
+        return this.periodType;
     }
 
-    public Services period(String period) {
-        this.setPeriod(period);
+    public Services periodType(PeriodType periodType) {
+        this.setPeriodType(periodType);
         return this;
     }
 
-    public void setPeriod(String period) {
-        this.period = period;
+    public void setPeriodType(PeriodType periodType) {
+        this.periodType = periodType;
     }
 
     public Integer getCountPeriod() {
@@ -112,6 +116,19 @@ public class Services implements Serializable {
 
     public void setCountPeriod(Integer countPeriod) {
         this.countPeriod = countPeriod;
+    }
+
+    public Groups getGroup() {
+        return this.group;
+    }
+
+    public void setGroup(Groups groups) {
+        this.group = groups;
+    }
+
+    public Services group(Groups groups) {
+        this.setGroup(groups);
+        return this;
     }
 
     public Set<Customers> getUsers() {
@@ -145,37 +162,6 @@ public class Services implements Serializable {
         return this;
     }
 
-    public Set<Groups> getGroups() {
-        return this.groups;
-    }
-
-    public void setGroups(Set<Groups> groups) {
-        if (this.groups != null) {
-            this.groups.forEach(i -> i.removeServices(this));
-        }
-        if (groups != null) {
-            groups.forEach(i -> i.addServices(this));
-        }
-        this.groups = groups;
-    }
-
-    public Services groups(Set<Groups> groups) {
-        this.setGroups(groups);
-        return this;
-    }
-
-    public Services addGroups(Groups groups) {
-        this.groups.add(groups);
-        groups.getServices().add(this);
-        return this;
-    }
-
-    public Services removeGroups(Groups groups) {
-        this.groups.remove(groups);
-        groups.getServices().remove(this);
-        return this;
-    }
-
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -200,9 +186,9 @@ public class Services implements Serializable {
     public String toString() {
         return "Services{" +
             "id=" + getId() +
-            ", name='" + getName() + "'" +
+            ", serviceType='" + getServiceType() + "'" +
             ", price=" + getPrice() +
-            ", period='" + getPeriod() + "'" +
+            ", periodType='" + getPeriodType() + "'" +
             ", countPeriod=" + getCountPeriod() +
             "}";
     }

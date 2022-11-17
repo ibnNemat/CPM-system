@@ -18,10 +18,12 @@ type PaymentFormDefaults = Pick<NewPayment, 'id' | 'isPayed'>;
 
 type PaymentFormGroupContent = {
   id: FormControl<IPayment['id'] | NewPayment['id']>;
+  payedMoney: FormControl<IPayment['payedMoney']>;
   paymentForPeriod: FormControl<IPayment['paymentForPeriod']>;
   isPayed: FormControl<IPayment['isPayed']>;
-  startPeriod: FormControl<IPayment['startPeriod']>;
-  user: FormControl<IPayment['user']>;
+  startedPeriod: FormControl<IPayment['startedPeriod']>;
+  finishedPeriod: FormControl<IPayment['finishedPeriod']>;
+  customer: FormControl<IPayment['customer']>;
   service: FormControl<IPayment['service']>;
   group: FormControl<IPayment['group']>;
 };
@@ -43,16 +45,22 @@ export class PaymentFormService {
           validators: [Validators.required],
         }
       ),
+      payedMoney: new FormControl(paymentRawValue.payedMoney, {
+        validators: [Validators.required],
+      }),
       paymentForPeriod: new FormControl(paymentRawValue.paymentForPeriod, {
         validators: [Validators.required],
       }),
       isPayed: new FormControl(paymentRawValue.isPayed, {
         validators: [Validators.required],
       }),
-      startPeriod: new FormControl(paymentRawValue.startPeriod, {
+      startedPeriod: new FormControl(paymentRawValue.startedPeriod, {
         validators: [Validators.required],
       }),
-      user: new FormControl(paymentRawValue.user),
+      finishedPeriod: new FormControl(paymentRawValue.finishedPeriod, {
+        validators: [Validators.required],
+      }),
+      customer: new FormControl(paymentRawValue.customer),
       service: new FormControl(paymentRawValue.service),
       group: new FormControl(paymentRawValue.group),
     });

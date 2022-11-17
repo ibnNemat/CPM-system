@@ -19,6 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import uz.devops.intern.IntegrationTest;
 import uz.devops.intern.domain.Services;
+import uz.devops.intern.domain.enumeration.PeriodType;
+import uz.devops.intern.domain.enumeration.ServiceType;
 import uz.devops.intern.repository.ServicesRepository;
 import uz.devops.intern.service.dto.ServicesDTO;
 import uz.devops.intern.service.mapper.ServicesMapper;
@@ -31,14 +33,14 @@ import uz.devops.intern.service.mapper.ServicesMapper;
 @WithMockUser
 class ServicesResourceIT {
 
-    private static final String DEFAULT_NAME = "AAAAAAAAAA";
-    private static final String UPDATED_NAME = "BBBBBBBBBB";
+    private static final ServiceType DEFAULT_SERVICE_TYPE = ServiceType.KNOWLEDGE;
+    private static final ServiceType UPDATED_SERVICE_TYPE = ServiceType.FOOD;
 
     private static final Double DEFAULT_PRICE = 1D;
     private static final Double UPDATED_PRICE = 2D;
 
-    private static final String DEFAULT_PERIOD = "AAAAAAAAAA";
-    private static final String UPDATED_PERIOD = "BBBBBBBBBB";
+    private static final PeriodType DEFAULT_PERIOD_TYPE = PeriodType.ONETIME;
+    private static final PeriodType UPDATED_PERIOD_TYPE = PeriodType.DAY;
 
     private static final Integer DEFAULT_COUNT_PERIOD = 1;
     private static final Integer UPDATED_COUNT_PERIOD = 2;
@@ -70,7 +72,11 @@ class ServicesResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Services createEntity(EntityManager em) {
-        Services services = new Services().name(DEFAULT_NAME).price(DEFAULT_PRICE).period(DEFAULT_PERIOD).countPeriod(DEFAULT_COUNT_PERIOD);
+        Services services = new Services()
+            .serviceType(DEFAULT_SERVICE_TYPE)
+            .price(DEFAULT_PRICE)
+            .periodType(DEFAULT_PERIOD_TYPE)
+            .countPeriod(DEFAULT_COUNT_PERIOD);
         return services;
     }
 
@@ -81,7 +87,11 @@ class ServicesResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Services createUpdatedEntity(EntityManager em) {
-        Services services = new Services().name(UPDATED_NAME).price(UPDATED_PRICE).period(UPDATED_PERIOD).countPeriod(UPDATED_COUNT_PERIOD);
+        Services services = new Services()
+            .serviceType(UPDATED_SERVICE_TYPE)
+            .price(UPDATED_PRICE)
+            .periodType(UPDATED_PERIOD_TYPE)
+            .countPeriod(UPDATED_COUNT_PERIOD);
         return services;
     }
 
@@ -104,9 +114,9 @@ class ServicesResourceIT {
         List<Services> servicesList = servicesRepository.findAll();
         assertThat(servicesList).hasSize(databaseSizeBeforeCreate + 1);
         Services testServices = servicesList.get(servicesList.size() - 1);
-        assertThat(testServices.getName()).isEqualTo(DEFAULT_NAME);
+        assertThat(testServices.getServiceType()).isEqualTo(DEFAULT_SERVICE_TYPE);
         assertThat(testServices.getPrice()).isEqualTo(DEFAULT_PRICE);
-        assertThat(testServices.getPeriod()).isEqualTo(DEFAULT_PERIOD);
+        assertThat(testServices.getPeriodType()).isEqualTo(DEFAULT_PERIOD_TYPE);
         assertThat(testServices.getCountPeriod()).isEqualTo(DEFAULT_COUNT_PERIOD);
     }
 
@@ -131,10 +141,10 @@ class ServicesResourceIT {
 
     @Test
     @Transactional
-    void checkNameIsRequired() throws Exception {
+    void checkServiceTypeIsRequired() throws Exception {
         int databaseSizeBeforeTest = servicesRepository.findAll().size();
         // set the field null
-        services.setName(null);
+        services.setServiceType(null);
 
         // Create the Services, which fails.
         ServicesDTO servicesDTO = servicesMapper.toDto(services);
@@ -167,10 +177,10 @@ class ServicesResourceIT {
 
     @Test
     @Transactional
-    void checkPeriodIsRequired() throws Exception {
+    void checkPeriodTypeIsRequired() throws Exception {
         int databaseSizeBeforeTest = servicesRepository.findAll().size();
         // set the field null
-        services.setPeriod(null);
+        services.setPeriodType(null);
 
         // Create the Services, which fails.
         ServicesDTO servicesDTO = servicesMapper.toDto(services);
@@ -213,9 +223,9 @@ class ServicesResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(services.getId().intValue())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
+            .andExpect(jsonPath("$.[*].serviceType").value(hasItem(DEFAULT_SERVICE_TYPE.toString())))
             .andExpect(jsonPath("$.[*].price").value(hasItem(DEFAULT_PRICE.doubleValue())))
-            .andExpect(jsonPath("$.[*].period").value(hasItem(DEFAULT_PERIOD)))
+            .andExpect(jsonPath("$.[*].periodType").value(hasItem(DEFAULT_PERIOD_TYPE.toString())))
             .andExpect(jsonPath("$.[*].countPeriod").value(hasItem(DEFAULT_COUNT_PERIOD)));
     }
 
@@ -231,9 +241,9 @@ class ServicesResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(services.getId().intValue()))
-            .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
+            .andExpect(jsonPath("$.serviceType").value(DEFAULT_SERVICE_TYPE.toString()))
             .andExpect(jsonPath("$.price").value(DEFAULT_PRICE.doubleValue()))
-            .andExpect(jsonPath("$.period").value(DEFAULT_PERIOD))
+            .andExpect(jsonPath("$.periodType").value(DEFAULT_PERIOD_TYPE.toString()))
             .andExpect(jsonPath("$.countPeriod").value(DEFAULT_COUNT_PERIOD));
     }
 
@@ -256,7 +266,11 @@ class ServicesResourceIT {
         Services updatedServices = servicesRepository.findById(services.getId()).get();
         // Disconnect from session so that the updates on updatedServices are not directly saved in db
         em.detach(updatedServices);
-        updatedServices.name(UPDATED_NAME).price(UPDATED_PRICE).period(UPDATED_PERIOD).countPeriod(UPDATED_COUNT_PERIOD);
+        updatedServices
+            .serviceType(UPDATED_SERVICE_TYPE)
+            .price(UPDATED_PRICE)
+            .periodType(UPDATED_PERIOD_TYPE)
+            .countPeriod(UPDATED_COUNT_PERIOD);
         ServicesDTO servicesDTO = servicesMapper.toDto(updatedServices);
 
         restServicesMockMvc
@@ -271,9 +285,9 @@ class ServicesResourceIT {
         List<Services> servicesList = servicesRepository.findAll();
         assertThat(servicesList).hasSize(databaseSizeBeforeUpdate);
         Services testServices = servicesList.get(servicesList.size() - 1);
-        assertThat(testServices.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testServices.getServiceType()).isEqualTo(UPDATED_SERVICE_TYPE);
         assertThat(testServices.getPrice()).isEqualTo(UPDATED_PRICE);
-        assertThat(testServices.getPeriod()).isEqualTo(UPDATED_PERIOD);
+        assertThat(testServices.getPeriodType()).isEqualTo(UPDATED_PERIOD_TYPE);
         assertThat(testServices.getCountPeriod()).isEqualTo(UPDATED_COUNT_PERIOD);
     }
 
@@ -368,9 +382,9 @@ class ServicesResourceIT {
         List<Services> servicesList = servicesRepository.findAll();
         assertThat(servicesList).hasSize(databaseSizeBeforeUpdate);
         Services testServices = servicesList.get(servicesList.size() - 1);
-        assertThat(testServices.getName()).isEqualTo(DEFAULT_NAME);
+        assertThat(testServices.getServiceType()).isEqualTo(DEFAULT_SERVICE_TYPE);
         assertThat(testServices.getPrice()).isEqualTo(DEFAULT_PRICE);
-        assertThat(testServices.getPeriod()).isEqualTo(DEFAULT_PERIOD);
+        assertThat(testServices.getPeriodType()).isEqualTo(DEFAULT_PERIOD_TYPE);
         assertThat(testServices.getCountPeriod()).isEqualTo(UPDATED_COUNT_PERIOD);
     }
 
@@ -386,7 +400,11 @@ class ServicesResourceIT {
         Services partialUpdatedServices = new Services();
         partialUpdatedServices.setId(services.getId());
 
-        partialUpdatedServices.name(UPDATED_NAME).price(UPDATED_PRICE).period(UPDATED_PERIOD).countPeriod(UPDATED_COUNT_PERIOD);
+        partialUpdatedServices
+            .serviceType(UPDATED_SERVICE_TYPE)
+            .price(UPDATED_PRICE)
+            .periodType(UPDATED_PERIOD_TYPE)
+            .countPeriod(UPDATED_COUNT_PERIOD);
 
         restServicesMockMvc
             .perform(
@@ -400,9 +418,9 @@ class ServicesResourceIT {
         List<Services> servicesList = servicesRepository.findAll();
         assertThat(servicesList).hasSize(databaseSizeBeforeUpdate);
         Services testServices = servicesList.get(servicesList.size() - 1);
-        assertThat(testServices.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testServices.getServiceType()).isEqualTo(UPDATED_SERVICE_TYPE);
         assertThat(testServices.getPrice()).isEqualTo(UPDATED_PRICE);
-        assertThat(testServices.getPeriod()).isEqualTo(UPDATED_PERIOD);
+        assertThat(testServices.getPeriodType()).isEqualTo(UPDATED_PERIOD_TYPE);
         assertThat(testServices.getCountPeriod()).isEqualTo(UPDATED_COUNT_PERIOD);
     }
 

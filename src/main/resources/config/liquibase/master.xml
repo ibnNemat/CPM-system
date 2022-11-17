@@ -21,6 +21,8 @@
     <include file="config/liquibase/changelog/20221112075349_added_entity_constraints_Customers.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20221112075354_added_entity_constraints_Payment.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20221112075352_added_entity_constraints_Groups.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20221112075353_added_entity_constraints_Services.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20221114110950_added_entity_constraints_PaymentHistory.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
 </databaseChangeLog>

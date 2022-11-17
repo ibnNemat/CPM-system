@@ -14,6 +14,10 @@
         <dd>
           <span>{{ payment.id }}</span>
         </dd>
+        <dt><span jhiTranslate="cpmSystemApp.payment.payedMoney">Payed Money</span></dt>
+        <dd>
+          <span>{{ payment.payedMoney }}</span>
+        </dd>
         <dt><span jhiTranslate="cpmSystemApp.payment.paymentForPeriod">Payment For Period</span></dt>
         <dd>
           <span>{{ payment.paymentForPeriod }}</span>
@@ -22,14 +26,18 @@
         <dd>
           <span>{{ payment.isPayed }}</span>
         </dd>
-        <dt><span jhiTranslate="cpmSystemApp.payment.startPeriod">Start Period</span></dt>
+        <dt><span jhiTranslate="cpmSystemApp.payment.startedPeriod">Started Period</span></dt>
         <dd>
-          <span>{{ payment.startPeriod | formatMediumDate }}</span>
+          <span>{{ payment.startedPeriod | formatMediumDate }}</span>
         </dd>
-        <dt><span jhiTranslate="cpmSystemApp.payment.user">User</span></dt>
+        <dt><span jhiTranslate="cpmSystemApp.payment.finishedPeriod">Finished Period</span></dt>
         <dd>
-          <div *ngIf="payment.user">
-            <a [routerLink]="['/customers', payment.user.id, 'view']">{{ payment.user.id }}</a>
+          <span>{{ payment.finishedPeriod | formatMediumDate }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.payment.customer">Customer</span></dt>
+        <dd>
+          <div *ngIf="payment.customer">
+            <a [routerLink]="['/customers', payment.customer.id, 'view']">{{ payment.customer.id }}</a>
           </div>
         </dd>
         <dt><span jhiTranslate="cpmSystemApp.payment.service">Service</span></dt>

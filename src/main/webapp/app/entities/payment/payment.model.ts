@@ -5,10 +5,12 @@ import { IGroups } from 'app/entities/groups/groups.model';
 
 export interface IPayment {
   id: number;
+  payedMoney?: number | null;
   paymentForPeriod?: number | null;
   isPayed?: boolean | null;
-  startPeriod?: dayjs.Dayjs | null;
-  user?: Pick<ICustomers, 'id'> | null;
+  startedPeriod?: dayjs.Dayjs | null;
+  finishedPeriod?: dayjs.Dayjs | null;
+  customer?: Pick<ICustomers, 'id'> | null;
   service?: Pick<IServices, 'id'> | null;
   group?: Pick<IGroups, 'id'> | null;
 }

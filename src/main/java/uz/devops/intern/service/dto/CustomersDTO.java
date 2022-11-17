@@ -15,9 +15,6 @@ public class CustomersDTO implements Serializable {
     private Long id;
 
     @NotNull
-    private String fullName;
-
-    @NotNull
     private String username;
 
     @NotNull
@@ -27,10 +24,9 @@ public class CustomersDTO implements Serializable {
     private String phoneNumber;
 
     @NotNull
-    private String email;
-
-    @NotNull
     private Double account;
+
+    private UserDTO user;
 
     private Set<GroupsDTO> groups = new HashSet<>();
 
@@ -42,14 +38,6 @@ public class CustomersDTO implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
     }
 
     public String getUsername() {
@@ -76,20 +64,20 @@ public class CustomersDTO implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public Double getAccount() {
         return account;
     }
 
     public void setAccount(Double account) {
         this.account = account;
+    }
+
+    public UserDTO getUser() {
+        return user;
+    }
+
+    public void setUser(UserDTO user) {
+        this.user = user;
     }
 
     public Set<GroupsDTO> getGroups() {
@@ -134,12 +122,11 @@ public class CustomersDTO implements Serializable {
     public String toString() {
         return "CustomersDTO{" +
             "id=" + getId() +
-            ", fullName='" + getFullName() + "'" +
             ", username='" + getUsername() + "'" +
             ", password='" + getPassword() + "'" +
             ", phoneNumber='" + getPhoneNumber() + "'" +
-            ", email='" + getEmail() + "'" +
             ", account=" + getAccount() +
+            ", user=" + getUser() +
             ", groups=" + getGroups() +
             ", services=" + getServices() +
             "}";

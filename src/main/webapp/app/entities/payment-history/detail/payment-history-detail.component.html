@@ -18,13 +18,13 @@
         <dd>
           <span>{{ paymentHistory.organizationName }}</span>
         </dd>
-        <dt><span jhiTranslate="cpmSystemApp.paymentHistory.serviceName">Service Name</span></dt>
-        <dd>
-          <span>{{ paymentHistory.serviceName }}</span>
-        </dd>
         <dt><span jhiTranslate="cpmSystemApp.paymentHistory.groupName">Group Name</span></dt>
         <dd>
           <span>{{ paymentHistory.groupName }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.paymentHistory.serviceName">Service Name</span></dt>
+        <dd>
+          <span>{{ paymentHistory.serviceName }}</span>
         </dd>
         <dt><span jhiTranslate="cpmSystemApp.paymentHistory.sum">Sum</span></dt>
         <dd>
@@ -33,6 +33,12 @@
         <dt><span jhiTranslate="cpmSystemApp.paymentHistory.createdAt">Created At</span></dt>
         <dd>
           <span>{{ paymentHistory.createdAt | formatMediumDate }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.paymentHistory.customer">Customer</span></dt>
+        <dd>
+          <div *ngIf="paymentHistory.customer">
+            <a [routerLink]="['/customers', paymentHistory.customer.id, 'view']">{{ paymentHistory.customer.id }}</a>
+          </div>
         </dd>
       </dl>
 

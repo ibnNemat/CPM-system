@@ -9,6 +9,9 @@ import { of, Subject, from } from 'rxjs';
 import { CustomersFormService } from './customers-form.service';
 import { CustomersService } from '../service/customers.service';
 import { ICustomers } from '../customers.model';
+
+import { IUser } from 'app/entities/user/user.model';
+import { UserService } from 'app/entities/user/user.service';
 import { IGroups } from 'app/entities/groups/groups.model';
 import { GroupsService } from 'app/entities/groups/service/groups.service';
 import { IServices } from 'app/entities/services/services.model';
@@ -22,6 +25,7 @@ describe('Customers Management Update Component', () => {
   let activatedRoute: ActivatedRoute;
   let customersFormService: CustomersFormService;
   let customersService: CustomersService;
+  let userService: UserService;
   let groupsService: GroupsService;
   let servicesService: ServicesService;
 
@@ -46,6 +50,7 @@ describe('Customers Management Update Component', () => {
     activatedRoute = TestBed.inject(ActivatedRoute);
     customersFormService = TestBed.inject(CustomersFormService);
     customersService = TestBed.inject(CustomersService);
+    userService = TestBed.inject(UserService);
     groupsService = TestBed.inject(GroupsService);
     servicesService = TestBed.inject(ServicesService);
 
@@ -53,6 +58,28 @@ describe('Customers Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
+    it('Should call User query and add missing value', () => {
+      const customers: ICustomers = { id: 456 };
+      const user: IUser = { id: 15589 };
+      customers.user = user;
+
+      const userCollection: IUser[] = [{ id: 17029 }];
+      jest.spyOn(userService, 'query').mockReturnValue(of(new HttpResponse({ body: userCollection })));
+      const additionalUsers = [user];
+      const expectedCollection: IUser[] = [...additionalUsers, ...userCollection];
+      jest.spyOn(userService, 'addUserToCollectionIfMissing').mockReturnValue(expectedCollection);
+
+      activatedRoute.data = of({ customers });
+      comp.ngOnInit();
+
+      expect(userService.query).toHaveBeenCalled();
+      expect(userService.addUserToCollectionIfMissing).toHaveBeenCalledWith(
+        userCollection,
+        ...additionalUsers.map(expect.objectContaining)
+      );
+      expect(comp.usersSharedCollection).toEqual(expectedCollection);
+    });
+
     it('Should call Groups query and add missing value', () => {
       const customers: ICustomers = { id: 456 };
       const groups: IGroups[] = [{ id: 27496 }];
@@ -99,6 +126,8 @@ describe('Customers Management Update Component', () => {
 
     it('Should update editForm', () => {
       const customers: ICustomers = { id: 456 };
+      const user: IUser = { id: 64561 };
+      customers.user = user;
       const groups: IGroups = { id: 17548 };
       customers.groups = [groups];
       const services: IServices = { id: 65202 };
@@ -107,6 +136,7 @@ describe('Customers Management Update Component', () => {
       activatedRoute.data = of({ customers });
       comp.ngOnInit();
 
+      expect(comp.usersSharedCollection).toContain(user);
       expect(comp.groupsSharedCollection).toContain(groups);
       expect(comp.servicesSharedCollection).toContain(services);
       expect(comp.customers).toEqual(customers);
@@ -182,6 +212,16 @@ describe('Customers Management Update Component', () => {
   });
 
   describe('Compare relationships', () => {
+    describe('compareUser', () => {
+      it('Should forward to userService', () => {
+        const entity = { id: 123 };
+        const entity2 = { id: 456 };
+        jest.spyOn(userService, 'compareUser');
+        comp.compareUser(entity, entity2);
+        expect(userService.compareUser).toHaveBeenCalledWith(entity, entity2);
+      });
+    });
+
     describe('compareGroups', () => {
       it('Should forward to groupsService', () => {
         const entity = { id: 123 };

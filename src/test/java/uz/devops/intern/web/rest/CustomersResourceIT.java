@@ -41,9 +41,6 @@ import uz.devops.intern.service.mapper.CustomersMapper;
 @WithMockUser
 class CustomersResourceIT {
 
-    private static final String DEFAULT_FULL_NAME = "AAAAAAAAAA";
-    private static final String UPDATED_FULL_NAME = "BBBBBBBBBB";
-
     private static final String DEFAULT_USERNAME = "AAAAAAAAAA";
     private static final String UPDATED_USERNAME = "BBBBBBBBBB";
 
@@ -52,9 +49,6 @@ class CustomersResourceIT {
 
     private static final String DEFAULT_PHONE_NUMBER = "AAAAAAAAAA";
     private static final String UPDATED_PHONE_NUMBER = "BBBBBBBBBB";
-
-    private static final String DEFAULT_EMAIL = "AAAAAAAAAA";
-    private static final String UPDATED_EMAIL = "BBBBBBBBBB";
 
     private static final Double DEFAULT_ACCOUNT = 1D;
     private static final Double UPDATED_ACCOUNT = 2D;
@@ -93,11 +87,9 @@ class CustomersResourceIT {
      */
     public static Customers createEntity(EntityManager em) {
         Customers customers = new Customers()
-            .fullName(DEFAULT_FULL_NAME)
             .username(DEFAULT_USERNAME)
             .password(DEFAULT_PASSWORD)
             .phoneNumber(DEFAULT_PHONE_NUMBER)
-            .email(DEFAULT_EMAIL)
             .account(DEFAULT_ACCOUNT);
         return customers;
     }
@@ -110,11 +102,9 @@ class CustomersResourceIT {
      */
     public static Customers createUpdatedEntity(EntityManager em) {
         Customers customers = new Customers()
-            .fullName(UPDATED_FULL_NAME)
             .username(UPDATED_USERNAME)
             .password(UPDATED_PASSWORD)
             .phoneNumber(UPDATED_PHONE_NUMBER)
-            .email(UPDATED_EMAIL)
             .account(UPDATED_ACCOUNT);
         return customers;
     }
@@ -138,11 +128,9 @@ class CustomersResourceIT {
         List<Customers> customersList = customersRepository.findAll();
         assertThat(customersList).hasSize(databaseSizeBeforeCreate + 1);
         Customers testCustomers = customersList.get(customersList.size() - 1);
-        assertThat(testCustomers.getFullName()).isEqualTo(DEFAULT_FULL_NAME);
         assertThat(testCustomers.getUsername()).isEqualTo(DEFAULT_USERNAME);
         assertThat(testCustomers.getPassword()).isEqualTo(DEFAULT_PASSWORD);
         assertThat(testCustomers.getPhoneNumber()).isEqualTo(DEFAULT_PHONE_NUMBER);
-        assertThat(testCustomers.getEmail()).isEqualTo(DEFAULT_EMAIL);
         assertThat(testCustomers.getAccount()).isEqualTo(DEFAULT_ACCOUNT);
     }
 
@@ -163,24 +151,6 @@ class CustomersResourceIT {
         // Validate the Customers in the database
         List<Customers> customersList = customersRepository.findAll();
         assertThat(customersList).hasSize(databaseSizeBeforeCreate);
-    }
-
-    @Test
-    @Transactional
-    void checkFullNameIsRequired() throws Exception {
-        int databaseSizeBeforeTest = customersRepository.findAll().size();
-        // set the field null
-        customers.setFullName(null);
-
-        // Create the Customers, which fails.
-        CustomersDTO customersDTO = customersMapper.toDto(customers);
-
-        restCustomersMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(customersDTO)))
-            .andExpect(status().isBadRequest());
-
-        List<Customers> customersList = customersRepository.findAll();
-        assertThat(customersList).hasSize(databaseSizeBeforeTest);
     }
 
     @Test
@@ -239,24 +209,6 @@ class CustomersResourceIT {
 
     @Test
     @Transactional
-    void checkEmailIsRequired() throws Exception {
-        int databaseSizeBeforeTest = customersRepository.findAll().size();
-        // set the field null
-        customers.setEmail(null);
-
-        // Create the Customers, which fails.
-        CustomersDTO customersDTO = customersMapper.toDto(customers);
-
-        restCustomersMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(customersDTO)))
-            .andExpect(status().isBadRequest());
-
-        List<Customers> customersList = customersRepository.findAll();
-        assertThat(customersList).hasSize(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
     void checkAccountIsRequired() throws Exception {
         int databaseSizeBeforeTest = customersRepository.findAll().size();
         // set the field null
@@ -285,11 +237,9 @@ class CustomersResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(customers.getId().intValue())))
-            .andExpect(jsonPath("$.[*].fullName").value(hasItem(DEFAULT_FULL_NAME)))
             .andExpect(jsonPath("$.[*].username").value(hasItem(DEFAULT_USERNAME)))
             .andExpect(jsonPath("$.[*].password").value(hasItem(DEFAULT_PASSWORD)))
             .andExpect(jsonPath("$.[*].phoneNumber").value(hasItem(DEFAULT_PHONE_NUMBER)))
-            .andExpect(jsonPath("$.[*].email").value(hasItem(DEFAULT_EMAIL)))
             .andExpect(jsonPath("$.[*].account").value(hasItem(DEFAULT_ACCOUNT.doubleValue())));
     }
 
@@ -322,11 +272,9 @@ class CustomersResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(customers.getId().intValue()))
-            .andExpect(jsonPath("$.fullName").value(DEFAULT_FULL_NAME))
             .andExpect(jsonPath("$.username").value(DEFAULT_USERNAME))
             .andExpect(jsonPath("$.password").value(DEFAULT_PASSWORD))
             .andExpect(jsonPath("$.phoneNumber").value(DEFAULT_PHONE_NUMBER))
-            .andExpect(jsonPath("$.email").value(DEFAULT_EMAIL))
             .andExpect(jsonPath("$.account").value(DEFAULT_ACCOUNT.doubleValue()));
     }
 
@@ -349,13 +297,7 @@ class CustomersResourceIT {
         Customers updatedCustomers = customersRepository.findById(customers.getId()).get();
         // Disconnect from session so that the updates on updatedCustomers are not directly saved in db
         em.detach(updatedCustomers);
-        updatedCustomers
-            .fullName(UPDATED_FULL_NAME)
-            .username(UPDATED_USERNAME)
-            .password(UPDATED_PASSWORD)
-            .phoneNumber(UPDATED_PHONE_NUMBER)
-            .email(UPDATED_EMAIL)
-            .account(UPDATED_ACCOUNT);
+        updatedCustomers.username(UPDATED_USERNAME).password(UPDATED_PASSWORD).phoneNumber(UPDATED_PHONE_NUMBER).account(UPDATED_ACCOUNT);
         CustomersDTO customersDTO = customersMapper.toDto(updatedCustomers);
 
         restCustomersMockMvc
@@ -370,11 +312,9 @@ class CustomersResourceIT {
         List<Customers> customersList = customersRepository.findAll();
         assertThat(customersList).hasSize(databaseSizeBeforeUpdate);
         Customers testCustomers = customersList.get(customersList.size() - 1);
-        assertThat(testCustomers.getFullName()).isEqualTo(UPDATED_FULL_NAME);
         assertThat(testCustomers.getUsername()).isEqualTo(UPDATED_USERNAME);
         assertThat(testCustomers.getPassword()).isEqualTo(UPDATED_PASSWORD);
         assertThat(testCustomers.getPhoneNumber()).isEqualTo(UPDATED_PHONE_NUMBER);
-        assertThat(testCustomers.getEmail()).isEqualTo(UPDATED_EMAIL);
         assertThat(testCustomers.getAccount()).isEqualTo(UPDATED_ACCOUNT);
     }
 
@@ -455,7 +395,7 @@ class CustomersResourceIT {
         Customers partialUpdatedCustomers = new Customers();
         partialUpdatedCustomers.setId(customers.getId());
 
-        partialUpdatedCustomers.fullName(UPDATED_FULL_NAME).password(UPDATED_PASSWORD).email(UPDATED_EMAIL);
+        partialUpdatedCustomers.username(UPDATED_USERNAME).phoneNumber(UPDATED_PHONE_NUMBER);
 
         restCustomersMockMvc
             .perform(
@@ -469,11 +409,9 @@ class CustomersResourceIT {
         List<Customers> customersList = customersRepository.findAll();
         assertThat(customersList).hasSize(databaseSizeBeforeUpdate);
         Customers testCustomers = customersList.get(customersList.size() - 1);
-        assertThat(testCustomers.getFullName()).isEqualTo(UPDATED_FULL_NAME);
-        assertThat(testCustomers.getUsername()).isEqualTo(DEFAULT_USERNAME);
-        assertThat(testCustomers.getPassword()).isEqualTo(UPDATED_PASSWORD);
-        assertThat(testCustomers.getPhoneNumber()).isEqualTo(DEFAULT_PHONE_NUMBER);
-        assertThat(testCustomers.getEmail()).isEqualTo(UPDATED_EMAIL);
+        assertThat(testCustomers.getUsername()).isEqualTo(UPDATED_USERNAME);
+        assertThat(testCustomers.getPassword()).isEqualTo(DEFAULT_PASSWORD);
+        assertThat(testCustomers.getPhoneNumber()).isEqualTo(UPDATED_PHONE_NUMBER);
         assertThat(testCustomers.getAccount()).isEqualTo(DEFAULT_ACCOUNT);
     }
 
@@ -490,11 +428,9 @@ class CustomersResourceIT {
         partialUpdatedCustomers.setId(customers.getId());
 
         partialUpdatedCustomers
-            .fullName(UPDATED_FULL_NAME)
             .username(UPDATED_USERNAME)
             .password(UPDATED_PASSWORD)
             .phoneNumber(UPDATED_PHONE_NUMBER)
-            .email(UPDATED_EMAIL)
             .account(UPDATED_ACCOUNT);
 
         restCustomersMockMvc
@@ -509,11 +445,9 @@ class CustomersResourceIT {
         List<Customers> customersList = customersRepository.findAll();
         assertThat(customersList).hasSize(databaseSizeBeforeUpdate);
         Customers testCustomers = customersList.get(customersList.size() - 1);
-        assertThat(testCustomers.getFullName()).isEqualTo(UPDATED_FULL_NAME);
         assertThat(testCustomers.getUsername()).isEqualTo(UPDATED_USERNAME);
         assertThat(testCustomers.getPassword()).isEqualTo(UPDATED_PASSWORD);
         assertThat(testCustomers.getPhoneNumber()).isEqualTo(UPDATED_PHONE_NUMBER);
-        assertThat(testCustomers.getEmail()).isEqualTo(UPDATED_EMAIL);
         assertThat(testCustomers.getAccount()).isEqualTo(UPDATED_ACCOUNT);
     }
 

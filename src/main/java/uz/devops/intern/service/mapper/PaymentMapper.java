@@ -15,7 +15,7 @@ import uz.devops.intern.service.dto.ServicesDTO;
  */
 @Mapper(componentModel = "spring")
 public interface PaymentMapper extends EntityMapper<PaymentDTO, Payment> {
-    @Mapping(target = "user", source = "user", qualifiedByName = "customersId")
+    @Mapping(target = "customer", source = "customer", qualifiedByName = "customersId")
     @Mapping(target = "service", source = "service", qualifiedByName = "servicesId")
     @Mapping(target = "group", source = "group", qualifiedByName = "groupsId")
     PaymentDTO toDto(Payment s);

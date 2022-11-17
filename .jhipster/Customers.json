@@ -6,14 +6,9 @@
   "entityTableName": "customers",
   "fields": [
     {
-      "fieldName": "fullName",
-      "fieldType": "String",
-      "fieldValidateRules": ["required"]
-    },
-    {
       "fieldName": "username",
       "fieldType": "String",
-      "fieldValidateRules": ["required"]
+      "fieldValidateRules": ["required", "unique"]
     },
     {
       "fieldName": "password",
@@ -22,11 +17,6 @@
     },
     {
       "fieldName": "phoneNumber",
-      "fieldType": "String",
-      "fieldValidateRules": ["required"]
-    },
-    {
-      "fieldName": "email",
       "fieldType": "String",
       "fieldValidateRules": ["required"]
     },
@@ -42,6 +32,12 @@
   "pagination": "pagination",
   "readOnly": false,
   "relationships": [
+    {
+      "otherEntityName": "user",
+      "ownerSide": true,
+      "relationshipName": "user",
+      "relationshipType": "one-to-one"
+    },
     {
       "otherEntityName": "groups",
       "otherEntityRelationshipName": "users",

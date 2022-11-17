@@ -106,7 +106,6 @@ export class GroupsComponent implements OnInit {
     const queryObject = {
       page: pageToLoad - 1,
       size: this.itemsPerPage,
-      eagerload: true,
       sort: this.getSortQueryParam(predicate, ascending),
     };
     return this.groupsService.query(queryObject).pipe(tap(() => (this.isLoading = false)));

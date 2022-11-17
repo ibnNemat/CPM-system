@@ -38,9 +38,9 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
-          <th scope="col" jhiSortBy="name">
+          <th scope="col" jhiSortBy="serviceType">
             <div class="d-flex">
-              <span jhiTranslate="cpmSystemApp.services.name">Name</span>
+              <span jhiTranslate="cpmSystemApp.services.serviceType">Service Type</span>
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
@@ -50,15 +50,21 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
-          <th scope="col" jhiSortBy="period">
+          <th scope="col" jhiSortBy="periodType">
             <div class="d-flex">
-              <span jhiTranslate="cpmSystemApp.services.period">Period</span>
+              <span jhiTranslate="cpmSystemApp.services.periodType">Period Type</span>
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
           <th scope="col" jhiSortBy="countPeriod">
             <div class="d-flex">
               <span jhiTranslate="cpmSystemApp.services.countPeriod">Count Period</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="group.id">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.services.group">Group</span>
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
@@ -70,10 +76,15 @@
           <td>
             <a [routerLink]="['/services', services.id, 'view']">{{ services.id }}</a>
           </td>
-          <td>{{ services.name }}</td>
+          <td jhiTranslate="{{ 'cpmSystemApp.ServiceType.' + services.serviceType }}">{{ services.serviceType }}</td>
           <td>{{ services.price }}</td>
-          <td>{{ services.period }}</td>
+          <td jhiTranslate="{{ 'cpmSystemApp.PeriodType.' + services.periodType }}">{{ services.periodType }}</td>
           <td>{{ services.countPeriod }}</td>
+          <td>
+            <div *ngIf="services.group">
+              <a [routerLink]="['/groups', services.group.id, 'view']">{{ services.group.id }}</a>
+            </div>
+          </td>
           <td class="text-end">
             <div class="btn-group">
               <button

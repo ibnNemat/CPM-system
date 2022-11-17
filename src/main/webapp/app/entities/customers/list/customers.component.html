@@ -38,12 +38,6 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
-          <th scope="col" jhiSortBy="fullName">
-            <div class="d-flex">
-              <span jhiTranslate="cpmSystemApp.customers.fullName">Full Name</span>
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
           <th scope="col" jhiSortBy="username">
             <div class="d-flex">
               <span jhiTranslate="cpmSystemApp.customers.username">Username</span>
@@ -62,15 +56,15 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
-          <th scope="col" jhiSortBy="email">
-            <div class="d-flex">
-              <span jhiTranslate="cpmSystemApp.customers.email">Email</span>
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
           <th scope="col" jhiSortBy="account">
             <div class="d-flex">
               <span jhiTranslate="cpmSystemApp.customers.account">Account</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="user.id">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.customers.user">User</span>
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
@@ -82,12 +76,13 @@
           <td>
             <a [routerLink]="['/customers', customers.id, 'view']">{{ customers.id }}</a>
           </td>
-          <td>{{ customers.fullName }}</td>
           <td>{{ customers.username }}</td>
           <td>{{ customers.password }}</td>
           <td>{{ customers.phoneNumber }}</td>
-          <td>{{ customers.email }}</td>
           <td>{{ customers.account }}</td>
+          <td>
+            {{ customers.user?.id }}
+          </td>
           <td class="text-end">
             <div class="btn-group">
               <button

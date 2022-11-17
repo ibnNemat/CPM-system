@@ -1,6 +1,5 @@
 package uz.devops.intern.service.impl;
 
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -12,6 +11,10 @@ import uz.devops.intern.repository.CustomersRepository;
 import uz.devops.intern.service.CustomersService;
 import uz.devops.intern.service.dto.CustomersDTO;
 import uz.devops.intern.service.mapper.CustomersMapper;
+import uz.devops.intern.service.utils.ContextHolderUtil;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link Customers}.
@@ -19,13 +22,9 @@ import uz.devops.intern.service.mapper.CustomersMapper;
 @Service
 @Transactional
 public class CustomersServiceImpl implements CustomersService {
-
     private final Logger log = LoggerFactory.getLogger(CustomersServiceImpl.class);
-
     private final CustomersRepository customersRepository;
-
     private final CustomersMapper customersMapper;
-
     public CustomersServiceImpl(CustomersRepository customersRepository, CustomersMapper customersMapper) {
         this.customersRepository = customersRepository;
         this.customersMapper = customersMapper;
@@ -34,6 +33,12 @@ public class CustomersServiceImpl implements CustomersService {
     @Override
     public CustomersDTO save(CustomersDTO customersDTO) {
         log.debug("Request to save Customers : {}", customersDTO);
+        String username = ContextHolderUtil.getUsernameFromContextHolder();
+        if (username == null){
+            log.error("Error while saving customer: user principal not found!");
+            return null;
+        }
+        customersDTO.setUsername(username);
         Customers customers = customersMapper.toEntity(customersDTO);
         customers = customersRepository.save(customers);
         return customersMapper.toDto(customers);
@@ -85,4 +90,17 @@ public class CustomersServiceImpl implements CustomersService {
         log.debug("Request to delete Customers : {}", id);
         customersRepository.deleteById(id);
     }
+
+//    @Override
+//    public List<CustomersDTO> getAllCustomers() {
+//        String username = ContextHolderUtil.getUsernameFromContextHolder();
+//        if (username == null){
+//            log.error("Error while getting customers: user principal not found!");
+//            return null;
+//        }
+//        List<Customers> customersList = customersRepository.findAllByUsername(username);
+//        return customersList.stream()
+//            .map(customersMapper::toDto)
+//            .toList();
+//    }
 }

@@ -9,7 +9,8 @@ import { PaymentService, RestPayment } from './payment.service';
 
 const requireRestSample: RestPayment = {
   ...sampleWithRequiredData,
-  startPeriod: sampleWithRequiredData.startPeriod?.format(DATE_FORMAT),
+  startedPeriod: sampleWithRequiredData.startedPeriod?.format(DATE_FORMAT),
+  finishedPeriod: sampleWithRequiredData.finishedPeriod?.format(DATE_FORMAT),
 };
 
 describe('Payment Service', () => {

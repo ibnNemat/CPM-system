@@ -14,21 +14,27 @@
         <dd>
           <span>{{ services.id }}</span>
         </dd>
-        <dt><span jhiTranslate="cpmSystemApp.services.name">Name</span></dt>
+        <dt><span jhiTranslate="cpmSystemApp.services.serviceType">Service Type</span></dt>
         <dd>
-          <span>{{ services.name }}</span>
+          <span jhiTranslate="{{ 'cpmSystemApp.ServiceType.' + services.serviceType }}">{{ services.serviceType }}</span>
         </dd>
         <dt><span jhiTranslate="cpmSystemApp.services.price">Price</span></dt>
         <dd>
           <span>{{ services.price }}</span>
         </dd>
-        <dt><span jhiTranslate="cpmSystemApp.services.period">Period</span></dt>
+        <dt><span jhiTranslate="cpmSystemApp.services.periodType">Period Type</span></dt>
         <dd>
-          <span>{{ services.period }}</span>
+          <span jhiTranslate="{{ 'cpmSystemApp.PeriodType.' + services.periodType }}">{{ services.periodType }}</span>
         </dd>
         <dt><span jhiTranslate="cpmSystemApp.services.countPeriod">Count Period</span></dt>
         <dd>
           <span>{{ services.countPeriod }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.services.group">Group</span></dt>
+        <dd>
+          <div *ngIf="services.group">
+            <a [routerLink]="['/groups', services.group.id, 'view']">{{ services.group.id }}</a>
+          </div>
         </dd>
       </dl>
 

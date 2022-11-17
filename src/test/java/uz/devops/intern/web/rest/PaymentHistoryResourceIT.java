@@ -36,11 +36,11 @@ class PaymentHistoryResourceIT {
     private static final String DEFAULT_ORGANIZATION_NAME = "AAAAAAAAAA";
     private static final String UPDATED_ORGANIZATION_NAME = "BBBBBBBBBB";
 
-    private static final String DEFAULT_SERVICE_NAME = "AAAAAAAAAA";
-    private static final String UPDATED_SERVICE_NAME = "BBBBBBBBBB";
-
     private static final String DEFAULT_GROUP_NAME = "AAAAAAAAAA";
     private static final String UPDATED_GROUP_NAME = "BBBBBBBBBB";
+
+    private static final String DEFAULT_SERVICE_NAME = "AAAAAAAAAA";
+    private static final String UPDATED_SERVICE_NAME = "BBBBBBBBBB";
 
     private static final Double DEFAULT_SUM = 1D;
     private static final Double UPDATED_SUM = 2D;
@@ -77,8 +77,8 @@ class PaymentHistoryResourceIT {
     public static PaymentHistory createEntity(EntityManager em) {
         PaymentHistory paymentHistory = new PaymentHistory()
             .organizationName(DEFAULT_ORGANIZATION_NAME)
-            .serviceName(DEFAULT_SERVICE_NAME)
             .groupName(DEFAULT_GROUP_NAME)
+            .serviceName(DEFAULT_SERVICE_NAME)
             .sum(DEFAULT_SUM)
             .createdAt(DEFAULT_CREATED_AT);
         return paymentHistory;
@@ -93,8 +93,8 @@ class PaymentHistoryResourceIT {
     public static PaymentHistory createUpdatedEntity(EntityManager em) {
         PaymentHistory paymentHistory = new PaymentHistory()
             .organizationName(UPDATED_ORGANIZATION_NAME)
-            .serviceName(UPDATED_SERVICE_NAME)
             .groupName(UPDATED_GROUP_NAME)
+            .serviceName(UPDATED_SERVICE_NAME)
             .sum(UPDATED_SUM)
             .createdAt(UPDATED_CREATED_AT);
         return paymentHistory;
@@ -122,8 +122,8 @@ class PaymentHistoryResourceIT {
         assertThat(paymentHistoryList).hasSize(databaseSizeBeforeCreate + 1);
         PaymentHistory testPaymentHistory = paymentHistoryList.get(paymentHistoryList.size() - 1);
         assertThat(testPaymentHistory.getOrganizationName()).isEqualTo(DEFAULT_ORGANIZATION_NAME);
-        assertThat(testPaymentHistory.getServiceName()).isEqualTo(DEFAULT_SERVICE_NAME);
         assertThat(testPaymentHistory.getGroupName()).isEqualTo(DEFAULT_GROUP_NAME);
+        assertThat(testPaymentHistory.getServiceName()).isEqualTo(DEFAULT_SERVICE_NAME);
         assertThat(testPaymentHistory.getSum()).isEqualTo(DEFAULT_SUM);
         assertThat(testPaymentHistory.getCreatedAt()).isEqualTo(DEFAULT_CREATED_AT);
     }
@@ -162,8 +162,8 @@ class PaymentHistoryResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(paymentHistory.getId().intValue())))
             .andExpect(jsonPath("$.[*].organizationName").value(hasItem(DEFAULT_ORGANIZATION_NAME)))
-            .andExpect(jsonPath("$.[*].serviceName").value(hasItem(DEFAULT_SERVICE_NAME)))
             .andExpect(jsonPath("$.[*].groupName").value(hasItem(DEFAULT_GROUP_NAME)))
+            .andExpect(jsonPath("$.[*].serviceName").value(hasItem(DEFAULT_SERVICE_NAME)))
             .andExpect(jsonPath("$.[*].sum").value(hasItem(DEFAULT_SUM.doubleValue())))
             .andExpect(jsonPath("$.[*].createdAt").value(hasItem(DEFAULT_CREATED_AT.toString())));
     }
@@ -181,8 +181,8 @@ class PaymentHistoryResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(paymentHistory.getId().intValue()))
             .andExpect(jsonPath("$.organizationName").value(DEFAULT_ORGANIZATION_NAME))
-            .andExpect(jsonPath("$.serviceName").value(DEFAULT_SERVICE_NAME))
             .andExpect(jsonPath("$.groupName").value(DEFAULT_GROUP_NAME))
+            .andExpect(jsonPath("$.serviceName").value(DEFAULT_SERVICE_NAME))
             .andExpect(jsonPath("$.sum").value(DEFAULT_SUM.doubleValue()))
             .andExpect(jsonPath("$.createdAt").value(DEFAULT_CREATED_AT.toString()));
     }
@@ -208,8 +208,8 @@ class PaymentHistoryResourceIT {
         em.detach(updatedPaymentHistory);
         updatedPaymentHistory
             .organizationName(UPDATED_ORGANIZATION_NAME)
-            .serviceName(UPDATED_SERVICE_NAME)
             .groupName(UPDATED_GROUP_NAME)
+            .serviceName(UPDATED_SERVICE_NAME)
             .sum(UPDATED_SUM)
             .createdAt(UPDATED_CREATED_AT);
         PaymentHistoryDTO paymentHistoryDTO = paymentHistoryMapper.toDto(updatedPaymentHistory);
@@ -227,8 +227,8 @@ class PaymentHistoryResourceIT {
         assertThat(paymentHistoryList).hasSize(databaseSizeBeforeUpdate);
         PaymentHistory testPaymentHistory = paymentHistoryList.get(paymentHistoryList.size() - 1);
         assertThat(testPaymentHistory.getOrganizationName()).isEqualTo(UPDATED_ORGANIZATION_NAME);
-        assertThat(testPaymentHistory.getServiceName()).isEqualTo(UPDATED_SERVICE_NAME);
         assertThat(testPaymentHistory.getGroupName()).isEqualTo(UPDATED_GROUP_NAME);
+        assertThat(testPaymentHistory.getServiceName()).isEqualTo(UPDATED_SERVICE_NAME);
         assertThat(testPaymentHistory.getSum()).isEqualTo(UPDATED_SUM);
         assertThat(testPaymentHistory.getCreatedAt()).isEqualTo(UPDATED_CREATED_AT);
     }
@@ -313,8 +313,8 @@ class PaymentHistoryResourceIT {
         partialUpdatedPaymentHistory.setId(paymentHistory.getId());
 
         partialUpdatedPaymentHistory
-            .serviceName(UPDATED_SERVICE_NAME)
             .groupName(UPDATED_GROUP_NAME)
+            .serviceName(UPDATED_SERVICE_NAME)
             .sum(UPDATED_SUM)
             .createdAt(UPDATED_CREATED_AT);
 
@@ -331,8 +331,8 @@ class PaymentHistoryResourceIT {
         assertThat(paymentHistoryList).hasSize(databaseSizeBeforeUpdate);
         PaymentHistory testPaymentHistory = paymentHistoryList.get(paymentHistoryList.size() - 1);
         assertThat(testPaymentHistory.getOrganizationName()).isEqualTo(DEFAULT_ORGANIZATION_NAME);
-        assertThat(testPaymentHistory.getServiceName()).isEqualTo(UPDATED_SERVICE_NAME);
         assertThat(testPaymentHistory.getGroupName()).isEqualTo(UPDATED_GROUP_NAME);
+        assertThat(testPaymentHistory.getServiceName()).isEqualTo(UPDATED_SERVICE_NAME);
         assertThat(testPaymentHistory.getSum()).isEqualTo(UPDATED_SUM);
         assertThat(testPaymentHistory.getCreatedAt()).isEqualTo(UPDATED_CREATED_AT);
     }
@@ -351,8 +351,8 @@ class PaymentHistoryResourceIT {
 
         partialUpdatedPaymentHistory
             .organizationName(UPDATED_ORGANIZATION_NAME)
-            .serviceName(UPDATED_SERVICE_NAME)
             .groupName(UPDATED_GROUP_NAME)
+            .serviceName(UPDATED_SERVICE_NAME)
             .sum(UPDATED_SUM)
             .createdAt(UPDATED_CREATED_AT);
 
@@ -369,8 +369,8 @@ class PaymentHistoryResourceIT {
         assertThat(paymentHistoryList).hasSize(databaseSizeBeforeUpdate);
         PaymentHistory testPaymentHistory = paymentHistoryList.get(paymentHistoryList.size() - 1);
         assertThat(testPaymentHistory.getOrganizationName()).isEqualTo(UPDATED_ORGANIZATION_NAME);
-        assertThat(testPaymentHistory.getServiceName()).isEqualTo(UPDATED_SERVICE_NAME);
         assertThat(testPaymentHistory.getGroupName()).isEqualTo(UPDATED_GROUP_NAME);
+        assertThat(testPaymentHistory.getServiceName()).isEqualTo(UPDATED_SERVICE_NAME);
         assertThat(testPaymentHistory.getSum()).isEqualTo(UPDATED_SUM);
         assertThat(testPaymentHistory.getCreatedAt()).isEqualTo(UPDATED_CREATED_AT);
     }

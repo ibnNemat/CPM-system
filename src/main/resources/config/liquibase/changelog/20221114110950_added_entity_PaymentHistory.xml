@@ -17,16 +17,19 @@
             <column name="organization_name" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="service_name" type="varchar(255)">
+            <column name="group_name" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="group_name" type="varchar(255)">
+            <column name="service_name" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
             <column name="sum" type="double">
                 <constraints nullable="true" />
             </column>
             <column name="created_at" type="date">
+                <constraints nullable="true" />
+            </column>
+            <column name="customer_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
@@ -51,8 +54,8 @@
                   usePreparedStatements="true">
             <column name="id" type="numeric"/>
             <column name="organization_name" type="string"/>
-            <column name="service_name" type="string"/>
             <column name="group_name" type="string"/>
+            <column name="service_name" type="string"/>
             <column name="sum" type="numeric"/>
             <column name="created_at" type="date"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->

@@ -14,17 +14,20 @@
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="name" type="varchar(255)">
+            <column name="service_type" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
             <column name="price" type="double">
                 <constraints nullable="false" />
             </column>
-            <column name="period" type="varchar(255)">
+            <column name="period_type" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
             <column name="count_period" type="integer">
                 <constraints nullable="false" />
+            </column>
+            <column name="group_id" type="bigint">
+                <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
@@ -47,9 +50,9 @@
                   tableName="services"
                   usePreparedStatements="true">
             <column name="id" type="numeric"/>
-            <column name="name" type="string"/>
+            <column name="service_type" type="string"/>
             <column name="price" type="numeric"/>
-            <column name="period" type="string"/>
+            <column name="period_type" type="string"/>
             <column name="count_period" type="numeric"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
