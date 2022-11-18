@@ -30,12 +30,15 @@ public class Groups implements Serializable {
     @NotNull
     @Column(name = "group_owner_name", nullable = false)
     private String groupOwnerName;
-
     @ManyToOne
     @JsonIgnoreProperties(value = { "groups" }, allowSetters = true)
     private Organization organization;
-
-    @ManyToMany(mappedBy = "groups")
+    @ManyToMany
+    @JoinTable(
+        name = "rel_customers__groups",
+        joinColumns = @JoinColumn(name = "groups_id"),
+        inverseJoinColumns = @JoinColumn(name = "customers_id")
+    )
     @JsonIgnoreProperties(value = { "user", "groups", "services" }, allowSetters = true)
     private Set<Customers> users = new HashSet<>();
 
@@ -47,6 +50,7 @@ public class Groups implements Serializable {
 
     public Groups id(Long id) {
         this.setId(id);
+
         return this;
     }
 
@@ -97,14 +101,8 @@ public class Groups implements Serializable {
         return this.users;
     }
 
-    public void setUsers(Set<Customers> customers) {
-        if (this.users != null) {
-            this.users.forEach(i -> i.removeGroups(this));
-        }
-        if (customers != null) {
-            customers.forEach(i -> i.addGroups(this));
-        }
-        this.users = customers;
+    public void setUsers(Set<Customers> users) {
+        this.users = users;
     }
 
     public Groups users(Set<Customers> customers) {

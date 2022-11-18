@@ -41,7 +41,7 @@
     {
       "otherEntityName": "groups",
       "otherEntityRelationshipName": "users",
-      "ownerSide": true,
+      "ownerSide": false,
       "relationshipName": "groups",
       "relationshipType": "many-to-many"
     },

@@ -63,7 +63,8 @@ public class GroupsResource {
         GroupsDTO result = groupsService.save(groupsDTO);
         return ResponseEntity
             .created(new URI("/api/groups/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
+//            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, ""))
             .body(result);
     }
 

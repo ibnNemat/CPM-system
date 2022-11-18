@@ -1,7 +1,12 @@
 package uz.devops.intern.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import uz.devops.intern.domain.Customers;
+
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import javax.validation.constraints.*;
 
 /**
@@ -15,10 +20,18 @@ public class GroupsDTO implements Serializable {
     @NotNull
     private String name;
 
-    @NotNull
     private String groupOwnerName;
 
     private OrganizationDTO organization;
+//    @JsonIgnoreProperties(value = {"services", "customers", "user"})
+    private Set<CustomersDTO> users;
+    public Set<CustomersDTO> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<CustomersDTO> users) {
+        this.users = users;
+    }
 
     public Long getId() {
         return id;

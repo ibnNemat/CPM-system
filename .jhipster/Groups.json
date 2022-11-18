@@ -12,8 +12,7 @@
     },
     {
       "fieldName": "groupOwnerName",
-      "fieldType": "String",
-      "fieldValidateRules": ["required"]
+      "fieldType": "String"
     }
   ],
   "fluentMethods": true,
@@ -31,7 +30,7 @@
     {
       "otherEntityName": "customers",
       "otherEntityRelationshipName": "groups",
-      "ownerSide": false,
+      "ownerSide": true,
       "relationshipName": "users",
       "relationshipType": "many-to-many"
     }

@@ -12,8 +12,11 @@
     },
     {
       "fieldName": "orgOwnerName",
-      "fieldType": "String",
-      "fieldValidateRules": ["required"]
+      "fieldType": "String"
+    },
+    {
+    "fieldName": "users",
+    "fieldType": "Set"
     }
   ],
   "fluentMethods": true,

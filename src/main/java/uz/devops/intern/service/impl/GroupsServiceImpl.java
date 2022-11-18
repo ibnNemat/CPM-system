@@ -3,17 +3,21 @@ package uz.devops.intern.service.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uz.devops.intern.domain.Customers;
 import uz.devops.intern.domain.Groups;
 import uz.devops.intern.repository.GroupsRepository;
 import uz.devops.intern.service.GroupsService;
+import uz.devops.intern.service.dto.CustomersDTO;
 import uz.devops.intern.service.dto.GroupsDTO;
+import uz.devops.intern.service.mapper.GroupMapper;
 import uz.devops.intern.service.mapper.GroupsMapper;
 import uz.devops.intern.service.utils.ContextHolderUtil;
 
+import javax.persistence.EntityManager;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,16 +25,13 @@ import java.util.Optional;
  * Service Implementation for managing {@link Groups}.
  */
 @Service
-@Transactional
 public class GroupsServiceImpl implements GroupsService {
-
+    private final EntityManager entityManager;
     private final Logger log = LoggerFactory.getLogger(GroupsServiceImpl.class);
-
     private final GroupsRepository groupsRepository;
-
     private final GroupsMapper groupsMapper;
-
-    public GroupsServiceImpl(GroupsRepository groupsRepository, GroupsMapper groupsMapper) {
+    public GroupsServiceImpl(EntityManager entityManager, GroupsRepository groupsRepository, GroupsMapper groupsMapper) {
+        this.entityManager = entityManager;
         this.groupsRepository = groupsRepository;
         this.groupsMapper = groupsMapper;
     }
@@ -52,14 +53,26 @@ public class GroupsServiceImpl implements GroupsService {
     public GroupsDTO save(GroupsDTO groupsDTO) {
         log.debug("Request to save Groups : {}", groupsDTO);
         String groupOwner = ContextHolderUtil.getUsernameFromContextHolder();
+
         if (groupOwner == null){
             log.error("Error while saving new group: user principal not found!");
             return null;
         }
+
         groupsDTO.setGroupOwnerName(groupOwner);
         Groups groups = groupsMapper.toEntity(groupsDTO);
         groups = groupsRepository.save(groups);
-        return groupsMapper.toDto(groups);
+
+//        if (groupsDTO.getUsers() != null) {
+//            for (CustomersDTO customers: groupsDTO.getUsers()) {
+//                entityManager.createNativeQuery("INSERT INTO rel_customers__groups (groups_id, customers_id) " +
+//                        "VALUES (?,?)")
+//                    .setParameter(1, new BigInteger(String.valueOf(groups.getId())))
+//                    .setParameter(2, new BigInteger(String.valueOf(customers.getId())))
+//                    .executeUpdate();
+//            }
+//        }
+        return GroupMapper.toDto(groups);
     }
 
     @Override

@@ -9,13 +9,10 @@ import javax.validation.constraints.*;
  */
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class OrganizationDTO implements Serializable {
-
     private Long id;
-
     @NotNull
     private String name;
 
-    @NotNull
     private String orgOwnerName;
 
     public Long getId() {

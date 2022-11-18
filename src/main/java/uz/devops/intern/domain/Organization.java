@@ -27,7 +27,6 @@ public class Organization implements Serializable {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @NotNull
     @Column(name = "org_owner_name", nullable = false)
     private String orgOwnerName;
 
