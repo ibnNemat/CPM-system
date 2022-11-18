@@ -90,36 +90,6 @@
             <option [ngValue]="userOption" *ngFor="let userOption of usersSharedCollection">{{ userOption.id }}</option>
           </select>
         </div>
-
-        <div class="row mb-3">
-          <label jhiTranslate="cpmSystemApp.customers.groups" for="field_groups">Groups</label>
-          <select
-            class="form-control"
-            id="field_groups"
-            data-cy="groups"
-            multiple
-            name="groups"
-            formControlName="groups"
-            [compareWith]="compareGroups"
-          >
-            <option [ngValue]="groupsOption" *ngFor="let groupsOption of groupsSharedCollection">{{ groupsOption.id }}</option>
-          </select>
-        </div>
-
-        <div class="row mb-3">
-          <label jhiTranslate="cpmSystemApp.customers.services" for="field_services">Services</label>
-          <select
-            class="form-control"
-            id="field_services"
-            data-cy="services"
-            multiple
-            name="services"
-            formControlName="services"
-            [compareWith]="compareServices"
-          >
-            <option [ngValue]="servicesOption" *ngFor="let servicesOption of servicesSharedCollection">{{ servicesOption.id }}</option>
-          </select>
-        </div>
       </div>
 
       <div>

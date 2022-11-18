@@ -22,23 +22,27 @@ public class Groups implements Serializable {
     @SequenceGenerator(name = "sequenceGenerator")
     @Column(name = "id")
     private Long id;
+
     @NotNull
     @Column(name = "name", nullable = false, unique = true)
     private String name;
+
     @NotNull
     @Column(name = "group_owner_name", nullable = false)
     private String groupOwnerName;
+
+    @ManyToMany
+    @JoinTable(
+        name = "rel_groups__users",
+        joinColumns = @JoinColumn(name = "groups_id"),
+        inverseJoinColumns = @JoinColumn(name = "users_id")
+    )
+    @JsonIgnoreProperties(value = { "user", "groups", "services" }, allowSetters = true)
+    private Set<Customers> users = new HashSet<>();
+
     @ManyToOne
     @JsonIgnoreProperties(value = { "groups" }, allowSetters = true)
     private Organization organization;
-    @ManyToMany
-    @JoinTable(
-        name = "rel_customers__groups",
-        joinColumns = @JoinColumn(name = "groups_id"),
-        inverseJoinColumns = @JoinColumn(name = "customers_id")
-    )
-    @JsonIgnoreProperties(value = { "user", "groups", "services" }, allowSetters = true)
-    private Set<Customers> customers = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -48,7 +52,6 @@ public class Groups implements Serializable {
 
     public Groups id(Long id) {
         this.setId(id);
-
         return this;
     }
 
@@ -82,6 +85,31 @@ public class Groups implements Serializable {
         this.groupOwnerName = groupOwnerName;
     }
 
+    public Set<Customers> getUsers() {
+        return this.users;
+    }
+
+    public void setUsers(Set<Customers> customers) {
+        this.users = customers;
+    }
+
+    public Groups users(Set<Customers> customers) {
+        this.setUsers(customers);
+        return this;
+    }
+
+    public Groups addUsers(Customers customers) {
+        this.users.add(customers);
+        customers.getGroups().add(this);
+        return this;
+    }
+
+    public Groups removeUsers(Customers customers) {
+        this.users.remove(customers);
+        customers.getGroups().remove(this);
+        return this;
+    }
+
     public Organization getOrganization() {
         return this.organization;
     }
@@ -92,31 +120,6 @@ public class Groups implements Serializable {
 
     public Groups organization(Organization organization) {
         this.setOrganization(organization);
-        return this;
-    }
-
-    public Set<Customers> getCustomers() {
-        return this.customers;
-    }
-
-    public void setCustomers(Set<Customers> users) {
-        this.customers = users;
-    }
-
-    public Groups users(Set<Customers> customers) {
-        this.setCustomers(customers);
-        return this;
-    }
-
-    public Groups addUsers(Customers customers) {
-        this.customers.add(customers);
-        customers.getGroups().add(this);
-        return this;
-    }
-
-    public Groups removeUsers(Customers customers) {
-        this.customers.remove(customers);
-        customers.getGroups().remove(this);
         return this;
     }
 

@@ -1,12 +1,10 @@
 package uz.devops.intern.service.dto;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import javax.validation.constraints.*;
-
 import uz.devops.intern.domain.enumeration.PeriodType;
 import uz.devops.intern.domain.enumeration.ServiceType;
 
@@ -15,35 +13,24 @@ import uz.devops.intern.domain.enumeration.ServiceType;
  */
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ServicesDTO implements Serializable {
+
     private Long id;
+
     @NotNull
     private ServiceType serviceType;
+
     @NotNull
     private Double price;
+
     @NotNull
     private PeriodType periodType;
+
     @NotNull
     private Integer countPeriod;
-    private LocalDate startedPeriod;
+
     private GroupsDTO group;
 
-    private Set<CustomersDTO> customers = new HashSet<>();
-
-    public LocalDate getStartedPeriod() {
-        return startedPeriod;
-    }
-
-    public void setStartedPeriod(LocalDate startedPeriod) {
-        this.startedPeriod = startedPeriod;
-    }
-
-    public Set<CustomersDTO> getCustomers() {
-        return customers;
-    }
-
-    public void setCustomers(Set<CustomersDTO> customers) {
-        this.customers = customers;
-    }
+    private Set<CustomersDTO> users = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -93,6 +80,14 @@ public class ServicesDTO implements Serializable {
         this.group = group;
     }
 
+    public Set<CustomersDTO> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<CustomersDTO> users) {
+        this.users = users;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -115,6 +110,16 @@ public class ServicesDTO implements Serializable {
     }
 
     // prettier-ignore
-
-
+    @Override
+    public String toString() {
+        return "ServicesDTO{" +
+            "id=" + getId() +
+            ", serviceType='" + getServiceType() + "'" +
+            ", price=" + getPrice() +
+            ", periodType='" + getPeriodType() + "'" +
+            ", countPeriod=" + getCountPeriod() +
+            ", group=" + getGroup() +
+            ", users=" + getUsers() +
+            "}";
+    }
 }

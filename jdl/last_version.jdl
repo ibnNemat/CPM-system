@@ -47,8 +47,8 @@ enum ServiceType{
 }
 
 relationship ManyToMany {
-    Customers{groups} to Groups{users}
-    Customers{services} to Services{users}
+    Groups{users} to Customers{groups}
+    Services{users} to Customers{services}
 }
 
 relationship ManyToOne {

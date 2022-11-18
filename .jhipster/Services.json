@@ -26,10 +26,6 @@
       "fieldName": "countPeriod",
       "fieldType": "Integer",
       "fieldValidateRules": ["required"]
-    },
-    {
-      "fieldName": "startedPeriod",
-      "fieldType": "LocalDate"
     }
   ],
   "fluentMethods": true,
@@ -47,7 +43,7 @@
       "otherEntityName": "customers",
       "otherEntityRelationshipName": "services",
       "ownerSide": true,
-      "relationshipName": "customers",
+      "relationshipName": "users",
       "relationshipType": "many-to-many"
     }
   ],

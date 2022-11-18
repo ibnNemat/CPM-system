@@ -12,10 +12,6 @@ import { ICustomers } from '../customers.model';
 
 import { IUser } from 'app/entities/user/user.model';
 import { UserService } from 'app/entities/user/user.service';
-import { IGroups } from 'app/entities/groups/groups.model';
-import { GroupsService } from 'app/entities/groups/service/groups.service';
-import { IServices } from 'app/entities/services/services.model';
-import { ServicesService } from 'app/entities/services/service/services.service';
 
 import { CustomersUpdateComponent } from './customers-update.component';
 
@@ -26,8 +22,6 @@ describe('Customers Management Update Component', () => {
   let customersFormService: CustomersFormService;
   let customersService: CustomersService;
   let userService: UserService;
-  let groupsService: GroupsService;
-  let servicesService: ServicesService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -51,8 +45,6 @@ describe('Customers Management Update Component', () => {
     customersFormService = TestBed.inject(CustomersFormService);
     customersService = TestBed.inject(CustomersService);
     userService = TestBed.inject(UserService);
-    groupsService = TestBed.inject(GroupsService);
-    servicesService = TestBed.inject(ServicesService);
 
     comp = fixture.componentInstance;
   });
@@ -80,65 +72,15 @@ describe('Customers Management Update Component', () => {
       expect(comp.usersSharedCollection).toEqual(expectedCollection);
     });
 
-    it('Should call Groups query and add missing value', () => {
-      const customers: ICustomers = { id: 456 };
-      const groups: IGroups[] = [{ id: 27496 }];
-      customers.groups = groups;
-
-      const groupsCollection: IGroups[] = [{ id: 94353 }];
-      jest.spyOn(groupsService, 'query').mockReturnValue(of(new HttpResponse({ body: groupsCollection })));
-      const additionalGroups = [...groups];
-      const expectedCollection: IGroups[] = [...additionalGroups, ...groupsCollection];
-      jest.spyOn(groupsService, 'addGroupsToCollectionIfMissing').mockReturnValue(expectedCollection);
-
-      activatedRoute.data = of({ customers });
-      comp.ngOnInit();
-
-      expect(groupsService.query).toHaveBeenCalled();
-      expect(groupsService.addGroupsToCollectionIfMissing).toHaveBeenCalledWith(
-        groupsCollection,
-        ...additionalGroups.map(expect.objectContaining)
-      );
-      expect(comp.groupsSharedCollection).toEqual(expectedCollection);
-    });
-
-    it('Should call Services query and add missing value', () => {
-      const customers: ICustomers = { id: 456 };
-      const services: IServices[] = [{ id: 39275 }];
-      customers.services = services;
-
-      const servicesCollection: IServices[] = [{ id: 14973 }];
-      jest.spyOn(servicesService, 'query').mockReturnValue(of(new HttpResponse({ body: servicesCollection })));
-      const additionalServices = [...services];
-      const expectedCollection: IServices[] = [...additionalServices, ...servicesCollection];
-      jest.spyOn(servicesService, 'addServicesToCollectionIfMissing').mockReturnValue(expectedCollection);
-
-      activatedRoute.data = of({ customers });
-      comp.ngOnInit();
-
-      expect(servicesService.query).toHaveBeenCalled();
-      expect(servicesService.addServicesToCollectionIfMissing).toHaveBeenCalledWith(
-        servicesCollection,
-        ...additionalServices.map(expect.objectContaining)
-      );
-      expect(comp.servicesSharedCollection).toEqual(expectedCollection);
-    });
-
     it('Should update editForm', () => {
       const customers: ICustomers = { id: 456 };
       const user: IUser = { id: 64561 };
       customers.user = user;
-      const groups: IGroups = { id: 17548 };
-      customers.groups = [groups];
-      const services: IServices = { id: 65202 };
-      customers.services = [services];
 
       activatedRoute.data = of({ customers });
       comp.ngOnInit();
 
       expect(comp.usersSharedCollection).toContain(user);
-      expect(comp.groupsSharedCollection).toContain(groups);
-      expect(comp.servicesSharedCollection).toContain(services);
       expect(comp.customers).toEqual(customers);
     });
   });
@@ -219,26 +161,6 @@ describe('Customers Management Update Component', () => {
         jest.spyOn(userService, 'compareUser');
         comp.compareUser(entity, entity2);
         expect(userService.compareUser).toHaveBeenCalledWith(entity, entity2);
-      });
-    });
-
-    describe('compareGroups', () => {
-      it('Should forward to groupsService', () => {
-        const entity = { id: 123 };
-        const entity2 = { id: 456 };
-        jest.spyOn(groupsService, 'compareGroups');
-        comp.compareGroups(entity, entity2);
-        expect(groupsService.compareGroups).toHaveBeenCalledWith(entity, entity2);
-      });
-    });
-
-    describe('compareServices', () => {
-      it('Should forward to servicesService', () => {
-        const entity = { id: 123 };
-        const entity2 = { id: 456 };
-        jest.spyOn(servicesService, 'compareServices');
-        comp.compareServices(entity, entity2);
-        expect(servicesService.compareServices).toHaveBeenCalledWith(entity, entity2);
       });
     });
   });

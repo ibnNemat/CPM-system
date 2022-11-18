@@ -1,9 +1,7 @@
 package uz.devops.intern.service.dto;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import javax.validation.constraints.*;
 
 /**
@@ -26,10 +24,6 @@ public class CustomersDTO implements Serializable {
     private Double account;
 
     private UserDTO user;
-
-    private Set<GroupsDTO> groups = new HashSet<>();
-
-    private Set<ServicesDTO> services = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -79,22 +73,6 @@ public class CustomersDTO implements Serializable {
         this.user = user;
     }
 
-    public Set<GroupsDTO> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(Set<GroupsDTO> groups) {
-        this.groups = groups;
-    }
-
-    public Set<ServicesDTO> getServices() {
-        return services;
-    }
-
-    public void setServices(Set<ServicesDTO> services) {
-        this.services = services;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -126,8 +104,6 @@ public class CustomersDTO implements Serializable {
             ", phoneNumber='" + getPhoneNumber() + "'" +
             ", account=" + getAccount() +
             ", user=" + getUser() +
-            ", groups=" + getGroups() +
-            ", services=" + getServices() +
             "}";
     }
 }

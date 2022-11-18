@@ -14,6 +14,7 @@ import javax.validation.constraints.*;
 @Table(name = "customers")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Customers implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -22,26 +23,31 @@ public class Customers implements Serializable {
     @Column(name = "id")
     private Long id;
 
+    @NotNull
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
+    @NotNull
     @Column(name = "password", nullable = false)
     private String password;
 
-
+    @NotNull
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
+
+    @NotNull
     @Column(name = "account", nullable = false)
     private Double account;
+
     @OneToOne
     @JoinColumn(unique = true)
     private User user;
 
-    @ManyToMany(mappedBy = "customers")
-    @JsonIgnoreProperties(value = { "organization", "users" }, allowSetters = true)
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties(value = { "users", "organization" }, allowSetters = true)
     private Set<Groups> groups = new HashSet<>();
 
-    @ManyToMany(mappedBy = "customers")
+    @ManyToMany(mappedBy = "users")
     @JsonIgnoreProperties(value = { "group", "users" }, allowSetters = true)
     private Set<Services> services = new HashSet<>();
 
@@ -130,6 +136,12 @@ public class Customers implements Serializable {
     }
 
     public void setGroups(Set<Groups> groups) {
+        if (this.groups != null) {
+            this.groups.forEach(i -> i.removeUsers(this));
+        }
+        if (groups != null) {
+            groups.forEach(i -> i.addUsers(this));
+        }
         this.groups = groups;
     }
 
@@ -140,13 +152,13 @@ public class Customers implements Serializable {
 
     public Customers addGroups(Groups groups) {
         this.groups.add(groups);
-        groups.getCustomers().add(this);
+        groups.getUsers().add(this);
         return this;
     }
 
     public Customers removeGroups(Groups groups) {
         this.groups.remove(groups);
-        groups.getCustomers().remove(this);
+        groups.getUsers().remove(this);
         return this;
     }
 
@@ -155,6 +167,12 @@ public class Customers implements Serializable {
     }
 
     public void setServices(Set<Services> services) {
+        if (this.services != null) {
+            this.services.forEach(i -> i.removeUsers(this));
+        }
+        if (services != null) {
+            services.forEach(i -> i.addUsers(this));
+        }
         this.services = services;
     }
 
@@ -165,13 +183,13 @@ public class Customers implements Serializable {
 
     public Customers addServices(Services services) {
         this.services.add(services);
-        services.getCustomers().add(this);
+        services.getUsers().add(this);
         return this;
     }
 
     public Customers removeServices(Services services) {
         this.services.remove(services);
-        services.getCustomers().remove(this);
+        services.getUsers().remove(this);
         return this;
     }
 

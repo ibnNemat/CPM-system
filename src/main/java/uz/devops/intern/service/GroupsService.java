@@ -1,6 +1,5 @@
 package uz.devops.intern.service;
 
-import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,10 +9,6 @@ import uz.devops.intern.service.dto.GroupsDTO;
  * Service Interface for managing {@link uz.devops.intern.domain.Groups}.
  */
 public interface GroupsService {
-
-    Page<GroupsDTO> findAllWithEagerRelationships(Pageable pageable);
-    List<GroupsDTO> findOnlyManagerGroups();
-
     /**
      * Save a groups.
      *
@@ -45,6 +40,14 @@ public interface GroupsService {
      * @return the list of entities.
      */
     Page<GroupsDTO> findAll(Pageable pageable);
+
+    /**
+     * Get all the groups with eager load of many-to-many relationships.
+     *
+     * @param pageable the pagination information.
+     * @return the list of entities.
+     */
+    Page<GroupsDTO> findAllWithEagerRelationships(Pageable pageable);
 
     /**
      * Get the "id" groups.

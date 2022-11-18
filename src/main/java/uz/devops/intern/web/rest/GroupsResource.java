@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
@@ -30,7 +30,6 @@ import uz.devops.intern.web.rest.errors.BadRequestAlertException;
  */
 @RestController
 @RequestMapping("/api")
-@PreAuthorize("hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN')")
 public class GroupsResource {
 
     private final Logger log = LoggerFactory.getLogger(GroupsResource.class);
@@ -65,8 +64,7 @@ public class GroupsResource {
         GroupsDTO result = groupsService.save(groupsDTO);
         return ResponseEntity
             .created(new URI("/api/groups/" + result.getId()))
-//            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, ""))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
@@ -144,28 +142,23 @@ public class GroupsResource {
      * {@code GET  /groups} : get all the groups.
      *
      * @param pageable the pagination information.
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of groups in body.
      */
     @GetMapping("/groups")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    public ResponseEntity<List<GroupsDTO>> getAllGroups(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<GroupsDTO>> getAllGroups(
+        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false, defaultValue = "false") boolean eagerload
+    ) {
         log.debug("REST request to get a page of Groups");
-        Page<GroupsDTO> page = groupsService.findAll(pageable);
+        Page<GroupsDTO> page;
+        if (eagerload) {
+            page = groupsService.findAllWithEagerRelationships(pageable);
+        } else {
+            page = groupsService.findAll(pageable);
+        }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
-    }
-
-    @GetMapping("/manager-groups")
-    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
-    public ResponseEntity<List<GroupsDTO>> findAllManagerGroups(){
-        List<GroupsDTO> groupsDTOList = groupsService.findOnlyManagerGroups();
-        return ResponseEntity.ok(groupsDTOList);
-    }
-
-    @GetMapping("/groups-relationship")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Page<GroupsDTO>> findAllWithEagerRelationships(Pageable pageable){
-        return ResponseEntity.ok(groupsService.findAllWithEagerRelationships(pageable));
     }
 
     /**

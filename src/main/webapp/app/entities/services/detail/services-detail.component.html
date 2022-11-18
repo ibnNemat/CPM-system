@@ -36,6 +36,13 @@
             <a [routerLink]="['/groups', services.group.id, 'view']">{{ services.group.id }}</a>
           </div>
         </dd>
+        <dt><span jhiTranslate="cpmSystemApp.services.users">Users</span></dt>
+        <dd>
+          <span *ngFor="let users of services.users; let last = last">
+            <a [routerLink]="['/customers', users.id, 'view']">{{ users.id }}</a
+            >{{ last ? '' : ', ' }}
+          </span>
+        </dd>
       </dl>
 
       <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">

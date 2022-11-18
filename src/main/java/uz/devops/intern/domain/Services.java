@@ -2,7 +2,6 @@ package uz.devops.intern.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
@@ -17,51 +16,47 @@ import uz.devops.intern.domain.enumeration.ServiceType;
 @Table(name = "services")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Services implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
     @Column(name = "id")
     private Long id;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "service_type", nullable = false)
     private ServiceType serviceType;
+
     @NotNull
     @Column(name = "price", nullable = false)
     private Double price;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "period_type", nullable = false)
     private PeriodType periodType;
+
     @NotNull
     @Column(name = "count_period", nullable = false)
     private Integer countPeriod;
+
     @ManyToOne
-    @JsonIgnoreProperties(value = { "organization", "users" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "users", "organization" }, allowSetters = true)
     private Groups group;
 
-    @Column(name = "started_period", nullable = false)
-    private LocalDate startedPeriod;
     @ManyToMany
     @JoinTable(
-        name = "rel_customers__services",
+        name = "rel_services__users",
         joinColumns = @JoinColumn(name = "services_id"),
-        inverseJoinColumns = @JoinColumn(name = "customers_id")
+        inverseJoinColumns = @JoinColumn(name = "users_id")
     )
     @JsonIgnoreProperties(value = { "user", "groups", "services" }, allowSetters = true)
-    private Set<Customers> customers = new HashSet<>();
+    private Set<Customers> users = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
-
-
-    public LocalDate getStartedPeriod() {
-        return startedPeriod;
-    }
-
-    public void setStartedPeriod(LocalDate startedPeriod) {
-        this.startedPeriod = startedPeriod;
-    }
 
     public Long getId() {
         return this.id;
@@ -141,33 +136,27 @@ public class Services implements Serializable {
         return this;
     }
 
-    public Set<Customers> getCustomers() {
-        return this.customers;
+    public Set<Customers> getUsers() {
+        return this.users;
     }
 
-    public void setCustomers(Set<Customers> customers) {
-        if (this.customers != null) {
-            this.customers.forEach(i -> i.removeServices(this));
-        }
-        if (customers != null) {
-            customers.forEach(i -> i.addServices(this));
-        }
-        this.customers = customers;
+    public void setUsers(Set<Customers> customers) {
+        this.users = customers;
     }
 
     public Services users(Set<Customers> customers) {
-        this.setCustomers(customers);
+        this.setUsers(customers);
         return this;
     }
 
     public Services addUsers(Customers customers) {
-        this.customers.add(customers);
+        this.users.add(customers);
         customers.getServices().add(this);
         return this;
     }
 
     public Services removeUsers(Customers customers) {
-        this.customers.remove(customers);
+        this.users.remove(customers);
         customers.getServices().remove(this);
         return this;
     }
@@ -192,19 +181,14 @@ public class Services implements Serializable {
     }
 
     // prettier-ignore
-
-
     @Override
     public String toString() {
         return "Services{" +
-            "id=" + id +
-            ", serviceType=" + serviceType +
-            ", price=" + price +
-            ", periodType=" + periodType +
-            ", countPeriod=" + countPeriod +
-            ", group=" + group +
-            ", startedPeriod=" + startedPeriod +
-            ", users=" + customers +
-            '}';
+            "id=" + getId() +
+            ", serviceType='" + getServiceType() + "'" +
+            ", price=" + getPrice() +
+            ", periodType='" + getPeriodType() + "'" +
+            ", countPeriod=" + getCountPeriod() +
+            "}";
     }
 }
