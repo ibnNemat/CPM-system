@@ -8,6 +8,7 @@ import uz.devops.intern.domain.Services;
 import uz.devops.intern.repository.ServicesRepository;
 import uz.devops.intern.service.ServicesService;
 import uz.devops.intern.service.dto.ServicesDTO;
+import uz.devops.intern.service.mapper.ServiceMapper;
 import uz.devops.intern.service.mapper.ServicesMapper;
 
 import java.util.LinkedList;
@@ -33,15 +34,16 @@ public class ServicesServiceImpl implements ServicesService {
     @Override
     public ServicesDTO save(ServicesDTO servicesDTO) {
         log.debug("Request to save Services : {}", servicesDTO);
-        Services services = servicesMapper.toEntity(servicesDTO);
+        Services services = ServiceMapper.toEntity(servicesDTO);
         services = servicesRepository.save(services);
-        return servicesMapper.toDto(services);
+        return ServiceMapper.toDto(services);
     }
 
     @Override
     public ServicesDTO update(ServicesDTO servicesDTO) {
         log.debug("Request to update Services : {}", servicesDTO);
-        Services services = servicesMapper.toEntity(servicesDTO);
+        Services services = ServiceMapper.toEntity(servicesDTO);
+
         services = servicesRepository.save(services);
         return servicesMapper.toDto(services);
     }

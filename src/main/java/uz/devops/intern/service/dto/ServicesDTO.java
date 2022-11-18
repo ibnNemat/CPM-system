@@ -1,8 +1,12 @@
 package uz.devops.intern.service.dto;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import javax.validation.constraints.*;
+
+import uz.devops.intern.domain.Customers;
 import uz.devops.intern.domain.enumeration.PeriodType;
 import uz.devops.intern.domain.enumeration.ServiceType;
 
@@ -11,22 +15,25 @@ import uz.devops.intern.domain.enumeration.ServiceType;
  */
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ServicesDTO implements Serializable {
-
     private Long id;
-
     @NotNull
     private ServiceType serviceType;
-
     @NotNull
     private Double price;
-
     @NotNull
     private PeriodType periodType;
-
     @NotNull
     private Integer countPeriod;
-
     private GroupsDTO group;
+    private Set<CustomersDTO> users = new HashSet<>();
+
+    public Set<CustomersDTO> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<CustomersDTO> users) {
+        this.users = users;
+    }
 
     public Long getId() {
         return id;

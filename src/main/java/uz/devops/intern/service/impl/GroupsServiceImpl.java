@@ -6,18 +6,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uz.devops.intern.domain.Customers;
 import uz.devops.intern.domain.Groups;
 import uz.devops.intern.repository.GroupsRepository;
 import uz.devops.intern.service.GroupsService;
-import uz.devops.intern.service.dto.CustomersDTO;
 import uz.devops.intern.service.dto.GroupsDTO;
 import uz.devops.intern.service.mapper.GroupMapper;
 import uz.devops.intern.service.mapper.GroupsMapper;
 import uz.devops.intern.service.utils.ContextHolderUtil;
 
 import javax.persistence.EntityManager;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,7 +69,7 @@ public class GroupsServiceImpl implements GroupsService {
 //                    .executeUpdate();
 //            }
 //        }
-        return GroupMapper.toDto(groups);
+        return GroupMapper.ForSavingService(groups);
     }
 
     @Override
