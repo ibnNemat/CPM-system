@@ -1,7 +1,13 @@
 package uz.devops.intern.service.impl;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.devops.intern.domain.Services;
@@ -10,19 +16,17 @@ import uz.devops.intern.service.ServicesService;
 import uz.devops.intern.service.dto.ServicesDTO;
 import uz.devops.intern.service.mapper.ServicesMapper;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 /**
  * Service Implementation for managing {@link Services}.
  */
 @Service
 @Transactional
 public class ServicesServiceImpl implements ServicesService {
+
     private final Logger log = LoggerFactory.getLogger(ServicesServiceImpl.class);
+
     private final ServicesRepository servicesRepository;
+
     private final ServicesMapper servicesMapper;
 
     public ServicesServiceImpl(ServicesRepository servicesRepository, ServicesMapper servicesMapper) {
@@ -68,11 +72,15 @@ public class ServicesServiceImpl implements ServicesService {
         return servicesRepository.findAll().stream().map(servicesMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
     }
 
+    public Page<ServicesDTO> findAllWithEagerRelationships(Pageable pageable) {
+        return servicesRepository.findAllWithEagerRelationships(pageable).map(servicesMapper::toDto);
+    }
+
     @Override
     @Transactional(readOnly = true)
     public Optional<ServicesDTO> findOne(Long id) {
         log.debug("Request to get Services : {}", id);
-        return servicesRepository.findById(id).map(servicesMapper::toDto);
+        return servicesRepository.findOneWithEagerRelationships(id).map(servicesMapper::toDto);
     }
 
     @Override

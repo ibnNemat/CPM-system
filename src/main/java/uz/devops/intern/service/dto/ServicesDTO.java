@@ -1,7 +1,9 @@
 package uz.devops.intern.service.dto;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import javax.validation.constraints.*;
 import uz.devops.intern.domain.enumeration.PeriodType;
 import uz.devops.intern.domain.enumeration.ServiceType;
@@ -27,6 +29,8 @@ public class ServicesDTO implements Serializable {
     private Integer countPeriod;
 
     private GroupsDTO group;
+
+    private Set<CustomersDTO> users = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -76,6 +80,14 @@ public class ServicesDTO implements Serializable {
         this.group = group;
     }
 
+    public Set<CustomersDTO> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<CustomersDTO> users) {
+        this.users = users;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -107,6 +119,7 @@ public class ServicesDTO implements Serializable {
             ", periodType='" + getPeriodType() + "'" +
             ", countPeriod=" + getCountPeriod() +
             ", group=" + getGroup() +
+            ", users=" + getUsers() +
             "}";
     }
 }

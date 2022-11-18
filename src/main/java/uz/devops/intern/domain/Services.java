@@ -44,10 +44,15 @@ public class Services implements Serializable {
     private Integer countPeriod;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = { "organization", "users" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "users", "organization" }, allowSetters = true)
     private Groups group;
 
-    @ManyToMany(mappedBy = "services")
+    @ManyToMany
+    @JoinTable(
+        name = "rel_services__users",
+        joinColumns = @JoinColumn(name = "services_id"),
+        inverseJoinColumns = @JoinColumn(name = "users_id")
+    )
     @JsonIgnoreProperties(value = { "user", "groups", "services" }, allowSetters = true)
     private Set<Customers> users = new HashSet<>();
 
@@ -136,12 +141,6 @@ public class Services implements Serializable {
     }
 
     public void setUsers(Set<Customers> customers) {
-        if (this.users != null) {
-            this.users.forEach(i -> i.removeServices(this));
-        }
-        if (customers != null) {
-            customers.forEach(i -> i.addServices(this));
-        }
         this.users = customers;
     }
 

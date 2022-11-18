@@ -31,13 +31,18 @@ public class Groups implements Serializable {
     @Column(name = "group_owner_name", nullable = false)
     private String groupOwnerName;
 
+    @ManyToMany
+    @JoinTable(
+        name = "rel_groups__users",
+        joinColumns = @JoinColumn(name = "groups_id"),
+        inverseJoinColumns = @JoinColumn(name = "users_id")
+    )
+    @JsonIgnoreProperties(value = { "user", "groups", "services" }, allowSetters = true)
+    private Set<Customers> users = new HashSet<>();
+
     @ManyToOne
     @JsonIgnoreProperties(value = { "groups" }, allowSetters = true)
     private Organization organization;
-
-    @ManyToMany(mappedBy = "groups")
-    @JsonIgnoreProperties(value = { "user", "groups", "services" }, allowSetters = true)
-    private Set<Customers> users = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -80,30 +85,11 @@ public class Groups implements Serializable {
         this.groupOwnerName = groupOwnerName;
     }
 
-    public Organization getOrganization() {
-        return this.organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
-    }
-
-    public Groups organization(Organization organization) {
-        this.setOrganization(organization);
-        return this;
-    }
-
     public Set<Customers> getUsers() {
         return this.users;
     }
 
     public void setUsers(Set<Customers> customers) {
-        if (this.users != null) {
-            this.users.forEach(i -> i.removeGroups(this));
-        }
-        if (customers != null) {
-            customers.forEach(i -> i.addGroups(this));
-        }
         this.users = customers;
     }
 
@@ -121,6 +107,19 @@ public class Groups implements Serializable {
     public Groups removeUsers(Customers customers) {
         this.users.remove(customers);
         customers.getGroups().remove(this);
+        return this;
+    }
+
+    public Organization getOrganization() {
+        return this.organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
+    public Groups organization(Organization organization) {
+        this.setOrganization(organization);
         return this;
     }
 

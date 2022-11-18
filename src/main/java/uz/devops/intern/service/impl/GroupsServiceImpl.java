@@ -1,9 +1,9 @@
 package uz.devops.intern.service.impl;
 
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,10 +12,6 @@ import uz.devops.intern.repository.GroupsRepository;
 import uz.devops.intern.service.GroupsService;
 import uz.devops.intern.service.dto.GroupsDTO;
 import uz.devops.intern.service.mapper.GroupsMapper;
-import uz.devops.intern.service.utils.ContextHolderUtil;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link Groups}.
@@ -36,27 +32,8 @@ public class GroupsServiceImpl implements GroupsService {
     }
 
     @Override
-    public List<GroupsDTO> findOnlyManagerGroups() {
-        String ownerName = ContextHolderUtil.getUsernameFromContextHolder();
-        if (ownerName == null){
-            log.error("Error while getting groupManagerList: user principal not found!");
-            return null;
-        }
-        List<Groups> groupsList = groupsRepository.findAllByGroupOwnerName(ownerName);
-        return groupsList.stream()
-            .map(groupsMapper::toDto)
-            .toList();
-    }
-
-    @Override
     public GroupsDTO save(GroupsDTO groupsDTO) {
         log.debug("Request to save Groups : {}", groupsDTO);
-        String groupOwner = ContextHolderUtil.getUsernameFromContextHolder();
-        if (groupOwner == null){
-            log.error("Error while saving new group: user principal not found!");
-            return null;
-        }
-        groupsDTO.setGroupOwnerName(groupOwner);
         Groups groups = groupsMapper.toEntity(groupsDTO);
         groups = groupsRepository.save(groups);
         return groupsMapper.toDto(groups);
@@ -92,7 +69,6 @@ public class GroupsServiceImpl implements GroupsService {
         return groupsRepository.findAll(pageable).map(groupsMapper::toDto);
     }
 
-    @Override
     public Page<GroupsDTO> findAllWithEagerRelationships(Pageable pageable) {
         return groupsRepository.findAllWithEagerRelationships(pageable).map(groupsMapper::toDto);
     }

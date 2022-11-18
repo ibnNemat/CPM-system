@@ -23,17 +23,17 @@
   "readOnly": false,
   "relationships": [
     {
+      "otherEntityName": "customers",
+      "otherEntityRelationshipName": "groups",
+      "ownerSide": true,
+      "relationshipName": "users",
+      "relationshipType": "many-to-many"
+    },
+    {
       "otherEntityName": "organization",
       "otherEntityRelationshipName": "groups",
       "relationshipName": "organization",
       "relationshipType": "many-to-one"
-    },
-    {
-      "otherEntityName": "customers",
-      "otherEntityRelationshipName": "groups",
-      "ownerSide": false,
-      "relationshipName": "users",
-      "relationshipType": "many-to-many"
     }
   ],
   "service": "serviceImpl"

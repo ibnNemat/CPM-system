@@ -43,21 +43,11 @@ public class Customers implements Serializable {
     @JoinColumn(unique = true)
     private User user;
 
-    @ManyToMany
-    @JoinTable(
-        name = "rel_customers__groups",
-        joinColumns = @JoinColumn(name = "customers_id"),
-        inverseJoinColumns = @JoinColumn(name = "groups_id")
-    )
-    @JsonIgnoreProperties(value = { "organization", "users" }, allowSetters = true)
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties(value = { "users", "organization" }, allowSetters = true)
     private Set<Groups> groups = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-        name = "rel_customers__services",
-        joinColumns = @JoinColumn(name = "customers_id"),
-        inverseJoinColumns = @JoinColumn(name = "services_id")
-    )
+    @ManyToMany(mappedBy = "users")
     @JsonIgnoreProperties(value = { "group", "users" }, allowSetters = true)
     private Set<Services> services = new HashSet<>();
 
@@ -146,6 +136,12 @@ public class Customers implements Serializable {
     }
 
     public void setGroups(Set<Groups> groups) {
+        if (this.groups != null) {
+            this.groups.forEach(i -> i.removeUsers(this));
+        }
+        if (groups != null) {
+            groups.forEach(i -> i.addUsers(this));
+        }
         this.groups = groups;
     }
 
@@ -171,6 +167,12 @@ public class Customers implements Serializable {
     }
 
     public void setServices(Set<Services> services) {
+        if (this.services != null) {
+            this.services.forEach(i -> i.removeUsers(this));
+        }
+        if (services != null) {
+            services.forEach(i -> i.addUsers(this));
+        }
         this.services = services;
     }
 

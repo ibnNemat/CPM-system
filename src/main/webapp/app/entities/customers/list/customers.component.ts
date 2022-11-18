@@ -106,7 +106,6 @@ export class CustomersComponent implements OnInit {
     const queryObject = {
       page: pageToLoad - 1,
       size: this.itemsPerPage,
-      eagerload: true,
       sort: this.getSortQueryParam(predicate, ascending),
     };
     return this.customersService.query(queryObject).pipe(tap(() => (this.isLoading = false)));

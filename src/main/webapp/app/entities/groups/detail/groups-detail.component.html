@@ -22,6 +22,13 @@
         <dd>
           <span>{{ groups.groupOwnerName }}</span>
         </dd>
+        <dt><span jhiTranslate="cpmSystemApp.groups.users">Users</span></dt>
+        <dd>
+          <span *ngFor="let users of groups.users; let last = last">
+            <a [routerLink]="['/customers', users.id, 'view']">{{ users.id }}</a
+            >{{ last ? '' : ', ' }}
+          </span>
+        </dd>
         <dt><span jhiTranslate="cpmSystemApp.groups.organization">Organization</span></dt>
         <dd>
           <div *ngIf="groups.organization">

@@ -135,10 +135,11 @@ public class ServicesResource {
     /**
      * {@code GET  /services} : get all the services.
      *
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of services in body.
      */
     @GetMapping("/services")
-    public List<ServicesDTO> getAllServices() {
+    public List<ServicesDTO> getAllServices(@RequestParam(required = false, defaultValue = "false") boolean eagerload) {
         log.debug("REST request to get all Services");
         return servicesService.findAll();
     }

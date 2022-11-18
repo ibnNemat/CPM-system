@@ -49,6 +49,21 @@
         </div>
 
         <div class="row mb-3">
+          <label jhiTranslate="cpmSystemApp.groups.users" for="field_users">Users</label>
+          <select
+            class="form-control"
+            id="field_users"
+            data-cy="users"
+            multiple
+            name="users"
+            formControlName="users"
+            [compareWith]="compareCustomers"
+          >
+            <option [ngValue]="customersOption" *ngFor="let customersOption of customersSharedCollection">{{ customersOption.id }}</option>
+          </select>
+        </div>
+
+        <div class="row mb-3">
           <label class="form-label" jhiTranslate="cpmSystemApp.groups.organization" for="field_organization">Organization</label>
           <select
             class="form-control"

@@ -42,14 +42,6 @@ public interface CustomersService {
     Page<CustomersDTO> findAll(Pageable pageable);
 
     /**
-     * Get all the customers with eager load of many-to-many relationships.
-     *
-     * @param pageable the pagination information.
-     * @return the list of entities.
-     */
-    Page<CustomersDTO> findAllWithEagerRelationships(Pageable pageable);
-
-    /**
      * Get the "id" customers.
      *
      * @param id the id of the entity.

@@ -2,25 +2,17 @@ package uz.devops.intern.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import uz.devops.intern.IntegrationTest;
 import uz.devops.intern.domain.Customers;
 import uz.devops.intern.repository.CustomersRepository;
-import uz.devops.intern.service.CustomersService;
 import uz.devops.intern.service.dto.CustomersDTO;
 import uz.devops.intern.service.mapper.CustomersMapper;
 
@@ -36,7 +27,6 @@ import uz.devops.intern.service.mapper.CustomersMapper;
  * Integration tests for the {@link CustomersResource} REST controller.
  */
 @IntegrationTest
-@ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
 class CustomersResourceIT {
@@ -62,14 +52,8 @@ class CustomersResourceIT {
     @Autowired
     private CustomersRepository customersRepository;
 
-    @Mock
-    private CustomersRepository customersRepositoryMock;
-
     @Autowired
     private CustomersMapper customersMapper;
-
-    @Mock
-    private CustomersService customersServiceMock;
 
     @Autowired
     private EntityManager em;
@@ -241,23 +225,6 @@ class CustomersResourceIT {
             .andExpect(jsonPath("$.[*].password").value(hasItem(DEFAULT_PASSWORD)))
             .andExpect(jsonPath("$.[*].phoneNumber").value(hasItem(DEFAULT_PHONE_NUMBER)))
             .andExpect(jsonPath("$.[*].account").value(hasItem(DEFAULT_ACCOUNT.doubleValue())));
-    }
-
-    @SuppressWarnings({ "unchecked" })
-    void getAllCustomersWithEagerRelationshipsIsEnabled() throws Exception {
-        when(customersServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
-
-        restCustomersMockMvc.perform(get(ENTITY_API_URL + "?eagerload=true")).andExpect(status().isOk());
-
-        verify(customersServiceMock, times(1)).findAllWithEagerRelationships(any());
-    }
-
-    @SuppressWarnings({ "unchecked" })
-    void getAllCustomersWithEagerRelationshipsIsNotEnabled() throws Exception {
-        when(customersServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
-
-        restCustomersMockMvc.perform(get(ENTITY_API_URL + "?eagerload=false")).andExpect(status().isOk());
-        verify(customersRepositoryMock, times(1)).findAll(any(Pageable.class));
     }
 
     @Test

@@ -42,7 +42,7 @@
     {
       "otherEntityName": "customers",
       "otherEntityRelationshipName": "services",
-      "ownerSide": false,
+      "ownerSide": true,
       "relationshipName": "users",
       "relationshipType": "many-to-many"
     }

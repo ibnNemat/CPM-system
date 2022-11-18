@@ -20,8 +20,8 @@
       "id": "ID",
       "name": "Name",
       "groupOwnerName": "Group Owner Name",
-      "organization": "Organization",
-      "users": "Users"
+      "users": "Users",
+      "organization": "Organization"
     }
   }
 }

@@ -68,6 +68,12 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
+          <th scope="col" jhiSortBy="users.id">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.services.users">Users</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
           <th scope="col"></th>
         </tr>
       </thead>
@@ -84,6 +90,12 @@
             <div *ngIf="services.group">
               <a [routerLink]="['/groups', services.group.id, 'view']">{{ services.group.id }}</a>
             </div>
+          </td>
+          <td>
+            <span *ngFor="let users of services.users; let last = last">
+              <a class="form-control-static" [routerLink]="['/customers', users.id, 'view']">{{ users.id }}</a
+              >{{ last ? '' : ', ' }}
+            </span>
           </td>
           <td class="text-end">
             <div class="btn-group">
