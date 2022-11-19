@@ -4,39 +4,70 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uz.devops.intern.domain.Customers;
+import uz.devops.intern.domain.Payment;
 import uz.devops.intern.domain.Services;
 import uz.devops.intern.repository.ServicesRepository;
+import uz.devops.intern.service.PaymentService;
 import uz.devops.intern.service.ServicesService;
 import uz.devops.intern.service.dto.ServicesDTO;
 import uz.devops.intern.service.mapper.ServiceMapper;
 import uz.devops.intern.service.mapper.ServicesMapper;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing {@link Services}.
  */
 @Service
-@Transactional
 public class ServicesServiceImpl implements ServicesService {
     private final Logger log = LoggerFactory.getLogger(ServicesServiceImpl.class);
     private final ServicesRepository servicesRepository;
     private final ServicesMapper servicesMapper;
+    private final PaymentService paymentService;
 
-    public ServicesServiceImpl(ServicesRepository servicesRepository, ServicesMapper servicesMapper) {
+    public ServicesServiceImpl(ServicesRepository servicesRepository, ServicesMapper servicesMapper, PaymentService paymentService) {
         this.servicesRepository = servicesRepository;
         this.servicesMapper = servicesMapper;
+        this.paymentService = paymentService;
     }
 
     @Override
     public ServicesDTO save(ServicesDTO servicesDTO) {
-        log.debug("Request to save Services : {}", servicesDTO);
-        Services services = ServiceMapper.toEntity(servicesDTO);
-        services = servicesRepository.save(services);
-        return ServiceMapper.toDto(services);
+        try {
+            log.debug("Request to save Services : {}", servicesDTO);
+            Services services = ServiceMapper.toEntity(servicesDTO);
+            services = servicesRepository.save(services);
+
+            createPaymentEachCustomers(services);
+            return ServiceMapper.toDto(services);
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void createPaymentEachCustomers(Services service) {
+        LocalDate startedPeriod = service.getStartedPeriod();
+        LocalDate endPeriod = startedPeriod.plusMonths(service.getCountPeriod());
+
+        Set<Customers> customersSet = service.getUsers();
+        List<Payment> paymentList = new ArrayList<>();
+        for(Customers c: customersSet){
+            Payment payment = new Payment();
+            payment.setService(service);
+            payment.setCustomer(c);
+            payment.setGroup(service.getGroup());
+            payment.setStartedPeriod(startedPeriod);
+            payment.setFinishedPeriod(endPeriod);
+            payment.setIsPayed(false);
+            payment.setPayedMoney(0D);
+            payment.setPaymentForPeriod(service.getPrice());
+            paymentList.add(payment);
+        }
+        paymentService.saveAll(paymentList);
     }
 
     @Override

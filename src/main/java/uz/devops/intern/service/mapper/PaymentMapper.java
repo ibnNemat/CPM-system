@@ -20,18 +20,18 @@ public interface PaymentMapper extends EntityMapper<PaymentDTO, Payment> {
     @Mapping(target = "group", source = "group", qualifiedByName = "groupsId")
     PaymentDTO toDto(Payment s);
 
-    @Named("customersId")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    CustomersDTO toDtoCustomersId(Customers customers);
 
-    @Named("servicesId")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    ServicesDTO toDtoServicesId(Services services);
 
-    @Named("groupsId")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    GroupsDTO toDtoGroupsId(Groups groups);
+
+
+
+
+
+
+
+
+
+
+
+
 }

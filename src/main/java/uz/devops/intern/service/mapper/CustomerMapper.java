@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 public class CustomerMapper {
     public static CustomersDTO toDtoWithNoUser(Customers customers){
         CustomersDTO customersDTO = new CustomersDTO();
+        customersDTO.setId(customersDTO.getId());
         customersDTO.setUsername(customers.getUsername());
         customersDTO.setPassword(customers.getPassword());
         customersDTO.setId(customers.getId());

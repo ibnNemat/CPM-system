@@ -59,17 +59,8 @@ public class GroupsServiceImpl implements GroupsService {
         groupsDTO.setGroupOwnerName(groupOwner);
         Groups groups = groupsMapper.toEntity(groupsDTO);
         groups = groupsRepository.save(groups);
-
-//        if (groupsDTO.getUsers() != null) {
-//            for (CustomersDTO customers: groupsDTO.getUsers()) {
-//                entityManager.createNativeQuery("INSERT INTO rel_customers__groups (groups_id, customers_id) " +
-//                        "VALUES (?,?)")
-//                    .setParameter(1, new BigInteger(String.valueOf(groups.getId())))
-//                    .setParameter(2, new BigInteger(String.valueOf(customers.getId())))
-//                    .executeUpdate();
-//            }
-//        }
-        return GroupMapper.ForSavingService(groups);
+        System.out.println(groups);
+        return GroupMapper.ForSavingGroup(groups);
     }
 
     @Override

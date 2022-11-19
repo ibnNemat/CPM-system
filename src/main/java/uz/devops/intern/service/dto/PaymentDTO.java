@@ -1,5 +1,7 @@
 package uz.devops.intern.service.dto;
 
+import uz.devops.intern.domain.Services;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -94,7 +96,7 @@ public class PaymentDTO implements Serializable {
         return service;
     }
 
-    public void setService(ServicesDTO service) {
+    public void setService(Services service) {
         this.service = service;
     }
 

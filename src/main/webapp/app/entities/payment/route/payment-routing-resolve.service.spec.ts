@@ -10,7 +10,7 @@ import { PaymentService } from '../service/payment.service';
 
 import { PaymentRoutingResolveService } from './payment-routing-resolve.service';
 
-describe('Payment routing resolve service', () => {
+describe('PaymentDTO routing resolve service', () => {
   let mockRouter: Router;
   let mockActivatedRouteSnapshot: ActivatedRouteSnapshot;
   let routingResolveService: PaymentRoutingResolveService;

@@ -12,10 +12,12 @@ import uz.devops.intern.service.PaymentService;
 import uz.devops.intern.service.dto.PaymentDTO;
 import uz.devops.intern.service.mapper.PaymentMapper;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
- * Service Implementation for managing {@link Payment}.
+ * Service Implementation for managing {@link uz.devops.intern.domain.Payment}.
  */
 @Service
 @Transactional
@@ -24,7 +26,6 @@ public class PaymentServiceImpl implements PaymentService {
     private final Logger log = LoggerFactory.getLogger(PaymentServiceImpl.class);
 
     private final PaymentRepository paymentRepository;
-
     private final PaymentMapper paymentMapper;
 
     public PaymentServiceImpl(PaymentRepository paymentRepository, PaymentMapper paymentMapper) {
@@ -34,23 +35,31 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentDTO save(PaymentDTO paymentDTO) {
-        log.debug("Request to save Payment : {}", paymentDTO);
-        Payment payment = paymentMapper.toEntity(paymentDTO);
+        log.debug("Request to save PaymentDTO : {}", paymentDTO);
+        uz.devops.intern.domain.Payment payment = paymentMapper.toEntity(paymentDTO);
         payment = paymentRepository.save(payment);
         return paymentMapper.toDto(payment);
     }
 
     @Override
+    public List<Payment> saveAll(List<Payment> paymentList){
+        log.debug("Request to save List<Payment> : {}", paymentList);
+        paymentRepository.saveAll(paymentList);
+        return paymentList;
+    }
+
+
+    @Override
     public PaymentDTO update(PaymentDTO paymentDTO) {
-        log.debug("Request to update Payment : {}", paymentDTO);
-        Payment payment = paymentMapper.toEntity(paymentDTO);
+        log.debug("Request to update PaymentDTO : {}", paymentDTO);
+        uz.devops.intern.domain.Payment payment = paymentMapper.toEntity(paymentDTO);
         payment = paymentRepository.save(payment);
         return paymentMapper.toDto(payment);
     }
 
     @Override
     public Optional<PaymentDTO> partialUpdate(PaymentDTO paymentDTO) {
-        log.debug("Request to partially update Payment : {}", paymentDTO);
+        log.debug("Request to partially update PaymentDTO : {}", paymentDTO);
 
         return paymentRepository
             .findById(paymentDTO.getId())
@@ -73,13 +82,13 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional(readOnly = true)
     public Optional<PaymentDTO> findOne(Long id) {
-        log.debug("Request to get Payment : {}", id);
+        log.debug("Request to get PaymentDTO : {}", id);
         return paymentRepository.findById(id).map(paymentMapper::toDto);
     }
 
     @Override
     public void delete(Long id) {
-        log.debug("Request to delete Payment : {}", id);
+        log.debug("Request to delete PaymentDTO : {}", id);
         paymentRepository.deleteById(id);
     }
 }

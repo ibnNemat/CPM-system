@@ -20,7 +20,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import uz.devops.intern.IntegrationTest;
-import uz.devops.intern.domain.Payment;
 import uz.devops.intern.repository.PaymentRepository;
 import uz.devops.intern.service.dto.PaymentDTO;
 import uz.devops.intern.service.mapper.PaymentMapper;
@@ -66,7 +65,7 @@ class PaymentResourceIT {
     @Autowired
     private MockMvc restPaymentMockMvc;
 
-    private Payment payment;
+    private uz.devops.intern.domain.Payment payment;
 
     /**
      * Create an entity for this test.
@@ -74,8 +73,8 @@ class PaymentResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static Payment createEntity(EntityManager em) {
-        Payment payment = new Payment()
+    public static uz.devops.intern.domain.Payment createEntity(EntityManager em) {
+        uz.devops.intern.domain.Payment payment = new uz.devops.intern.domain.Payment()
             .payedMoney(DEFAULT_PAYED_MONEY)
             .paymentForPeriod(DEFAULT_PAYMENT_FOR_PERIOD)
             .isPayed(DEFAULT_IS_PAYED)
@@ -90,8 +89,8 @@ class PaymentResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static Payment createUpdatedEntity(EntityManager em) {
-        Payment payment = new Payment()
+    public static uz.devops.intern.domain.Payment createUpdatedEntity(EntityManager em) {
+        uz.devops.intern.domain.Payment payment = new uz.devops.intern.domain.Payment()
             .payedMoney(UPDATED_PAYED_MONEY)
             .paymentForPeriod(UPDATED_PAYMENT_FOR_PERIOD)
             .isPayed(UPDATED_IS_PAYED)
@@ -109,16 +108,16 @@ class PaymentResourceIT {
     @Transactional
     void createPayment() throws Exception {
         int databaseSizeBeforeCreate = paymentRepository.findAll().size();
-        // Create the Payment
+        // Create the PaymentDTO
         PaymentDTO paymentDTO = paymentMapper.toDto(payment);
         restPaymentMockMvc
             .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(paymentDTO)))
             .andExpect(status().isCreated());
 
-        // Validate the Payment in the database
-        List<Payment> paymentList = paymentRepository.findAll();
+        // Validate the PaymentDTO in the database
+        List<uz.devops.intern.domain.Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeCreate + 1);
-        Payment testPayment = paymentList.get(paymentList.size() - 1);
+        uz.devops.intern.domain.Payment testPayment = paymentList.get(paymentList.size() - 1);
         assertThat(testPayment.getPayedMoney()).isEqualTo(DEFAULT_PAYED_MONEY);
         assertThat(testPayment.getPaymentForPeriod()).isEqualTo(DEFAULT_PAYMENT_FOR_PERIOD);
         assertThat(testPayment.getIsPayed()).isEqualTo(DEFAULT_IS_PAYED);
@@ -129,7 +128,7 @@ class PaymentResourceIT {
     @Test
     @Transactional
     void createPaymentWithExistingId() throws Exception {
-        // Create the Payment with an existing ID
+        // Create the PaymentDTO with an existing ID
         payment.setId(1L);
         PaymentDTO paymentDTO = paymentMapper.toDto(payment);
 
@@ -140,8 +139,8 @@ class PaymentResourceIT {
             .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(paymentDTO)))
             .andExpect(status().isBadRequest());
 
-        // Validate the Payment in the database
-        List<Payment> paymentList = paymentRepository.findAll();
+        // Validate the PaymentDTO in the database
+        List<uz.devops.intern.domain.Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeCreate);
     }
 
@@ -152,14 +151,14 @@ class PaymentResourceIT {
         // set the field null
         payment.setPayedMoney(null);
 
-        // Create the Payment, which fails.
+        // Create the PaymentDTO, which fails.
         PaymentDTO paymentDTO = paymentMapper.toDto(payment);
 
         restPaymentMockMvc
             .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(paymentDTO)))
             .andExpect(status().isBadRequest());
 
-        List<Payment> paymentList = paymentRepository.findAll();
+        List<uz.devops.intern.domain.Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeTest);
     }
 
@@ -170,14 +169,14 @@ class PaymentResourceIT {
         // set the field null
         payment.setPaymentForPeriod(null);
 
-        // Create the Payment, which fails.
+        // Create the PaymentDTO, which fails.
         PaymentDTO paymentDTO = paymentMapper.toDto(payment);
 
         restPaymentMockMvc
             .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(paymentDTO)))
             .andExpect(status().isBadRequest());
 
-        List<Payment> paymentList = paymentRepository.findAll();
+        List<uz.devops.intern.domain.Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeTest);
     }
 
@@ -188,14 +187,14 @@ class PaymentResourceIT {
         // set the field null
         payment.setIsPayed(null);
 
-        // Create the Payment, which fails.
+        // Create the PaymentDTO, which fails.
         PaymentDTO paymentDTO = paymentMapper.toDto(payment);
 
         restPaymentMockMvc
             .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(paymentDTO)))
             .andExpect(status().isBadRequest());
 
-        List<Payment> paymentList = paymentRepository.findAll();
+        List<uz.devops.intern.domain.Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeTest);
     }
 
@@ -206,14 +205,14 @@ class PaymentResourceIT {
         // set the field null
         payment.setStartedPeriod(null);
 
-        // Create the Payment, which fails.
+        // Create the PaymentDTO, which fails.
         PaymentDTO paymentDTO = paymentMapper.toDto(payment);
 
         restPaymentMockMvc
             .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(paymentDTO)))
             .andExpect(status().isBadRequest());
 
-        List<Payment> paymentList = paymentRepository.findAll();
+        List<uz.devops.intern.domain.Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeTest);
     }
 
@@ -224,14 +223,14 @@ class PaymentResourceIT {
         // set the field null
         payment.setFinishedPeriod(null);
 
-        // Create the Payment, which fails.
+        // Create the PaymentDTO, which fails.
         PaymentDTO paymentDTO = paymentMapper.toDto(payment);
 
         restPaymentMockMvc
             .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(paymentDTO)))
             .andExpect(status().isBadRequest());
 
-        List<Payment> paymentList = paymentRepository.findAll();
+        List<uz.devops.intern.domain.Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeTest);
     }
 
@@ -289,7 +288,7 @@ class PaymentResourceIT {
         int databaseSizeBeforeUpdate = paymentRepository.findAll().size();
 
         // Update the payment
-        Payment updatedPayment = paymentRepository.findById(payment.getId()).get();
+        uz.devops.intern.domain.Payment updatedPayment = paymentRepository.findById(payment.getId()).get();
         // Disconnect from session so that the updates on updatedPayment are not directly saved in db
         em.detach(updatedPayment);
         updatedPayment
@@ -308,10 +307,10 @@ class PaymentResourceIT {
             )
             .andExpect(status().isOk());
 
-        // Validate the Payment in the database
-        List<Payment> paymentList = paymentRepository.findAll();
+        // Validate the PaymentDTO in the database
+        List<uz.devops.intern.domain.Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeUpdate);
-        Payment testPayment = paymentList.get(paymentList.size() - 1);
+        uz.devops.intern.domain.Payment testPayment = paymentList.get(paymentList.size() - 1);
         assertThat(testPayment.getPayedMoney()).isEqualTo(UPDATED_PAYED_MONEY);
         assertThat(testPayment.getPaymentForPeriod()).isEqualTo(UPDATED_PAYMENT_FOR_PERIOD);
         assertThat(testPayment.getIsPayed()).isEqualTo(UPDATED_IS_PAYED);
@@ -325,7 +324,7 @@ class PaymentResourceIT {
         int databaseSizeBeforeUpdate = paymentRepository.findAll().size();
         payment.setId(count.incrementAndGet());
 
-        // Create the Payment
+        // Create the PaymentDTO
         PaymentDTO paymentDTO = paymentMapper.toDto(payment);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
@@ -337,8 +336,8 @@ class PaymentResourceIT {
             )
             .andExpect(status().isBadRequest());
 
-        // Validate the Payment in the database
-        List<Payment> paymentList = paymentRepository.findAll();
+        // Validate the PaymentDTO in the database
+        List<uz.devops.intern.domain.Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeUpdate);
     }
 
@@ -348,7 +347,7 @@ class PaymentResourceIT {
         int databaseSizeBeforeUpdate = paymentRepository.findAll().size();
         payment.setId(count.incrementAndGet());
 
-        // Create the Payment
+        // Create the PaymentDTO
         PaymentDTO paymentDTO = paymentMapper.toDto(payment);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -360,8 +359,8 @@ class PaymentResourceIT {
             )
             .andExpect(status().isBadRequest());
 
-        // Validate the Payment in the database
-        List<Payment> paymentList = paymentRepository.findAll();
+        // Validate the PaymentDTO in the database
+        List<uz.devops.intern.domain.Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeUpdate);
     }
 
@@ -371,7 +370,7 @@ class PaymentResourceIT {
         int databaseSizeBeforeUpdate = paymentRepository.findAll().size();
         payment.setId(count.incrementAndGet());
 
-        // Create the Payment
+        // Create the PaymentDTO
         PaymentDTO paymentDTO = paymentMapper.toDto(payment);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -379,8 +378,8 @@ class PaymentResourceIT {
             .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(paymentDTO)))
             .andExpect(status().isMethodNotAllowed());
 
-        // Validate the Payment in the database
-        List<Payment> paymentList = paymentRepository.findAll();
+        // Validate the PaymentDTO in the database
+        List<uz.devops.intern.domain.Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeUpdate);
     }
 
@@ -393,7 +392,7 @@ class PaymentResourceIT {
         int databaseSizeBeforeUpdate = paymentRepository.findAll().size();
 
         // Update the payment using partial update
-        Payment partialUpdatedPayment = new Payment();
+        uz.devops.intern.domain.Payment partialUpdatedPayment = new uz.devops.intern.domain.Payment();
         partialUpdatedPayment.setId(payment.getId());
 
         partialUpdatedPayment.paymentForPeriod(UPDATED_PAYMENT_FOR_PERIOD).finishedPeriod(UPDATED_FINISHED_PERIOD);
@@ -406,10 +405,10 @@ class PaymentResourceIT {
             )
             .andExpect(status().isOk());
 
-        // Validate the Payment in the database
-        List<Payment> paymentList = paymentRepository.findAll();
+        // Validate the PaymentDTO in the database
+        List<uz.devops.intern.domain.Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeUpdate);
-        Payment testPayment = paymentList.get(paymentList.size() - 1);
+        uz.devops.intern.domain.Payment testPayment = paymentList.get(paymentList.size() - 1);
         assertThat(testPayment.getPayedMoney()).isEqualTo(DEFAULT_PAYED_MONEY);
         assertThat(testPayment.getPaymentForPeriod()).isEqualTo(UPDATED_PAYMENT_FOR_PERIOD);
         assertThat(testPayment.getIsPayed()).isEqualTo(DEFAULT_IS_PAYED);
@@ -426,7 +425,7 @@ class PaymentResourceIT {
         int databaseSizeBeforeUpdate = paymentRepository.findAll().size();
 
         // Update the payment using partial update
-        Payment partialUpdatedPayment = new Payment();
+        uz.devops.intern.domain.Payment partialUpdatedPayment = new uz.devops.intern.domain.Payment();
         partialUpdatedPayment.setId(payment.getId());
 
         partialUpdatedPayment
@@ -444,10 +443,10 @@ class PaymentResourceIT {
             )
             .andExpect(status().isOk());
 
-        // Validate the Payment in the database
-        List<Payment> paymentList = paymentRepository.findAll();
+        // Validate the PaymentDTO in the database
+        List<uz.devops.intern.domain.Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeUpdate);
-        Payment testPayment = paymentList.get(paymentList.size() - 1);
+        uz.devops.intern.domain.Payment testPayment = paymentList.get(paymentList.size() - 1);
         assertThat(testPayment.getPayedMoney()).isEqualTo(UPDATED_PAYED_MONEY);
         assertThat(testPayment.getPaymentForPeriod()).isEqualTo(UPDATED_PAYMENT_FOR_PERIOD);
         assertThat(testPayment.getIsPayed()).isEqualTo(UPDATED_IS_PAYED);
@@ -461,7 +460,7 @@ class PaymentResourceIT {
         int databaseSizeBeforeUpdate = paymentRepository.findAll().size();
         payment.setId(count.incrementAndGet());
 
-        // Create the Payment
+        // Create the PaymentDTO
         PaymentDTO paymentDTO = paymentMapper.toDto(payment);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
@@ -473,8 +472,8 @@ class PaymentResourceIT {
             )
             .andExpect(status().isBadRequest());
 
-        // Validate the Payment in the database
-        List<Payment> paymentList = paymentRepository.findAll();
+        // Validate the PaymentDTO in the database
+        List<uz.devops.intern.domain.Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeUpdate);
     }
 
@@ -484,7 +483,7 @@ class PaymentResourceIT {
         int databaseSizeBeforeUpdate = paymentRepository.findAll().size();
         payment.setId(count.incrementAndGet());
 
-        // Create the Payment
+        // Create the PaymentDTO
         PaymentDTO paymentDTO = paymentMapper.toDto(payment);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -496,8 +495,8 @@ class PaymentResourceIT {
             )
             .andExpect(status().isBadRequest());
 
-        // Validate the Payment in the database
-        List<Payment> paymentList = paymentRepository.findAll();
+        // Validate the PaymentDTO in the database
+        List<uz.devops.intern.domain.Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeUpdate);
     }
 
@@ -507,7 +506,7 @@ class PaymentResourceIT {
         int databaseSizeBeforeUpdate = paymentRepository.findAll().size();
         payment.setId(count.incrementAndGet());
 
-        // Create the Payment
+        // Create the PaymentDTO
         PaymentDTO paymentDTO = paymentMapper.toDto(payment);
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
@@ -517,8 +516,8 @@ class PaymentResourceIT {
             )
             .andExpect(status().isMethodNotAllowed());
 
-        // Validate the Payment in the database
-        List<Payment> paymentList = paymentRepository.findAll();
+        // Validate the PaymentDTO in the database
+        List<uz.devops.intern.domain.Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeUpdate);
     }
 
@@ -536,7 +535,7 @@ class PaymentResourceIT {
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
-        List<Payment> paymentList = paymentRepository.findAll();
+        List<uz.devops.intern.domain.Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeDelete - 1);
     }
 }

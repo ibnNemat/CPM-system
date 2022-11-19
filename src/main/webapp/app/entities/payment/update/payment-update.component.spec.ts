@@ -18,7 +18,7 @@ import { GroupsService } from 'app/entities/groups/service/groups.service';
 
 import { PaymentUpdateComponent } from './payment-update.component';
 
-describe('Payment Management Update Component', () => {
+describe('PaymentDTO Management Update Component', () => {
   let comp: PaymentUpdateComponent;
   let fixture: ComponentFixture<PaymentUpdateComponent>;
   let activatedRoute: ActivatedRoute;

@@ -7,7 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 
 /**
- * A Payment.
+ * A PaymentDTO.
  */
 @Entity
 @Table(name = "payment")
@@ -195,7 +195,7 @@ public class Payment implements Serializable {
     // prettier-ignore
     @Override
     public String toString() {
-        return "Payment{" +
+        return "PaymentDTO{" +
             "id=" + getId() +
             ", payedMoney=" + getPayedMoney() +
             ", paymentForPeriod=" + getPaymentForPeriod() +

@@ -1,6 +1,7 @@
 package uz.devops.intern.service.dto;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -24,7 +25,18 @@ public class ServicesDTO implements Serializable {
     private PeriodType periodType;
     @NotNull
     private Integer countPeriod;
+    @NotNull
+    private LocalDate startedPeriod;
     private GroupsDTO group;
+
+    public LocalDate getStartedPeriod() {
+        return startedPeriod;
+    }
+
+    public void setStartedPeriod(LocalDate startedPeriod) {
+        this.startedPeriod = startedPeriod;
+    }
+
     private Set<CustomersDTO> users = new HashSet<>();
 
     public Set<CustomersDTO> getUsers() {
@@ -105,15 +117,17 @@ public class ServicesDTO implements Serializable {
     }
 
     // prettier-ignore
+
     @Override
     public String toString() {
         return "ServicesDTO{" +
-            "id=" + getId() +
-            ", serviceType='" + getServiceType() + "'" +
-            ", price=" + getPrice() +
-            ", periodType='" + getPeriodType() + "'" +
-            ", countPeriod=" + getCountPeriod() +
-            ", group=" + getGroup() +
-            "}";
+            "id=" + id +
+            ", serviceType=" + serviceType +
+            ", price=" + price +
+            ", periodType=" + periodType +
+            ", countPeriod=" + countPeriod +
+            ", group=" + group +
+            ", users=" + users +
+            '}';
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import uz.devops.intern.domain.Payment;
 
 /**
- * Spring Data JPA repository for the Payment entity.
+ * Spring Data JPA repository for the PaymentDTO entity.
  */
 @SuppressWarnings("unused")
 @Repository

@@ -47,7 +47,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: foundation240897@gmail.com
-    password: unforgettable97
+    password: wmmsfcfjltngvlpu
     protocol: smtp
     tls: true
     properties.mail.smtp:

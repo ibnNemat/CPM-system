@@ -9,7 +9,6 @@ public class OrganizationsMapper {
         organizationDTO.setId(o.getId());
         organizationDTO.setName(o.getName());
         organizationDTO.setOrgOwnerName(o.getOrgOwnerName());
-
         return organizationDTO;
     }
 

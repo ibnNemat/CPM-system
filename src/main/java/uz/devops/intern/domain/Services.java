@@ -2,6 +2,7 @@ package uz.devops.intern.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
@@ -33,25 +34,38 @@ public class Services implements Serializable {
     @NotNull
     @Column(name = "price", nullable = false)
     private Double price;
-
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "period_type", nullable = false)
     private PeriodType periodType;
-
     @NotNull
     @Column(name = "count_period", nullable = false)
     private Integer countPeriod;
-
     @ManyToOne
     @JsonIgnoreProperties(value = { "organization", "users" }, allowSetters = true)
     private Groups group;
 
-    @ManyToMany(mappedBy = "services")
+    @NotNull
+    private LocalDate startedPeriod;
+    @ManyToMany
+    @JoinTable(
+        name = "rel_customers__services",
+        joinColumns = @JoinColumn(name = "services_id"),
+        inverseJoinColumns = @JoinColumn(name = "customers_id")
+    )
     @JsonIgnoreProperties(value = { "user", "groups", "services" }, allowSetters = true)
     private Set<Customers> users = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
+
+    public LocalDate getStartedPeriod() {
+        return startedPeriod;
+    }
+
+    public void setStartedPeriod(LocalDate startedPeriod) {
+        this.startedPeriod = startedPeriod;
+    }
 
     public Long getId() {
         return this.id;
@@ -182,14 +196,17 @@ public class Services implements Serializable {
     }
 
     // prettier-ignore
+
     @Override
     public String toString() {
         return "Services{" +
-            "id=" + getId() +
-            ", serviceType='" + getServiceType() + "'" +
-            ", price=" + getPrice() +
-            ", periodType='" + getPeriodType() + "'" +
-            ", countPeriod=" + getCountPeriod() +
-            "}";
+            "id=" + id +
+            ", serviceType=" + serviceType +
+            ", price=" + price +
+            ", periodType=" + periodType +
+            ", countPeriod=" + countPeriod +
+            ", group=" + group +
+            ", users=" + users +
+            '}';
     }
 }
