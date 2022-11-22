@@ -38,9 +38,9 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
-          <th scope="col" jhiSortBy="payedMoney">
+          <th scope="col" jhiSortBy="paidMoney">
             <div class="d-flex">
-              <span jhiTranslate="cpmSystemApp.payment.payedMoney">Payed Money</span>
+              <span jhiTranslate="cpmSystemApp.payment.paidMoney">Paid Money</span>
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
@@ -80,12 +80,6 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
-          <th scope="col" jhiSortBy="group.id">
-            <div class="d-flex">
-              <span jhiTranslate="cpmSystemApp.payment.group">Group</span>
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
           <th scope="col"></th>
         </tr>
       </thead>
@@ -94,7 +88,7 @@
           <td>
             <a [routerLink]="['/payment', payment.id, 'view']">{{ payment.id }}</a>
           </td>
-          <td>{{ payment.payedMoney }}</td>
+          <td>{{ payment.paidMoney }}</td>
           <td>{{ payment.paymentForPeriod }}</td>
           <td>{{ payment.isPayed }}</td>
           <td>{{ payment.startedPeriod | formatMediumDate }}</td>
@@ -107,11 +101,6 @@
           <td>
             <div *ngIf="payment.service">
               <a [routerLink]="['/services', payment.service.id, 'view']">{{ payment.service.id }}</a>
-            </div>
-          </td>
-          <td>
-            <div *ngIf="payment.group">
-              <a [routerLink]="['/groups', payment.group.id, 'view']">{{ payment.group.id }}</a>
             </div>
           </td>
           <td class="text-end">

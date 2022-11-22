@@ -1,11 +1,11 @@
-id;name;group_owner_name
-1;Hat infrastructures Virginia;Chief Faroe
-2;Investment Ranch Guinea;National Maine Pass
-3;Dollar neural;District web-enabled
-4;hard Refined;Vermont
-5;adapter service-desk;Keyboard Orchestrator
-6;Movies Soft;Coordinator
-7;Islands;Lodge SQL
-8;plum Unbranded Persevering;Kiribati Kiribati
-9;Port;Checking invoice
-10;Cotton lime Gorgeous;Intelligent
+id;name;group_owner_name;parent_id
+1;Hat infrastructures Virginia;Chief Faroe;78048
+2;Freeway Dalasi;capacitor;33781
+3;Maine Pass visualize;neural Vermont;60809
+4;Way hard;RAM;56552
+5;Rubber Tools generating;Plastic;60227
+6;deposit Business-focused parse;Coordinator;21845
+7;frictionless Lodge;mobile plum Unbranded;24057
+8;cross-platform Radial;virtual withdrawal;62597
+9;expedite;Corporate architect;71736
+10;6th;blue;32150

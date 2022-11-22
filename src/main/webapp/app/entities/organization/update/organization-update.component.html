@@ -37,17 +37,6 @@
             data-cy="orgOwnerName"
             formControlName="orgOwnerName"
           />
-          <div
-            *ngIf="editForm.get('orgOwnerName')!.invalid && (editForm.get('orgOwnerName')!.dirty || editForm.get('orgOwnerName')!.touched)"
-          >
-            <small
-              class="form-text text-danger"
-              *ngIf="editForm.get('orgOwnerName')?.errors?.required"
-              jhiTranslate="entity.validation.required"
-            >
-              This field is required.
-            </small>
-          </div>
         </div>
       </div>
 

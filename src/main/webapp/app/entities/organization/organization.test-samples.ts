@@ -3,24 +3,22 @@ import { IOrganization, NewOrganization } from './organization.model';
 export const sampleWithRequiredData: IOrganization = {
   id: 12784,
   name: 'Automated Rial',
-  orgOwnerName: 'Hawaii TCP',
 };
 
 export const sampleWithPartialData: IOrganization = {
-  id: 85104,
-  name: 'Fantastic systems',
-  orgOwnerName: 'withdrawal invoice invoice',
+  id: 57434,
+  name: 'Utah',
+  orgOwnerName: 'generating',
 };
 
 export const sampleWithFullData: IOrganization = {
-  id: 96369,
-  name: 'payment circuit',
-  orgOwnerName: 'Enhanced payment Electronics',
+  id: 35747,
+  name: 'Market invoice withdrawal',
+  orgOwnerName: 'quantifying digital',
 };
 
 export const sampleWithNewData: NewOrganization = {
-  name: 'global',
-  orgOwnerName: 'auxiliary Program',
+  name: 'payment circuit',
   id: null,
 };
 

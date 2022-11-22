@@ -21,6 +21,7 @@ public class CustomersDTO implements Serializable {
     private String phoneNumber;
 
     @NotNull
+    @DecimalMin(value = "0")
     private Double account;
 
     private UserDTO user;

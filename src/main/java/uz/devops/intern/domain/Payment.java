@@ -7,7 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 
 /**
- * A PaymentDTO.
+ * A Payment.
  */
 @Entity
 @Table(name = "payment")
@@ -23,10 +23,16 @@ public class Payment implements Serializable {
     private Long id;
 
     @NotNull
-    @Column(name = "payed_money", nullable = false)
-    private Double payedMoney;
+    @DecimalMin(value = "0")
+    @Column(name = "paid_money", nullable = false)
+    private Double paidMoney;
+
+    @NotNull
+    @DecimalMin(value = "10000")
     @Column(name = "payment_for_period", nullable = false)
     private Double paymentForPeriod;
+
+    @NotNull
     @Column(name = "is_payed", nullable = false)
     private Boolean isPayed;
 
@@ -34,19 +40,16 @@ public class Payment implements Serializable {
     @Column(name = "started_period", nullable = false)
     private LocalDate startedPeriod;
 
-    @Column(name = "finished_period", nullable = false)
+    @Column(name = "finished_period")
     private LocalDate finishedPeriod;
+
     @ManyToOne
-    @JsonIgnoreProperties(value = { "user", "groups", "services" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "user", "groups" }, allowSetters = true)
     private Customers customer;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = { "group", "users" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "group" }, allowSetters = true)
     private Services service;
-
-    @ManyToOne
-    @JsonIgnoreProperties(value = { "users", "organization" }, allowSetters = true)
-    private Groups group;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -63,17 +66,17 @@ public class Payment implements Serializable {
         this.id = id;
     }
 
-    public Double getPayedMoney() {
-        return this.payedMoney;
+    public Double getPaidMoney() {
+        return this.paidMoney;
     }
 
-    public Payment payedMoney(Double payedMoney) {
-        this.setPayedMoney(payedMoney);
+    public Payment paidMoney(Double paidMoney) {
+        this.setPaidMoney(paidMoney);
         return this;
     }
 
-    public void setPayedMoney(Double payedMoney) {
-        this.payedMoney = payedMoney;
+    public void setPaidMoney(Double paidMoney) {
+        this.paidMoney = paidMoney;
     }
 
     public Double getPaymentForPeriod() {
@@ -154,19 +157,6 @@ public class Payment implements Serializable {
         return this;
     }
 
-    public Groups getGroup() {
-        return this.group;
-    }
-
-    public void setGroup(Groups groups) {
-        this.group = groups;
-    }
-
-    public Payment group(Groups groups) {
-        this.setGroup(groups);
-        return this;
-    }
-
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -189,9 +179,9 @@ public class Payment implements Serializable {
     // prettier-ignore
     @Override
     public String toString() {
-        return "PaymentDTO{" +
+        return "Payment{" +
             "id=" + getId() +
-            ", payedMoney=" + getPayedMoney() +
+            ", paidMoney=" + getPaidMoney() +
             ", paymentForPeriod=" + getPaymentForPeriod() +
             ", isPayed='" + getIsPayed() + "'" +
             ", startedPeriod='" + getStartedPeriod() + "'" +

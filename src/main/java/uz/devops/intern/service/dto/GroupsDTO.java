@@ -19,6 +19,8 @@ public class GroupsDTO implements Serializable {
 
     private String groupOwnerName;
 
+    private Long parentId;
+
     private Set<CustomersDTO> users = new HashSet<>();
 
     private OrganizationDTO organization;
@@ -54,6 +56,14 @@ public class GroupsDTO implements Serializable {
 
     public void setGroupOwnerName(String groupOwnerName) {
         this.groupOwnerName = groupOwnerName;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 
     public Set<CustomersDTO> getUsers() {
@@ -100,6 +110,7 @@ public class GroupsDTO implements Serializable {
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", groupOwnerName='" + getGroupOwnerName() + "'" +
+            ", parentId=" + getParentId() +
             ", users=" + getUsers() +
             ", organization=" + getOrganization() +
             "}";

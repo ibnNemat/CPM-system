@@ -22,7 +22,8 @@
     {
       "fieldName": "account",
       "fieldType": "Double",
-      "fieldValidateRules": ["required"]
+      "fieldValidateRules": ["required", "min"],
+      "fieldValidateRulesMin": "0"
     }
   ],
   "fluentMethods": true,
@@ -42,13 +43,6 @@
       "otherEntityRelationshipName": "users",
       "ownerSide": false,
       "relationshipName": "groups",
-      "relationshipType": "many-to-many"
-    },
-    {
-      "otherEntityName": "services",
-      "otherEntityRelationshipName": "users",
-      "ownerSide": false,
-      "relationshipName": "services",
       "relationshipType": "many-to-many"
     }
   ],

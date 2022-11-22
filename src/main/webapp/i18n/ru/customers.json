@@ -23,8 +23,7 @@
       "phoneNumber": "Phone Number",
       "account": "Account",
       "user": "User",
-      "groups": "Groups",
-      "services": "Services"
+      "groups": "Groups"
     }
   }
 }

@@ -47,6 +47,9 @@ class GroupsResourceIT {
     private static final String DEFAULT_GROUP_OWNER_NAME = "AAAAAAAAAA";
     private static final String UPDATED_GROUP_OWNER_NAME = "BBBBBBBBBB";
 
+    private static final Long DEFAULT_PARENT_ID = 1L;
+    private static final Long UPDATED_PARENT_ID = 2L;
+
     private static final String ENTITY_API_URL = "/api/groups";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -80,7 +83,7 @@ class GroupsResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Groups createEntity(EntityManager em) {
-        Groups groups = new Groups().name(DEFAULT_NAME).groupOwnerName(DEFAULT_GROUP_OWNER_NAME);
+        Groups groups = new Groups().name(DEFAULT_NAME).groupOwnerName(DEFAULT_GROUP_OWNER_NAME).parentId(DEFAULT_PARENT_ID);
         return groups;
     }
 
@@ -91,7 +94,7 @@ class GroupsResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Groups createUpdatedEntity(EntityManager em) {
-        Groups groups = new Groups().name(UPDATED_NAME).groupOwnerName(UPDATED_GROUP_OWNER_NAME);
+        Groups groups = new Groups().name(UPDATED_NAME).groupOwnerName(UPDATED_GROUP_OWNER_NAME).parentId(UPDATED_PARENT_ID);
         return groups;
     }
 
@@ -116,6 +119,7 @@ class GroupsResourceIT {
         Groups testGroups = groupsList.get(groupsList.size() - 1);
         assertThat(testGroups.getName()).isEqualTo(DEFAULT_NAME);
         assertThat(testGroups.getGroupOwnerName()).isEqualTo(DEFAULT_GROUP_OWNER_NAME);
+        assertThat(testGroups.getParentId()).isEqualTo(DEFAULT_PARENT_ID);
     }
 
     @Test
@@ -157,24 +161,6 @@ class GroupsResourceIT {
 
     @Test
     @Transactional
-    void checkGroupOwnerNameIsRequired() throws Exception {
-        int databaseSizeBeforeTest = groupsRepository.findAll().size();
-        // set the field null
-        groups.setGroupOwnerName(null);
-
-        // Create the Groups, which fails.
-        GroupsDTO groupsDTO = groupsMapper.toDto(groups);
-
-        restGroupsMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(groupsDTO)))
-            .andExpect(status().isBadRequest());
-
-        List<Groups> groupsList = groupsRepository.findAll();
-        assertThat(groupsList).hasSize(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
     void getAllGroups() throws Exception {
         // Initialize the database
         groupsRepository.saveAndFlush(groups);
@@ -186,7 +172,8 @@ class GroupsResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(groups.getId().intValue())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
-            .andExpect(jsonPath("$.[*].groupOwnerName").value(hasItem(DEFAULT_GROUP_OWNER_NAME)));
+            .andExpect(jsonPath("$.[*].groupOwnerName").value(hasItem(DEFAULT_GROUP_OWNER_NAME)))
+            .andExpect(jsonPath("$.[*].parentId").value(hasItem(DEFAULT_PARENT_ID.intValue())));
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -219,7 +206,8 @@ class GroupsResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(groups.getId().intValue()))
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
-            .andExpect(jsonPath("$.groupOwnerName").value(DEFAULT_GROUP_OWNER_NAME));
+            .andExpect(jsonPath("$.groupOwnerName").value(DEFAULT_GROUP_OWNER_NAME))
+            .andExpect(jsonPath("$.parentId").value(DEFAULT_PARENT_ID.intValue()));
     }
 
     @Test
@@ -241,7 +229,7 @@ class GroupsResourceIT {
         Groups updatedGroups = groupsRepository.findById(groups.getId()).get();
         // Disconnect from session so that the updates on updatedGroups are not directly saved in db
         em.detach(updatedGroups);
-        updatedGroups.name(UPDATED_NAME).groupOwnerName(UPDATED_GROUP_OWNER_NAME);
+        updatedGroups.name(UPDATED_NAME).groupOwnerName(UPDATED_GROUP_OWNER_NAME).parentId(UPDATED_PARENT_ID);
         GroupsDTO groupsDTO = groupsMapper.toDto(updatedGroups);
 
         restGroupsMockMvc
@@ -258,6 +246,7 @@ class GroupsResourceIT {
         Groups testGroups = groupsList.get(groupsList.size() - 1);
         assertThat(testGroups.getName()).isEqualTo(UPDATED_NAME);
         assertThat(testGroups.getGroupOwnerName()).isEqualTo(UPDATED_GROUP_OWNER_NAME);
+        assertThat(testGroups.getParentId()).isEqualTo(UPDATED_PARENT_ID);
     }
 
     @Test
@@ -337,7 +326,7 @@ class GroupsResourceIT {
         Groups partialUpdatedGroups = new Groups();
         partialUpdatedGroups.setId(groups.getId());
 
-        partialUpdatedGroups.groupOwnerName(UPDATED_GROUP_OWNER_NAME);
+        partialUpdatedGroups.groupOwnerName(UPDATED_GROUP_OWNER_NAME).parentId(UPDATED_PARENT_ID);
 
         restGroupsMockMvc
             .perform(
@@ -353,6 +342,7 @@ class GroupsResourceIT {
         Groups testGroups = groupsList.get(groupsList.size() - 1);
         assertThat(testGroups.getName()).isEqualTo(DEFAULT_NAME);
         assertThat(testGroups.getGroupOwnerName()).isEqualTo(UPDATED_GROUP_OWNER_NAME);
+        assertThat(testGroups.getParentId()).isEqualTo(UPDATED_PARENT_ID);
     }
 
     @Test
@@ -367,7 +357,7 @@ class GroupsResourceIT {
         Groups partialUpdatedGroups = new Groups();
         partialUpdatedGroups.setId(groups.getId());
 
-        partialUpdatedGroups.name(UPDATED_NAME).groupOwnerName(UPDATED_GROUP_OWNER_NAME);
+        partialUpdatedGroups.name(UPDATED_NAME).groupOwnerName(UPDATED_GROUP_OWNER_NAME).parentId(UPDATED_PARENT_ID);
 
         restGroupsMockMvc
             .perform(
@@ -383,6 +373,7 @@ class GroupsResourceIT {
         Groups testGroups = groupsList.get(groupsList.size() - 1);
         assertThat(testGroups.getName()).isEqualTo(UPDATED_NAME);
         assertThat(testGroups.getGroupOwnerName()).isEqualTo(UPDATED_GROUP_OWNER_NAME);
+        assertThat(testGroups.getParentId()).isEqualTo(UPDATED_PARENT_ID);
     }
 
     @Test

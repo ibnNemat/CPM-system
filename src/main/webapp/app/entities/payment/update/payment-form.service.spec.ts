@@ -20,14 +20,13 @@ describe('PaymentDTO Form Service', () => {
         expect(formGroup.controls).toEqual(
           expect.objectContaining({
             id: expect.any(Object),
-            payedMoney: expect.any(Object),
+            paidMoney: expect.any(Object),
             paymentForPeriod: expect.any(Object),
             isPayed: expect.any(Object),
             startedPeriod: expect.any(Object),
             finishedPeriod: expect.any(Object),
             customer: expect.any(Object),
             service: expect.any(Object),
-            group: expect.any(Object),
           })
         );
       });
@@ -38,14 +37,13 @@ describe('PaymentDTO Form Service', () => {
         expect(formGroup.controls).toEqual(
           expect.objectContaining({
             id: expect.any(Object),
-            payedMoney: expect.any(Object),
+            paidMoney: expect.any(Object),
             paymentForPeriod: expect.any(Object),
             isPayed: expect.any(Object),
             startedPeriod: expect.any(Object),
             finishedPeriod: expect.any(Object),
             customer: expect.any(Object),
             service: expect.any(Object),
-            group: expect.any(Object),
           })
         );
       });

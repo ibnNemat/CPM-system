@@ -1,13 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
+import { DATE_FORMAT } from 'app/config/input.constants';
 import { IServices } from '../services.model';
 import { sampleWithRequiredData, sampleWithNewData, sampleWithPartialData, sampleWithFullData } from '../services.test-samples';
 
-import { ServicesService } from './services.service';
+import { ServicesService, RestServices } from './services.service';
 
-const requireRestSample: IServices = {
+const requireRestSample: RestServices = {
   ...sampleWithRequiredData,
+  startedPeriod: sampleWithRequiredData.startedPeriod?.format(DATE_FORMAT),
 };
 
 describe('Services Service', () => {

@@ -14,9 +14,9 @@
         <dd>
           <span>{{ payment.id }}</span>
         </dd>
-        <dt><span jhiTranslate="cpmSystemApp.payment.payedMoney">Payed Money</span></dt>
+        <dt><span jhiTranslate="cpmSystemApp.payment.paidMoney">Paid Money</span></dt>
         <dd>
-          <span>{{ payment.payedMoney }}</span>
+          <span>{{ payment.paidMoney }}</span>
         </dd>
         <dt><span jhiTranslate="cpmSystemApp.payment.paymentForPeriod">Payment For Period</span></dt>
         <dd>
@@ -44,12 +44,6 @@
         <dd>
           <div *ngIf="payment.service">
             <a [routerLink]="['/services', payment.service.id, 'view']">{{ payment.service.id }}</a>
-          </div>
-        </dd>
-        <dt><span jhiTranslate="cpmSystemApp.payment.group">Group</span></dt>
-        <dd>
-          <div *ngIf="payment.group">
-            <a [routerLink]="['/groups', payment.group.id, 'view']">{{ payment.group.id }}</a>
           </div>
         </dd>
       </dl>

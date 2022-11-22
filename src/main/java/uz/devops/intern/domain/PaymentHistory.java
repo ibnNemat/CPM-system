@@ -37,7 +37,7 @@ public class PaymentHistory implements Serializable {
     private LocalDate createdAt;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = { "user", "groups", "services" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "user", "groups" }, allowSetters = true)
     private Customers customer;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

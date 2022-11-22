@@ -36,6 +36,7 @@ public class Customers implements Serializable {
     private String phoneNumber;
 
     @NotNull
+    @DecimalMin(value = "0")
     @Column(name = "account", nullable = false)
     private Double account;
 
@@ -43,13 +44,9 @@ public class Customers implements Serializable {
     @JoinColumn(unique = true)
     private User user;
 
-    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "users")
     @JsonIgnoreProperties(value = { "users", "organization" }, allowSetters = true)
     private Set<Groups> groups = new HashSet<>();
-
-    @ManyToMany(mappedBy = "users")
-    @JsonIgnoreProperties(value = { "group", "users" }, allowSetters = true)
-    private Set<Services> services = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -159,37 +156,6 @@ public class Customers implements Serializable {
     public Customers removeGroups(Groups groups) {
         this.groups.remove(groups);
         groups.getUsers().remove(this);
-        return this;
-    }
-
-    public Set<Services> getServices() {
-        return this.services;
-    }
-
-    public void setServices(Set<Services> services) {
-        if (this.services != null) {
-            this.services.forEach(i -> i.removeUsers(this));
-        }
-        if (services != null) {
-            services.forEach(i -> i.addUsers(this));
-        }
-        this.services = services;
-    }
-
-    public Customers services(Set<Services> services) {
-        this.setServices(services);
-        return this;
-    }
-
-    public Customers addServices(Services services) {
-        this.services.add(services);
-        services.getUsers().add(this);
-        return this;
-    }
-
-    public Customers removeServices(Services services) {
-        this.services.remove(services);
-        services.getUsers().remove(this);
         return this;
     }
 

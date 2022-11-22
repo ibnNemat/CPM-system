@@ -1,12 +1,10 @@
 package uz.devops.intern.service.dto;
 
 import java.io.Serializable;
-import java.util.HashSet;
+import java.time.LocalDate;
 import java.util.Objects;
-import java.util.Set;
 import javax.validation.constraints.*;
 import uz.devops.intern.domain.enumeration.PeriodType;
-import uz.devops.intern.domain.enumeration.ServiceType;
 
 /**
  * A DTO for the {@link uz.devops.intern.domain.Services} entity.
@@ -17,20 +15,23 @@ public class ServicesDTO implements Serializable {
     private Long id;
 
     @NotNull
-    private ServiceType serviceType;
+    private String name;
 
     @NotNull
+    @DecimalMin(value = "10000")
     private Double price;
+
+    @NotNull
+    private LocalDate startedPeriod;
 
     @NotNull
     private PeriodType periodType;
 
     @NotNull
+    @Min(value = 1)
     private Integer countPeriod;
 
     private GroupsDTO group;
-
-    private Set<CustomersDTO> users = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -40,12 +41,12 @@ public class ServicesDTO implements Serializable {
         this.id = id;
     }
 
-    public ServiceType getServiceType() {
-        return serviceType;
+    public String getName() {
+        return name;
     }
 
-    public void setServiceType(ServiceType serviceType) {
-        this.serviceType = serviceType;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Double getPrice() {
@@ -54,6 +55,14 @@ public class ServicesDTO implements Serializable {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public LocalDate getStartedPeriod() {
+        return startedPeriod;
+    }
+
+    public void setStartedPeriod(LocalDate startedPeriod) {
+        this.startedPeriod = startedPeriod;
     }
 
     public PeriodType getPeriodType() {
@@ -78,14 +87,6 @@ public class ServicesDTO implements Serializable {
 
     public void setGroup(GroupsDTO group) {
         this.group = group;
-    }
-
-    public Set<CustomersDTO> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<CustomersDTO> users) {
-        this.users = users;
     }
 
     @Override
@@ -114,12 +115,12 @@ public class ServicesDTO implements Serializable {
     public String toString() {
         return "ServicesDTO{" +
             "id=" + getId() +
-            ", serviceType='" + getServiceType() + "'" +
+            ", name='" + getName() + "'" +
             ", price=" + getPrice() +
+            ", startedPeriod='" + getStartedPeriod() + "'" +
             ", periodType='" + getPeriodType() + "'" +
             ", countPeriod=" + getCountPeriod() +
             ", group=" + getGroup() +
-            ", users=" + getUsers() +
             "}";
     }
 }

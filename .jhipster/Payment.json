@@ -6,17 +6,21 @@
   "entityTableName": "payment",
   "fields": [
     {
-      "fieldName": "payedMoney",
+      "fieldName": "paidMoney",
       "fieldType": "Double",
-      "fieldValidateRules": ["required"]
+      "fieldValidateRules": ["required", "min"],
+      "fieldValidateRulesMin": "0"
     },
     {
       "fieldName": "paymentForPeriod",
-      "fieldType": "Double"
+      "fieldType": "Double",
+      "fieldValidateRules": ["required", "min"],
+      "fieldValidateRulesMin": "10000"
     },
     {
       "fieldName": "isPayed",
-      "fieldType": "Boolean"
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
     },
     {
       "fieldName": "startedPeriod",
@@ -42,11 +46,6 @@
     {
       "otherEntityName": "services",
       "relationshipName": "service",
-      "relationshipType": "many-to-one"
-    },
-    {
-      "otherEntityName": "groups",
-      "relationshipName": "group",
       "relationshipType": "many-to-one"
     }
   ],

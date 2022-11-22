@@ -2,8 +2,6 @@ package uz.devops.intern.service;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import uz.devops.intern.service.dto.ServicesDTO;
 
 /**
@@ -40,14 +38,6 @@ public interface ServicesService {
      * @return the list of entities.
      */
     List<ServicesDTO> findAll();
-
-    /**
-     * Get all the services with eager load of many-to-many relationships.
-     *
-     * @param pageable the pagination information.
-     * @return the list of entities.
-     */
-    Page<ServicesDTO> findAllWithEagerRelationships(Pageable pageable);
 
     /**
      * Get the "id" services.

@@ -13,10 +13,6 @@
     {
       "fieldName": "orgOwnerName",
       "fieldType": "String"
-    },
-    {
-    "fieldName": "users",
-    "fieldType": "Set"
     }
   ],
   "fluentMethods": true,
