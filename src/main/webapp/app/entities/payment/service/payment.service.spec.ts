@@ -13,7 +13,7 @@ const requireRestSample: RestPayment = {
   finishedPeriod: sampleWithRequiredData.finishedPeriod?.format(DATE_FORMAT),
 };
 
-describe('PaymentDTO Service', () => {
+describe('Payment Service', () => {
   let service: PaymentService;
   let httpMock: HttpTestingController;
   let expectedResult: IPayment | IPayment[] | boolean | null;
@@ -39,7 +39,7 @@ describe('PaymentDTO Service', () => {
       expect(expectedResult).toMatchObject(expected);
     });
 
-    it('should create a PaymentDTO', () => {
+    it('should create a Payment', () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const payment = { ...sampleWithNewData };
       const returnedFromService = { ...requireRestSample };
@@ -52,7 +52,7 @@ describe('PaymentDTO Service', () => {
       expect(expectedResult).toMatchObject(expected);
     });
 
-    it('should update a PaymentDTO', () => {
+    it('should update a Payment', () => {
       const payment = { ...sampleWithRequiredData };
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
@@ -64,7 +64,7 @@ describe('PaymentDTO Service', () => {
       expect(expectedResult).toMatchObject(expected);
     });
 
-    it('should partial update a PaymentDTO', () => {
+    it('should partial update a Payment', () => {
       const patchObject = { ...sampleWithPartialData };
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
@@ -76,7 +76,7 @@ describe('PaymentDTO Service', () => {
       expect(expectedResult).toMatchObject(expected);
     });
 
-    it('should return a list of PaymentDTO', () => {
+    it('should return a list of Payment', () => {
       const returnedFromService = { ...requireRestSample };
 
       const expected = { ...sampleWithRequiredData };
@@ -89,7 +89,7 @@ describe('PaymentDTO Service', () => {
       expect(expectedResult).toMatchObject([expected]);
     });
 
-    it('should delete a PaymentDTO', () => {
+    it('should delete a Payment', () => {
       const expected = true;
 
       service.delete(123).subscribe(resp => (expectedResult = resp.ok));
@@ -100,14 +100,14 @@ describe('PaymentDTO Service', () => {
     });
 
     describe('addPaymentToCollectionIfMissing', () => {
-      it('should add a PaymentDTO to an empty array', () => {
+      it('should add a Payment to an empty array', () => {
         const payment: IPayment = sampleWithRequiredData;
         expectedResult = service.addPaymentToCollectionIfMissing([], payment);
         expect(expectedResult).toHaveLength(1);
         expect(expectedResult).toContain(payment);
       });
 
-      it('should not add a PaymentDTO to an array that contains it', () => {
+      it('should not add a Payment to an array that contains it', () => {
         const payment: IPayment = sampleWithRequiredData;
         const paymentCollection: IPayment[] = [
           {
@@ -119,7 +119,7 @@ describe('PaymentDTO Service', () => {
         expect(expectedResult).toHaveLength(2);
       });
 
-      it("should add a PaymentDTO to an array that doesn't contain it", () => {
+      it("should add a Payment to an array that doesn't contain it", () => {
         const payment: IPayment = sampleWithRequiredData;
         const paymentCollection: IPayment[] = [sampleWithPartialData];
         expectedResult = service.addPaymentToCollectionIfMissing(paymentCollection, payment);
@@ -127,7 +127,7 @@ describe('PaymentDTO Service', () => {
         expect(expectedResult).toContain(payment);
       });
 
-      it('should add only unique PaymentDTO to an array', () => {
+      it('should add only unique Payment to an array', () => {
         const paymentArray: IPayment[] = [sampleWithRequiredData, sampleWithPartialData, sampleWithFullData];
         const paymentCollection: IPayment[] = [sampleWithRequiredData];
         expectedResult = service.addPaymentToCollectionIfMissing(paymentCollection, ...paymentArray);
@@ -150,7 +150,7 @@ describe('PaymentDTO Service', () => {
         expect(expectedResult).toContain(payment);
       });
 
-      it('should return initial array if no PaymentDTO is added', () => {
+      it('should return initial array if no Payment is added', () => {
         const paymentCollection: IPayment[] = [sampleWithRequiredData];
         expectedResult = service.addPaymentToCollectionIfMissing(paymentCollection, undefined, null);
         expect(expectedResult).toEqual(paymentCollection);

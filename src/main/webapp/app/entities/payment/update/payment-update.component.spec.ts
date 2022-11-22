@@ -16,7 +16,7 @@ import { ServicesService } from 'app/entities/services/service/services.service'
 
 import { PaymentUpdateComponent } from './payment-update.component';
 
-describe('PaymentDTO Management Update Component', () => {
+describe('Payment Management Update Component', () => {
   let comp: PaymentUpdateComponent;
   let fixture: ComponentFixture<PaymentUpdateComponent>;
   let activatedRoute: ActivatedRoute;

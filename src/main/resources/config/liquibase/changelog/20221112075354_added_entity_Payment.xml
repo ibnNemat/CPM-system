@@ -7,7 +7,7 @@
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <!--
-        Added the entity PaymentDTO.
+        Added the entity Payment.
     -->
     <changeSet id="20221112075354-1" author="jhipster">
         <createTable tableName="payment">

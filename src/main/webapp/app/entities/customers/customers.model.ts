@@ -6,7 +6,7 @@ export interface ICustomers {
   username?: string | null;
   password?: string | null;
   phoneNumber?: string | null;
-  account?: number | null;
+  balance?: number | null;
   user?: Pick<IUser, 'id'> | null;
   groups?: Pick<IGroups, 'id'>[] | null;
 }

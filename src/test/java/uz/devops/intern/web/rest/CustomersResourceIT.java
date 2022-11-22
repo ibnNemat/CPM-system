@@ -40,8 +40,8 @@ class CustomersResourceIT {
     private static final String DEFAULT_PHONE_NUMBER = "AAAAAAAAAA";
     private static final String UPDATED_PHONE_NUMBER = "BBBBBBBBBB";
 
-    private static final Double DEFAULT_ACCOUNT = 0D;
-    private static final Double UPDATED_ACCOUNT = 1D;
+    private static final Double DEFAULT_BALANCE = 0D;
+    private static final Double UPDATED_BALANCE = 1D;
 
     private static final String ENTITY_API_URL = "/api/customers";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -74,7 +74,7 @@ class CustomersResourceIT {
             .username(DEFAULT_USERNAME)
             .password(DEFAULT_PASSWORD)
             .phoneNumber(DEFAULT_PHONE_NUMBER)
-            .account(DEFAULT_ACCOUNT);
+            .balance(DEFAULT_BALANCE);
         return customers;
     }
 
@@ -89,7 +89,7 @@ class CustomersResourceIT {
             .username(UPDATED_USERNAME)
             .password(UPDATED_PASSWORD)
             .phoneNumber(UPDATED_PHONE_NUMBER)
-            .account(UPDATED_ACCOUNT);
+            .balance(UPDATED_BALANCE);
         return customers;
     }
 
@@ -115,7 +115,7 @@ class CustomersResourceIT {
         assertThat(testCustomers.getUsername()).isEqualTo(DEFAULT_USERNAME);
         assertThat(testCustomers.getPassword()).isEqualTo(DEFAULT_PASSWORD);
         assertThat(testCustomers.getPhoneNumber()).isEqualTo(DEFAULT_PHONE_NUMBER);
-        assertThat(testCustomers.getAccount()).isEqualTo(DEFAULT_ACCOUNT);
+        assertThat(testCustomers.getBalance()).isEqualTo(DEFAULT_BALANCE);
     }
 
     @Test
@@ -193,10 +193,10 @@ class CustomersResourceIT {
 
     @Test
     @Transactional
-    void checkAccountIsRequired() throws Exception {
+    void checkBalanceIsRequired() throws Exception {
         int databaseSizeBeforeTest = customersRepository.findAll().size();
         // set the field null
-        customers.setAccount(null);
+        customers.setBalance(null);
 
         // Create the Customers, which fails.
         CustomersDTO customersDTO = customersMapper.toDto(customers);
@@ -224,7 +224,7 @@ class CustomersResourceIT {
             .andExpect(jsonPath("$.[*].username").value(hasItem(DEFAULT_USERNAME)))
             .andExpect(jsonPath("$.[*].password").value(hasItem(DEFAULT_PASSWORD)))
             .andExpect(jsonPath("$.[*].phoneNumber").value(hasItem(DEFAULT_PHONE_NUMBER)))
-            .andExpect(jsonPath("$.[*].account").value(hasItem(DEFAULT_ACCOUNT.doubleValue())));
+            .andExpect(jsonPath("$.[*].balance").value(hasItem(DEFAULT_BALANCE.doubleValue())));
     }
 
     @Test
@@ -242,7 +242,7 @@ class CustomersResourceIT {
             .andExpect(jsonPath("$.username").value(DEFAULT_USERNAME))
             .andExpect(jsonPath("$.password").value(DEFAULT_PASSWORD))
             .andExpect(jsonPath("$.phoneNumber").value(DEFAULT_PHONE_NUMBER))
-            .andExpect(jsonPath("$.account").value(DEFAULT_ACCOUNT.doubleValue()));
+            .andExpect(jsonPath("$.balance").value(DEFAULT_BALANCE.doubleValue()));
     }
 
     @Test
@@ -264,7 +264,7 @@ class CustomersResourceIT {
         Customers updatedCustomers = customersRepository.findById(customers.getId()).get();
         // Disconnect from session so that the updates on updatedCustomers are not directly saved in db
         em.detach(updatedCustomers);
-        updatedCustomers.username(UPDATED_USERNAME).password(UPDATED_PASSWORD).phoneNumber(UPDATED_PHONE_NUMBER).account(UPDATED_ACCOUNT);
+        updatedCustomers.username(UPDATED_USERNAME).password(UPDATED_PASSWORD).phoneNumber(UPDATED_PHONE_NUMBER).balance(UPDATED_BALANCE);
         CustomersDTO customersDTO = customersMapper.toDto(updatedCustomers);
 
         restCustomersMockMvc
@@ -282,7 +282,7 @@ class CustomersResourceIT {
         assertThat(testCustomers.getUsername()).isEqualTo(UPDATED_USERNAME);
         assertThat(testCustomers.getPassword()).isEqualTo(UPDATED_PASSWORD);
         assertThat(testCustomers.getPhoneNumber()).isEqualTo(UPDATED_PHONE_NUMBER);
-        assertThat(testCustomers.getAccount()).isEqualTo(UPDATED_ACCOUNT);
+        assertThat(testCustomers.getBalance()).isEqualTo(UPDATED_BALANCE);
     }
 
     @Test
@@ -379,7 +379,7 @@ class CustomersResourceIT {
         assertThat(testCustomers.getUsername()).isEqualTo(UPDATED_USERNAME);
         assertThat(testCustomers.getPassword()).isEqualTo(DEFAULT_PASSWORD);
         assertThat(testCustomers.getPhoneNumber()).isEqualTo(UPDATED_PHONE_NUMBER);
-        assertThat(testCustomers.getAccount()).isEqualTo(DEFAULT_ACCOUNT);
+        assertThat(testCustomers.getBalance()).isEqualTo(DEFAULT_BALANCE);
     }
 
     @Test
@@ -398,7 +398,7 @@ class CustomersResourceIT {
             .username(UPDATED_USERNAME)
             .password(UPDATED_PASSWORD)
             .phoneNumber(UPDATED_PHONE_NUMBER)
-            .account(UPDATED_ACCOUNT);
+            .balance(UPDATED_BALANCE);
 
         restCustomersMockMvc
             .perform(
@@ -415,7 +415,7 @@ class CustomersResourceIT {
         assertThat(testCustomers.getUsername()).isEqualTo(UPDATED_USERNAME);
         assertThat(testCustomers.getPassword()).isEqualTo(UPDATED_PASSWORD);
         assertThat(testCustomers.getPhoneNumber()).isEqualTo(UPDATED_PHONE_NUMBER);
-        assertThat(testCustomers.getAccount()).isEqualTo(UPDATED_ACCOUNT);
+        assertThat(testCustomers.getBalance()).isEqualTo(UPDATED_BALANCE);
     }
 
     @Test

@@ -2,7 +2,7 @@ entity Customers {
     username String required unique
     password String required
     phoneNumber String required
-    account Double required min(0)
+    balance Double required min(0)
 }
 
 entity Organization {
@@ -45,7 +45,7 @@ enum PeriodType {
 }
 
 relationship ManyToMany {
-    Groups{users} to Customers{groups}
+    Groups{customers} to Customers{groups}
 }
 
 relationship ManyToOne {

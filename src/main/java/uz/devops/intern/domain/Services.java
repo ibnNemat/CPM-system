@@ -46,7 +46,7 @@ public class Services implements Serializable {
     @Column(name = "count_period", nullable = false)
     private Integer countPeriod;
 
-    @JsonIgnoreProperties(value = { "users", "organization" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "customers", "organization" }, allowSetters = true)
     @OneToOne
     @JoinColumn(unique = true)
     private Groups group;

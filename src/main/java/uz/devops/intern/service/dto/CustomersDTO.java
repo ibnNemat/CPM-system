@@ -15,6 +15,7 @@ public class CustomersDTO implements Serializable {
     @NotNull
     private String username;
 
+    @NotNull
     private String password;
 
     @NotNull
@@ -22,7 +23,7 @@ public class CustomersDTO implements Serializable {
 
     @NotNull
     @DecimalMin(value = "0")
-    private Double account;
+    private Double balance;
 
     private UserDTO user;
 
@@ -58,12 +59,12 @@ public class CustomersDTO implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public Double getAccount() {
-        return account;
+    public Double getBalance() {
+        return balance;
     }
 
-    public void setAccount(Double account) {
-        this.account = account;
+    public void setBalance(Double balance) {
+        this.balance = balance;
     }
 
     public UserDTO getUser() {
@@ -103,7 +104,7 @@ public class CustomersDTO implements Serializable {
             ", username='" + getUsername() + "'" +
             ", password='" + getPassword() + "'" +
             ", phoneNumber='" + getPhoneNumber() + "'" +
-            ", account=" + getAccount() +
+            ", balance=" + getBalance() +
             ", user=" + getUser() +
             "}";
     }

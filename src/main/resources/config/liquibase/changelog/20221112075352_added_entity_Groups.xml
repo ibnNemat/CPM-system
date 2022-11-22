@@ -32,8 +32,8 @@
 
     <changeSet id="20221112075352-1-relations" author="jhipster">
 
-        <createTable tableName="rel_groups__users">
-            <column name="users_id" type="bigint">
+        <createTable tableName="rel_groups__customers">
+            <column name="customers_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
             <column name="groups_id" type="bigint">
@@ -41,7 +41,7 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="groups_id, users_id" tableName="rel_groups__users"/>
+        <addPrimaryKey columnNames="groups_id, customers_id" tableName="rel_groups__customers"/>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->

@@ -55,12 +55,12 @@ describe('Groups Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call Customers query and add missing value', () => {
       const groups: IGroups = { id: 456 };
-      const users: ICustomers[] = [{ id: 4682 }];
-      groups.users = users;
+      const customers: ICustomers[] = [{ id: 4682 }];
+      groups.customers = customers;
 
       const customersCollection: ICustomers[] = [{ id: 5063 }];
       jest.spyOn(customersService, 'query').mockReturnValue(of(new HttpResponse({ body: customersCollection })));
-      const additionalCustomers = [...users];
+      const additionalCustomers = [...customers];
       const expectedCollection: ICustomers[] = [...additionalCustomers, ...customersCollection];
       jest.spyOn(customersService, 'addCustomersToCollectionIfMissing').mockReturnValue(expectedCollection);
 
@@ -99,15 +99,15 @@ describe('Groups Management Update Component', () => {
 
     it('Should update editForm', () => {
       const groups: IGroups = { id: 456 };
-      const users: ICustomers = { id: 12265 };
-      groups.users = [users];
+      const customers: ICustomers = { id: 12265 };
+      groups.customers = [customers];
       const organization: IOrganization = { id: 87226 };
       groups.organization = organization;
 
       activatedRoute.data = of({ groups });
       comp.ngOnInit();
 
-      expect(comp.customersSharedCollection).toContain(users);
+      expect(comp.customersSharedCollection).toContain(customers);
       expect(comp.organizationsSharedCollection).toContain(organization);
       expect(comp.groups).toEqual(groups);
     });

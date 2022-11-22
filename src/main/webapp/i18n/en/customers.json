@@ -21,7 +21,7 @@
       "username": "Username",
       "password": "Password",
       "phoneNumber": "Phone Number",
-      "account": "Account",
+      "balance": "Balance",
       "user": "User",
       "groups": "Groups"
     }

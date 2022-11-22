@@ -5,7 +5,7 @@ export const sampleWithRequiredData: ICustomers = {
   username: 'Money',
   password: 'Chair transmit HDD',
   phoneNumber: 'lime',
-  account: 35716,
+  balance: 35716,
 };
 
 export const sampleWithPartialData: ICustomers = {
@@ -13,7 +13,7 @@ export const sampleWithPartialData: ICustomers = {
   username: 'digital Clothing repurpose',
   password: 'Rubber application Quality-focused',
   phoneNumber: 'Bedfordshire grey Manors',
-  account: 28332,
+  balance: 28332,
 };
 
 export const sampleWithFullData: ICustomers = {
@@ -21,14 +21,14 @@ export const sampleWithFullData: ICustomers = {
   username: 'Rubber Investor',
   password: 'plum',
   phoneNumber: 'ivory',
-  account: 56934,
+  balance: 56934,
 };
 
 export const sampleWithNewData: NewCustomers = {
   username: 'visualize',
   password: 'integrated',
   phoneNumber: 'Accounts Re-contextualized',
-  account: 21952,
+  balance: 21952,
   id: null,
 };
 

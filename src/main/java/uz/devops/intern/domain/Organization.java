@@ -31,7 +31,7 @@ public class Organization implements Serializable {
     private String orgOwnerName;
 
     @OneToMany(mappedBy = "organization")
-    @JsonIgnoreProperties(value = { "users", "organization" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "customers", "organization" }, allowSetters = true)
     private Set<Groups> groups = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

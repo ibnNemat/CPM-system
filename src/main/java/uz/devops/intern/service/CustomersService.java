@@ -9,8 +9,6 @@ import uz.devops.intern.service.dto.CustomersDTO;
  * Service Interface for managing {@link uz.devops.intern.domain.Customers}.
  */
 public interface CustomersService {
-    CustomersDTO findByIdAccountGreaterThen(Long customerId, Double account);
-
     /**
      * Save a customers.
      *
@@ -57,5 +55,4 @@ public interface CustomersService {
      * @param id the id of the entity.
      */
     void delete(Long id);
-
 }

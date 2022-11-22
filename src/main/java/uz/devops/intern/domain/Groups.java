@@ -35,12 +35,12 @@ public class Groups implements Serializable {
 
     @ManyToMany
     @JoinTable(
-        name = "rel_groups__users",
+        name = "rel_groups__customers",
         joinColumns = @JoinColumn(name = "groups_id"),
-        inverseJoinColumns = @JoinColumn(name = "users_id")
+        inverseJoinColumns = @JoinColumn(name = "customers_id")
     )
     @JsonIgnoreProperties(value = { "user", "groups" }, allowSetters = true)
-    private Set<Customers> users = new HashSet<>();
+    private Set<Customers> customers = new HashSet<>();
 
     @ManyToOne
     @JsonIgnoreProperties(value = { "groups" }, allowSetters = true)
@@ -100,27 +100,27 @@ public class Groups implements Serializable {
         this.parentId = parentId;
     }
 
-    public Set<Customers> getUsers() {
-        return this.users;
+    public Set<Customers> getCustomers() {
+        return this.customers;
     }
 
-    public void setUsers(Set<Customers> customers) {
-        this.users = customers;
+    public void setCustomers(Set<Customers> customers) {
+        this.customers = customers;
     }
 
-    public Groups users(Set<Customers> customers) {
-        this.setUsers(customers);
+    public Groups customers(Set<Customers> customers) {
+        this.setCustomers(customers);
         return this;
     }
 
-    public Groups addUsers(Customers customers) {
-        this.users.add(customers);
+    public Groups addCustomers(Customers customers) {
+        this.customers.add(customers);
         customers.getGroups().add(this);
         return this;
     }
 
-    public Groups removeUsers(Customers customers) {
-        this.users.remove(customers);
+    public Groups removeCustomers(Customers customers) {
+        this.customers.remove(customers);
         customers.getGroups().remove(this);
         return this;
     }

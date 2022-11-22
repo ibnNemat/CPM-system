@@ -33,11 +33,36 @@ public class PaymentHistoryServiceImpl implements PaymentHistoryService {
     }
 
     @Override
-    public PaymentHistory save(PaymentHistory paymentHistory) {
-        log.debug("Request to save PaymentHistory : {}", paymentHistory);
+    public PaymentHistoryDTO save(PaymentHistoryDTO paymentHistoryDTO) {
+        log.debug("Request to save PaymentHistory : {}", paymentHistoryDTO);
+        PaymentHistory paymentHistory = paymentHistoryMapper.toEntity(paymentHistoryDTO);
         paymentHistory = paymentHistoryRepository.save(paymentHistory);
-        return paymentHistory;
+        return paymentHistoryMapper.toDto(paymentHistory);
     }
+
+    @Override
+    public PaymentHistoryDTO update(PaymentHistoryDTO paymentHistoryDTO) {
+        log.debug("Request to update PaymentHistory : {}", paymentHistoryDTO);
+        PaymentHistory paymentHistory = paymentHistoryMapper.toEntity(paymentHistoryDTO);
+        paymentHistory = paymentHistoryRepository.save(paymentHistory);
+        return paymentHistoryMapper.toDto(paymentHistory);
+    }
+
+    @Override
+    public Optional<PaymentHistoryDTO> partialUpdate(PaymentHistoryDTO paymentHistoryDTO) {
+        log.debug("Request to partially update PaymentHistory : {}", paymentHistoryDTO);
+
+        return paymentHistoryRepository
+            .findById(paymentHistoryDTO.getId())
+            .map(existingPaymentHistory -> {
+                paymentHistoryMapper.partialUpdate(existingPaymentHistory, paymentHistoryDTO);
+
+                return existingPaymentHistory;
+            })
+            .map(paymentHistoryRepository::save)
+            .map(paymentHistoryMapper::toDto);
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<PaymentHistoryDTO> findAll() {

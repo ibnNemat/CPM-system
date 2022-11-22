@@ -21,16 +21,6 @@ public class ServicesRepositoryWithBagRelationshipsImpl implements ServicesRepos
     private EntityManager entityManager;
 
     @Override
-    public Optional<Services> fetchBagRelationships(Optional<Services> services) {
-        return services.map(this::fetchUsers);
-    }
-
-    @Override
-    public Page<Services> fetchBagRelationships(Page<Services> services) {
-        return new PageImpl<>(fetchBagRelationships(services.getContent()), services.getPageable(), services.getTotalElements());
-    }
-
-    @Override
     public List<Services> fetchBagRelationships(List<Services> services) {
         return Optional.of(services).map(this::fetchUsers).orElse(Collections.emptyList());
     }

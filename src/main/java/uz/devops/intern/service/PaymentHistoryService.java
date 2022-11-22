@@ -2,8 +2,6 @@ package uz.devops.intern.service;
 
 import java.util.List;
 import java.util.Optional;
-
-import uz.devops.intern.domain.PaymentHistory;
 import uz.devops.intern.service.dto.PaymentHistoryDTO;
 
 /**
@@ -16,7 +14,23 @@ public interface PaymentHistoryService {
      * @param paymentHistoryDTO the entity to save.
      * @return the persisted entity.
      */
-    PaymentHistory save(PaymentHistory paymentHistory);
+    PaymentHistoryDTO save(PaymentHistoryDTO paymentHistoryDTO);
+
+    /**
+     * Updates a paymentHistory.
+     *
+     * @param paymentHistoryDTO the entity to update.
+     * @return the persisted entity.
+     */
+    PaymentHistoryDTO update(PaymentHistoryDTO paymentHistoryDTO);
+
+    /**
+     * Partially updates a paymentHistory.
+     *
+     * @param paymentHistoryDTO the entity to update partially.
+     * @return the persisted entity.
+     */
+    Optional<PaymentHistoryDTO> partialUpdate(PaymentHistoryDTO paymentHistoryDTO);
 
     /**
      * Get all the paymentHistories.

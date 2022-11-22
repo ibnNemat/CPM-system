@@ -23,7 +23,7 @@ describe('Customers Form Service', () => {
             username: expect.any(Object),
             password: expect.any(Object),
             phoneNumber: expect.any(Object),
-            account: expect.any(Object),
+            balance: expect.any(Object),
             user: expect.any(Object),
             groups: expect.any(Object),
           })
@@ -39,7 +39,7 @@ describe('Customers Form Service', () => {
             username: expect.any(Object),
             password: expect.any(Object),
             phoneNumber: expect.any(Object),
-            account: expect.any(Object),
+            balance: expect.any(Object),
             user: expect.any(Object),
             groups: expect.any(Object),
           })
