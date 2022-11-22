@@ -16,10 +16,17 @@ public class GroupsDTO implements Serializable {
 
     @NotNull
     private String name;
-
     private String groupOwnerName;
-
     private Set<CustomersDTO> customers = new HashSet<>();
+    private Set<ServicesDTO> services;
+
+    public Set<ServicesDTO> getServices() {
+        return services;
+    }
+
+    public void setServices(Set<ServicesDTO> services) {
+        this.services = services;
+    }
 
     private OrganizationDTO organization;
 
