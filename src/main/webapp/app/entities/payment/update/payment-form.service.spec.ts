@@ -4,7 +4,7 @@ import { sampleWithRequiredData, sampleWithNewData } from '../payment.test-sampl
 
 import { PaymentFormService } from './payment-form.service';
 
-describe('Payment Form Service', () => {
+describe('PaymentDTO Form Service', () => {
   let service: PaymentFormService;
 
   beforeEach(() => {
@@ -50,7 +50,7 @@ describe('Payment Form Service', () => {
     });
 
     describe('getPayment', () => {
-      it('should return NewPayment for default Payment initial value', () => {
+      it('should return NewPayment for default PaymentDTO initial value', () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const formGroup = service.createPaymentFormGroup(sampleWithNewData);
 
@@ -59,7 +59,7 @@ describe('Payment Form Service', () => {
         expect(payment).toMatchObject(sampleWithNewData);
       });
 
-      it('should return NewPayment for empty Payment initial value', () => {
+      it('should return NewPayment for empty PaymentDTO initial value', () => {
         const formGroup = service.createPaymentFormGroup();
 
         const payment = service.getPayment(formGroup) as any;

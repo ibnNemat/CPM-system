@@ -21,7 +21,6 @@ public interface PaymentMapper extends EntityMapper<PaymentDTO, Payment> {
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     CustomersDTO toDtoCustomersId(Customers customers);
-
     @Named("servicesId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")

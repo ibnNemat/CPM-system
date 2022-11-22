@@ -37,19 +37,30 @@ public class AdminUserDTO implements Serializable {
     private String imageUrl;
 
     private boolean activated = false;
-
     @Size(min = 2, max = 10)
     private String langKey;
-
     private String createdBy;
-
     private Instant createdDate;
-
     private String lastModifiedBy;
-
     private Instant lastModifiedDate;
-
     private Set<String> authorities;
+    private String phoneNumber;
+    private Double account;
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public Double getAccount() {
+        return account;
+    }
+
+    public void setAccount(Double account) {
+        this.account = account;
+    }
 
     public AdminUserDTO() {
         // Empty constructor needed for Jackson.

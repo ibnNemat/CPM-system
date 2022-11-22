@@ -71,27 +71,21 @@ public class CustomersResource {
     /**
      * {@code PUT  /customers/:id} : Updates an existing customers.
      *
-     * @param id the id of the customersDTO to save.
      * @param customersDTO the customersDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated customersDTO,
      * or with status {@code 400 (Bad Request)} if the customersDTO is not valid,
      * or with status {@code 500 (Internal Server Error)} if the customersDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/customers/{id}")
-    public ResponseEntity<CustomersDTO> updateCustomers(
-        @PathVariable(value = "id", required = false) final Long id,
-        @Valid @RequestBody CustomersDTO customersDTO
+    @PutMapping("/customers")
+    public ResponseEntity<CustomersDTO> updateCustomers(@Valid @RequestBody CustomersDTO customersDTO
     ) throws URISyntaxException {
-        log.debug("REST request to update Customers : {}, {}", id, customersDTO);
+        log.debug("REST request to update Customers : {}, {}", customersDTO);
         if (customersDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, customersDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
 
-        if (!customersRepository.existsById(id)) {
+        if (!customersRepository.existsById(customersDTO.getId())) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 

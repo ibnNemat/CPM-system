@@ -15,8 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 import tech.jhipster.security.RandomUtil;
 import uz.devops.intern.config.Constants;
 import uz.devops.intern.domain.Authority;
+import uz.devops.intern.domain.Customers;
 import uz.devops.intern.domain.User;
 import uz.devops.intern.repository.AuthorityRepository;
+import uz.devops.intern.repository.CustomersRepository;
 import uz.devops.intern.repository.UserRepository;
 import uz.devops.intern.security.AuthoritiesConstants;
 import uz.devops.intern.security.SecurityUtils;
@@ -38,13 +40,13 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final AuthorityRepository authorityRepository;
-    private final CustomersService customersService;
+    private final CustomersRepository customersRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CustomersService customersService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CustomersRepository customersRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
-        this.customersService = customersService;
+        this.customersRepository = customersRepository;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -119,10 +121,43 @@ public class UserService {
         newUser.setActivationKey(RandomUtil.generateActivationKey());
         Set<Authority> authorities = new HashSet<>();
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
+
+        checkAuthority(userDTO.getAuthorities(), authorities);
+
         newUser.setAuthorities(authorities);
-        userRepository.save(newUser);
+        User user = userRepository.save(newUser);
+
+        saveCustomerIfExistsCustomerAuthority(user, userDTO);
         log.debug("Created Information for User: {}", newUser);
         return newUser;
+    }
+
+    private void checkAuthority(Set<String> authorityString, Set<Authority> authoritySet){
+        if(authorityString != null) {
+            Authority authority = new Authority();
+            if (authorityString.contains("ROLE_CUSTOMER")) {
+                authority.setName("ROLE_CUSTOMER");
+                authoritySet.add(authority);
+            } else if (authorityString.contains("ROLE_MANAGER")) {
+                authority.setName("ROLE_MANAGER");
+                authoritySet.add(authority);
+            }
+        }
+    }
+    private void saveCustomerIfExistsCustomerAuthority(User user, AdminUserDTO userDTO) {
+        Authority authority = new Authority();
+        authority.setName("ROLE_CUSTOMER");
+        if (user.getAuthorities().contains(authority)) {
+            Customers customers = new Customers();
+
+            customers.setUser(user);
+            customers.setUsername(user.getLogin());
+            customers.setPassword(user.getPassword());
+            customers.setPhoneNumber(userDTO.getPhoneNumber());
+            customers.account(userDTO.getAccount());
+
+            customersRepository.save(customers);
+        }
     }
 
     private boolean removeNonActivatedUser(User existingUser) {
@@ -157,22 +192,11 @@ public class UserService {
                 .map(Optional::get)
                 .collect(Collectors.toSet());
             user.setAuthorities(authorities);
-
-            saveCustomerIfExistsCustomerAuthority(authorities);
         }
 
         userRepository.save(user);
         log.debug("Created Information for User: {}", user);
         return user;
-    }
-
-    private void saveCustomerIfExistsCustomerAuthority(Set<Authority> authorities) {
-        Authority authority = new Authority();
-        authority.setName("ROLE_CUSTOMER");
-        if (authorities.contains(authority)){
-            CustomersDTO customersDTO = new CustomersDTO();
-
-        }
     }
 
     private void setLogin(AdminUserDTO userDTO, User user) {

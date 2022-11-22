@@ -1,6 +1,5 @@
 package uz.devops.intern.web.rest;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
@@ -13,8 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
@@ -23,6 +22,7 @@ import tech.jhipster.web.util.ResponseUtil;
 import uz.devops.intern.repository.PaymentRepository;
 import uz.devops.intern.service.PaymentService;
 import uz.devops.intern.service.dto.PaymentDTO;
+import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.web.rest.errors.BadRequestAlertException;
 
 /**
@@ -30,42 +30,22 @@ import uz.devops.intern.web.rest.errors.BadRequestAlertException;
  */
 @RestController
 @RequestMapping("/api")
+@PreAuthorize("hasAnyAuthority('ROLE_CUSTOMER', 'ROLE_MANAGER','ROLE_ADMIN')")
 public class PaymentResource {
-
     private final Logger log = LoggerFactory.getLogger(PaymentResource.class);
-
     private static final String ENTITY_NAME = "payment";
-
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
-
     private final PaymentService paymentService;
-
     private final PaymentRepository paymentRepository;
-
     public PaymentResource(PaymentService paymentService, PaymentRepository paymentRepository) {
         this.paymentService = paymentService;
         this.paymentRepository = paymentRepository;
     }
-
-    /**
-     * {@code POST  /payments} : Create a new payment.
-     *
-     * @param paymentDTO the paymentDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new paymentDTO, or with status {@code 400 (Bad Request)} if the payment has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PostMapping("/payments")
-    public ResponseEntity<PaymentDTO> createPayment(@Valid @RequestBody PaymentDTO paymentDTO) throws URISyntaxException {
-        log.debug("REST request to save Payment : {}", paymentDTO);
-        if (paymentDTO.getId() != null) {
-            throw new BadRequestAlertException("A new payment cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        PaymentDTO result = paymentService.save(paymentDTO);
-        return ResponseEntity
-            .created(new URI("/api/payments/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+    @PreAuthorize("hasAnyAuthority('ROLE_CUSTOMER')")
+    @PutMapping("/payment/pay")
+    public ResponseEntity<ResponseDTO> payForService(@Valid @RequestBody PaymentDTO paymentDTO){
+        return ResponseEntity.ok(paymentService.payForService(paymentDTO));
     }
 
     /**
@@ -79,11 +59,12 @@ public class PaymentResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/payments/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<PaymentDTO> updatePayment(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody PaymentDTO paymentDTO
     ) throws URISyntaxException {
-        log.debug("REST request to update Payment : {}, {}", id, paymentDTO);
+        log.debug("REST request to update PaymentDTO : {}, {}", id, paymentDTO);
         if (paymentDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -113,12 +94,13 @@ public class PaymentResource {
      * or with status {@code 500 (Internal Server Error)} if the paymentDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @PreAuthorize("hasAnyAuthority('ROLE_CUSTOMER')")
     @PatchMapping(value = "/payments/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<PaymentDTO> partialUpdatePayment(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody PaymentDTO paymentDTO
     ) throws URISyntaxException {
-        log.debug("REST request to partial update Payment partially : {}, {}", id, paymentDTO);
+        log.debug("REST request to partial update PaymentDTO partially : {}, {}", id, paymentDTO);
         if (paymentDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -160,7 +142,7 @@ public class PaymentResource {
      */
     @GetMapping("/payments/{id}")
     public ResponseEntity<PaymentDTO> getPayment(@PathVariable Long id) {
-        log.debug("REST request to get Payment : {}", id);
+        log.debug("REST request to get PaymentDTO : {}", id);
         Optional<PaymentDTO> paymentDTO = paymentService.findOne(id);
         return ResponseUtil.wrapOrNotFound(paymentDTO);
     }
@@ -173,7 +155,7 @@ public class PaymentResource {
      */
     @DeleteMapping("/payments/{id}")
     public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
-        log.debug("REST request to delete Payment : {}", id);
+        log.debug("REST request to delete PaymentDTO : {}", id);
         paymentService.delete(id);
         return ResponseEntity
             .noContent()

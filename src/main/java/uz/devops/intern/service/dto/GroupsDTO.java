@@ -24,6 +24,15 @@ public class GroupsDTO implements Serializable {
     private Set<CustomersDTO> users = new HashSet<>();
 
     private OrganizationDTO organization;
+//    @JsonIgnoreProperties(value = {"services", "customers", "user"})
+    private Set<CustomersDTO> customers;
+    public Set<CustomersDTO> getCustomers() {
+        return customers;
+    }
+
+    public void setCustomers(Set<CustomersDTO> customers) {
+        this.customers = customers;
+    }
 
     public Long getId() {
         return id;

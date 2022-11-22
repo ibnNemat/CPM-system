@@ -15,7 +15,6 @@ public class CustomersDTO implements Serializable {
     @NotNull
     private String username;
 
-    @NotNull
     private String password;
 
     @NotNull

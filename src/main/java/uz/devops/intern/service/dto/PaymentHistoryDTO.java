@@ -17,11 +17,8 @@ public class PaymentHistoryDTO implements Serializable {
     private String groupName;
 
     private String serviceName;
-
     private Double sum;
-
     private LocalDate createdAt;
-
     private CustomersDTO customer;
 
     public Long getId() {
