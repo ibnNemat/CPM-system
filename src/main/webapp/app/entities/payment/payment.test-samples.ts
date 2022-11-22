@@ -7,7 +7,7 @@ export const sampleWithRequiredData: IPayment = {
   paidMoney: 72336,
   paymentForPeriod: 76971,
   isPayed: false,
-  startedPeriod: dayjs('2022-11-11'),
+  startedPeriod: dayjs('2022-11-22'),
 };
 
 export const sampleWithPartialData: IPayment = {
@@ -15,8 +15,8 @@ export const sampleWithPartialData: IPayment = {
   paidMoney: 39655,
   paymentForPeriod: 35842,
   isPayed: false,
-  startedPeriod: dayjs('2022-11-11'),
-  finishedPeriod: dayjs('2022-11-11'),
+  startedPeriod: dayjs('2022-11-21'),
+  finishedPeriod: dayjs('2022-11-21'),
 };
 
 export const sampleWithFullData: IPayment = {
@@ -24,15 +24,15 @@ export const sampleWithFullData: IPayment = {
   paidMoney: 89152,
   paymentForPeriod: 91729,
   isPayed: true,
-  startedPeriod: dayjs('2022-11-11'),
-  finishedPeriod: dayjs('2022-11-11'),
+  startedPeriod: dayjs('2022-11-21'),
+  finishedPeriod: dayjs('2022-11-21'),
 };
 
 export const sampleWithNewData: NewPayment = {
   paidMoney: 12909,
   paymentForPeriod: 22359,
   isPayed: false,
-  startedPeriod: dayjs('2022-11-12'),
+  startedPeriod: dayjs('2022-11-22'),
   id: null,
 };
 

@@ -18,7 +18,7 @@ export const sampleWithFullData: IPaymentHistory = {
   groupName: 'Small end-to-end Object-based',
   serviceName: 'cyan B2C COM',
   sum: 61749,
-  createdAt: dayjs('2022-11-13'),
+  createdAt: dayjs('2022-11-21'),
 };
 
 export const sampleWithNewData: NewPaymentHistory = {

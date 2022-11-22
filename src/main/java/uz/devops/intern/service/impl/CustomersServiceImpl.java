@@ -21,8 +21,11 @@ import uz.devops.intern.service.mapper.CustomersMapper;
 public class CustomersServiceImpl implements CustomersService {
 
     private final Logger log = LoggerFactory.getLogger(CustomersServiceImpl.class);
+
     private final CustomersRepository customersRepository;
+
     private final CustomersMapper customersMapper;
+
     public CustomersServiceImpl(CustomersRepository customersRepository, CustomersMapper customersMapper) {
         this.customersRepository = customersRepository;
         this.customersMapper = customersMapper;

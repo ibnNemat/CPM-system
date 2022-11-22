@@ -1,6 +1,6 @@
 {
   "applications": "*",
-  "changelogDate": "20221114110950",
+  "changelogDate": "20221122110425",
   "dto": "mapstruct",
   "embedded": false,
   "entityTableName": "payment_history",
