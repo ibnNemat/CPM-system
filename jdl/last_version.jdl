@@ -13,7 +13,6 @@ entity Organization {
 entity Groups {
     name String required
     groupOwnerName String
-    parentId Long
 }
 
 entity Services {
@@ -46,6 +45,7 @@ enum PeriodType {
 
 relationship ManyToMany {
     Groups{customers} to Customers{groups}
+    Services{groups} to Groups{services}
 }
 
 relationship ManyToOne {
@@ -59,7 +59,6 @@ relationship OneToMany {
 }
 
 relationship OneToOne {
-    Services{group} to Groups
     Customers{user} to User
 }
 

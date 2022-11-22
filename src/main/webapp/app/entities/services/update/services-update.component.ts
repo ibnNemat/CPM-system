@@ -81,14 +81,19 @@ export class ServicesUpdateComponent implements OnInit {
     this.services = services;
     this.servicesFormService.resetForm(this.editForm, services);
 
-    this.groupsSharedCollection = this.groupsService.addGroupsToCollectionIfMissing<IGroups>(this.groupsSharedCollection, services.group);
+    this.groupsSharedCollection = this.groupsService.addGroupsToCollectionIfMissing<IGroups>(
+      this.groupsSharedCollection,
+      ...(services.groups ?? [])
+    );
   }
 
   protected loadRelationshipsOptions(): void {
     this.groupsService
       .query()
       .pipe(map((res: HttpResponse<IGroups[]>) => res.body ?? []))
-      .pipe(map((groups: IGroups[]) => this.groupsService.addGroupsToCollectionIfMissing<IGroups>(groups, this.services?.group)))
+      .pipe(
+        map((groups: IGroups[]) => this.groupsService.addGroupsToCollectionIfMissing<IGroups>(groups, ...(this.services?.groups ?? [])))
+      )
       .subscribe((groups: IGroups[]) => (this.groupsSharedCollection = groups));
   }
 }

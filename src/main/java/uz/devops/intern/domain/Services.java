@@ -3,6 +3,8 @@ package uz.devops.intern.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import uz.devops.intern.domain.enumeration.PeriodType;
@@ -46,10 +48,14 @@ public class Services implements Serializable {
     @Column(name = "count_period", nullable = false)
     private Integer countPeriod;
 
-    @JsonIgnoreProperties(value = { "customers", "organization" }, allowSetters = true)
-    @OneToOne
-    @JoinColumn(unique = true)
-    private Groups group;
+    @ManyToMany
+    @JoinTable(
+        name = "rel_services__groups",
+        joinColumns = @JoinColumn(name = "services_id"),
+        inverseJoinColumns = @JoinColumn(name = "groups_id")
+    )
+    @JsonIgnoreProperties(value = { "customers", "organization", "services" }, allowSetters = true)
+    private Set<Groups> groups = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -131,16 +137,28 @@ public class Services implements Serializable {
         this.countPeriod = countPeriod;
     }
 
-    public Groups getGroup() {
-        return this.group;
+    public Set<Groups> getGroups() {
+        return this.groups;
     }
 
-    public void setGroup(Groups groups) {
-        this.group = groups;
+    public void setGroups(Set<Groups> groups) {
+        this.groups = groups;
     }
 
-    public Services group(Groups groups) {
-        this.setGroup(groups);
+    public Services groups(Set<Groups> groups) {
+        this.setGroups(groups);
+        return this;
+    }
+
+    public Services addGroups(Groups groups) {
+        this.groups.add(groups);
+        groups.getServices().add(this);
+        return this;
+    }
+
+    public Services removeGroups(Groups groups) {
+        this.groups.remove(groups);
+        groups.getServices().remove(this);
         return this;
     }
 

@@ -132,9 +132,16 @@
         </div>
 
         <div class="row mb-3">
-          <label class="form-label" jhiTranslate="cpmSystemApp.services.group" for="field_group">Group</label>
-          <select class="form-control" id="field_group" data-cy="group" name="group" formControlName="group" [compareWith]="compareGroups">
-            <option [ngValue]="null"></option>
+          <label jhiTranslate="cpmSystemApp.services.groups" for="field_groups">Groups</label>
+          <select
+            class="form-control"
+            id="field_groups"
+            data-cy="groups"
+            multiple
+            name="groups"
+            formControlName="groups"
+            [compareWith]="compareGroups"
+          >
             <option [ngValue]="groupsOption" *ngFor="let groupsOption of groupsSharedCollection">{{ groupsOption.id }}</option>
           </select>
         </div>

@@ -13,10 +13,6 @@
     {
       "fieldName": "groupOwnerName",
       "fieldType": "String"
-    },
-    {
-      "fieldName": "parentId",
-      "fieldType": "Long"
     }
   ],
   "fluentMethods": true,
@@ -37,6 +33,13 @@
       "otherEntityRelationshipName": "groups",
       "relationshipName": "organization",
       "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "services",
+      "otherEntityRelationshipName": "groups",
+      "ownerSide": false,
+      "relationshipName": "services",
+      "relationshipType": "many-to-many"
     }
   ],
   "service": "serviceImpl"

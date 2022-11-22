@@ -30,9 +30,6 @@ public class Groups implements Serializable {
     @Column(name = "group_owner_name")
     private String groupOwnerName;
 
-    @Column(name = "parent_id")
-    private Long parentId;
-
     @ManyToMany
     @JoinTable(
         name = "rel_groups__customers",
@@ -45,6 +42,10 @@ public class Groups implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties(value = { "groups" }, allowSetters = true)
     private Organization organization;
+
+    @ManyToMany(mappedBy = "groups")
+    @JsonIgnoreProperties(value = { "groups" }, allowSetters = true)
+    private Set<Services> services = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -87,19 +88,6 @@ public class Groups implements Serializable {
         this.groupOwnerName = groupOwnerName;
     }
 
-    public Long getParentId() {
-        return this.parentId;
-    }
-
-    public Groups parentId(Long parentId) {
-        this.setParentId(parentId);
-        return this;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
-    }
-
     public Set<Customers> getCustomers() {
         return this.customers;
     }
@@ -138,6 +126,37 @@ public class Groups implements Serializable {
         return this;
     }
 
+    public Set<Services> getServices() {
+        return this.services;
+    }
+
+    public void setServices(Set<Services> services) {
+        if (this.services != null) {
+            this.services.forEach(i -> i.removeGroups(this));
+        }
+        if (services != null) {
+            services.forEach(i -> i.addGroups(this));
+        }
+        this.services = services;
+    }
+
+    public Groups services(Set<Services> services) {
+        this.setServices(services);
+        return this;
+    }
+
+    public Groups addServices(Services services) {
+        this.services.add(services);
+        services.getGroups().add(this);
+        return this;
+    }
+
+    public Groups removeServices(Services services) {
+        this.services.remove(services);
+        services.getGroups().remove(this);
+        return this;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -164,7 +183,6 @@ public class Groups implements Serializable {
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", groupOwnerName='" + getGroupOwnerName() + "'" +
-            ", parentId=" + getParentId() +
             "}";
     }
 }

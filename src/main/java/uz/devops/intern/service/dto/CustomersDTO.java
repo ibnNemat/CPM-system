@@ -2,7 +2,6 @@ package uz.devops.intern.service.dto;
 
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.Set;
 import javax.validation.constraints.*;
 
 /**
@@ -27,15 +26,6 @@ public class CustomersDTO implements Serializable {
     private Double balance;
 
     private UserDTO user;
-    private Set<GroupsDTO> groups;
-
-    public Set<GroupsDTO> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(Set<GroupsDTO> groups) {
-        this.groups = groups;
-    }
 
     public Long getId() {
         return id;

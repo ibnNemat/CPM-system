@@ -2,7 +2,9 @@ package uz.devops.intern.service.dto;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import javax.validation.constraints.*;
 import uz.devops.intern.domain.enumeration.PeriodType;
 
@@ -31,7 +33,7 @@ public class ServicesDTO implements Serializable {
     @Min(value = 1)
     private Integer countPeriod;
 
-    private GroupsDTO group;
+    private Set<GroupsDTO> groups = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -81,12 +83,12 @@ public class ServicesDTO implements Serializable {
         this.countPeriod = countPeriod;
     }
 
-    public GroupsDTO getGroup() {
-        return group;
+    public Set<GroupsDTO> getGroups() {
+        return groups;
     }
 
-    public void setGroup(GroupsDTO group) {
-        this.group = group;
+    public void setGroups(Set<GroupsDTO> groups) {
+        this.groups = groups;
     }
 
     @Override
@@ -120,7 +122,7 @@ public class ServicesDTO implements Serializable {
             ", startedPeriod='" + getStartedPeriod() + "'" +
             ", periodType='" + getPeriodType() + "'" +
             ", countPeriod=" + getCountPeriod() +
-            ", group=" + getGroup() +
+            ", groups=" + getGroups() +
             "}";
     }
 }

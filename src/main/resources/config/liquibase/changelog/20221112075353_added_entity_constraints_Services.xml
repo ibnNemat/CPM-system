@@ -8,9 +8,15 @@
     -->
     <changeSet id="20221112075353-2" author="jhipster">
 
-        <addForeignKeyConstraint baseColumnNames="group_id"
-                                 baseTableName="services"
-                                 constraintName="fk_services__group_id"
+        <addForeignKeyConstraint baseColumnNames="services_id"
+                                 baseTableName="rel_services__groups"
+                                 constraintName="fk_rel_services__groups__services_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="services"/>
+
+        <addForeignKeyConstraint baseColumnNames="groups_id"
+                                 baseTableName="rel_services__groups"
+                                 constraintName="fk_rel_services__groups__groups_id"
                                  referencedColumnNames="id"
                                  referencedTableName="groups"/>
     </changeSet>

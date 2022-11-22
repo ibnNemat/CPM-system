@@ -6,21 +6,19 @@ export const sampleWithRequiredData: IGroups = {
 };
 
 export const sampleWithPartialData: IGroups = {
-  id: 85345,
-  name: 'navigate',
-  groupOwnerName: 'Orchestrator Steel index',
-  parentId: 40751,
+  id: 67596,
+  name: 'Handmade Shoes Checking',
+  groupOwnerName: 'Cotton',
 };
 
 export const sampleWithFullData: IGroups = {
   id: 51968,
   name: 'Home payment web-enabled',
   groupOwnerName: 'Gorgeous Quality Account',
-  parentId: 12710,
 };
 
 export const sampleWithNewData: NewGroups = {
-  name: 'withdrawal Dynamic invoice',
+  name: 'alarm',
   id: null,
 };
 

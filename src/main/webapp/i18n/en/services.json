@@ -23,7 +23,7 @@
       "startedPeriod": "Started Period",
       "periodType": "Period Type",
       "countPeriod": "Count Period",
-      "group": "Group"
+      "groups": "Groups"
     }
   }
 }

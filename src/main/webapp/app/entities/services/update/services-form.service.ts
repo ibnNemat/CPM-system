@@ -14,7 +14,7 @@ type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>
  */
 type ServicesFormGroupInput = IServices | PartialWithRequiredKeyOf<NewServices>;
 
-type ServicesFormDefaults = Pick<NewServices, 'id'>;
+type ServicesFormDefaults = Pick<NewServices, 'id' | 'groups'>;
 
 type ServicesFormGroupContent = {
   id: FormControl<IServices['id'] | NewServices['id']>;
@@ -23,7 +23,7 @@ type ServicesFormGroupContent = {
   startedPeriod: FormControl<IServices['startedPeriod']>;
   periodType: FormControl<IServices['periodType']>;
   countPeriod: FormControl<IServices['countPeriod']>;
-  group: FormControl<IServices['group']>;
+  groups: FormControl<IServices['groups']>;
 };
 
 export type ServicesFormGroup = FormGroup<ServicesFormGroupContent>;
@@ -58,7 +58,7 @@ export class ServicesFormService {
       countPeriod: new FormControl(servicesRawValue.countPeriod, {
         validators: [Validators.required, Validators.min(1)],
       }),
-      group: new FormControl(servicesRawValue.group),
+      groups: new FormControl(servicesRawValue.groups ?? []),
     });
   }
 
@@ -79,6 +79,7 @@ export class ServicesFormService {
   private getFormDefaults(): ServicesFormDefaults {
     return {
       id: null,
+      groups: [],
     };
   }
 }
