@@ -42,7 +42,7 @@ public class GroupsServiceImpl implements GroupsService {
         }
         List<Groups> groupsList = groupsRepository.findAllByGroupOwnerName(ownerName);
         return groupsList.stream()
-            .map(groupsMapper::toDto)
+            .map(GroupMapper::toDto)
             .toList();
     }
 
@@ -59,8 +59,7 @@ public class GroupsServiceImpl implements GroupsService {
         groupsDTO.setGroupOwnerName(groupOwner);
         Groups groups = groupsMapper.toEntity(groupsDTO);
         groups = groupsRepository.save(groups);
-        System.out.println(groups);
-        return GroupMapper.ForSavingGroup(groups);
+        return GroupMapper.toDto(groups);
     }
 
     @Override
@@ -68,7 +67,7 @@ public class GroupsServiceImpl implements GroupsService {
         log.debug("Request to update Groups : {}", groupsDTO);
         Groups groups = groupsMapper.toEntity(groupsDTO);
         groups = groupsRepository.save(groups);
-        return groupsMapper.toDto(groups);
+        return GroupMapper.toDto(groups);
     }
 
     @Override
@@ -83,26 +82,26 @@ public class GroupsServiceImpl implements GroupsService {
                 return existingGroups;
             })
             .map(groupsRepository::save)
-            .map(groupsMapper::toDto);
+            .map(GroupMapper::toDto);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<GroupsDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Groups");
-        return groupsRepository.findAll(pageable).map(groupsMapper::toDto);
+        return groupsRepository.findAll(pageable).map(GroupMapper::toDto);
     }
 
     @Override
     public Page<GroupsDTO> findAllWithEagerRelationships(Pageable pageable) {
-        return groupsRepository.findAllWithEagerRelationships(pageable).map(groupsMapper::toDto);
+        return groupsRepository.findAllWithEagerRelationships(pageable).map(GroupMapper::toDto);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<GroupsDTO> findOne(Long id) {
         log.debug("Request to get Groups : {}", id);
-        return groupsRepository.findOneWithEagerRelationships(id).map(groupsMapper::toDto);
+        return groupsRepository.findById(id).map(GroupMapper::toDto);
     }
 
     @Override

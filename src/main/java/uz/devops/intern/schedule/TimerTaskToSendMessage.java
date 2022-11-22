@@ -15,14 +15,13 @@ import java.util.TimerTask;
 
 @Component
 @EnableScheduling
-public class InvoicesTimerTask {
+public class TimerTaskToSendMessage {
     private final PaymentRepository paymentRepository;
-    public InvoicesTimerTask(PaymentRepository paymentRepository) {
+    public TimerTaskToSendMessage(PaymentRepository paymentRepository) {
         this.paymentRepository = paymentRepository;
     }
-
     public void sendNotificationIfCustomerNotPaidForService(
-        Customers customer, Groups group, Services service, LocalDate startedPeriod){
+        Customers customer, Groups group, Services service, LocalDate startedPeriod, LocalDate endPeriod){
         Timer timer = new Timer();
         TimerTask timerTask = new TimerTask() {
             @Override
@@ -38,6 +37,6 @@ public class InvoicesTimerTask {
             }
         };
 
-        timer.scheduleAtFixedRate(timerTask, startedPeriod.toEpochDay(), 1000 * 60 * 2);
+        timer.scheduleAtFixedRate(timerTask, startedPeriod.toEpochDay(), 5000);
     }
 }

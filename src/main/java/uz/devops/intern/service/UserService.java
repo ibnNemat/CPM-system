@@ -122,7 +122,7 @@ public class UserService {
         Set<Authority> authorities = new HashSet<>();
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
 
-        checkUserAuthority(userDTO.getAuthorities(), authorities);
+        checkAuthority(userDTO.getAuthorities(), authorities);
 
         newUser.setAuthorities(authorities);
         User user = userRepository.save(newUser);
@@ -132,14 +132,18 @@ public class UserService {
         return newUser;
     }
 
-    private void checkUserAuthority(Set<String> authorityString, Set<Authority> authoritySet){
-        if (authorityString != null && authorityString.contains("ROLE_CUSTOMER")){
+    private void checkAuthority(Set<String> authorityString, Set<Authority> authoritySet){
+        if(authorityString != null) {
             Authority authority = new Authority();
-            authority.setName("ROLE_CUSTOMER");
-            authoritySet.add(authority);
+            if (authorityString.contains("ROLE_CUSTOMER")) {
+                authority.setName("ROLE_CUSTOMER");
+                authoritySet.add(authority);
+            } else if (authorityString.contains("ROLE_MANAGER")) {
+                authority.setName("ROLE_MANAGER");
+                authoritySet.add(authority);
+            }
         }
     }
-
     private void saveCustomerIfExistsCustomerAuthority(User user, AdminUserDTO userDTO) {
         Authority authority = new Authority();
         authority.setName("ROLE_CUSTOMER");

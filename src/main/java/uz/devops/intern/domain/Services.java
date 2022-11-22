@@ -17,20 +17,16 @@ import uz.devops.intern.domain.enumeration.ServiceType;
 @Table(name = "services")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Services implements Serializable {
-
     private static final long serialVersionUID = 1L;
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
     @Column(name = "id")
     private Long id;
-
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "service_type", nullable = false)
     private ServiceType serviceType;
-
     @NotNull
     @Column(name = "price", nullable = false)
     private Double price;
@@ -45,7 +41,7 @@ public class Services implements Serializable {
     @JsonIgnoreProperties(value = { "organization", "users" }, allowSetters = true)
     private Groups group;
 
-    @NotNull
+    @Column(name = "started_period", nullable = false)
     private LocalDate startedPeriod;
     @ManyToMany
     @JoinTable(
@@ -54,7 +50,7 @@ public class Services implements Serializable {
         inverseJoinColumns = @JoinColumn(name = "customers_id")
     )
     @JsonIgnoreProperties(value = { "user", "groups", "services" }, allowSetters = true)
-    private Set<Customers> users = new HashSet<>();
+    private Set<Customers> customers = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -145,33 +141,33 @@ public class Services implements Serializable {
         return this;
     }
 
-    public Set<Customers> getUsers() {
-        return this.users;
+    public Set<Customers> getCustomers() {
+        return this.customers;
     }
 
-    public void setUsers(Set<Customers> customers) {
-        if (this.users != null) {
-            this.users.forEach(i -> i.removeServices(this));
+    public void setCustomers(Set<Customers> customers) {
+        if (this.customers != null) {
+            this.customers.forEach(i -> i.removeServices(this));
         }
         if (customers != null) {
             customers.forEach(i -> i.addServices(this));
         }
-        this.users = customers;
+        this.customers = customers;
     }
 
     public Services users(Set<Customers> customers) {
-        this.setUsers(customers);
+        this.setCustomers(customers);
         return this;
     }
 
     public Services addUsers(Customers customers) {
-        this.users.add(customers);
+        this.customers.add(customers);
         customers.getServices().add(this);
         return this;
     }
 
     public Services removeUsers(Customers customers) {
-        this.users.remove(customers);
+        this.customers.remove(customers);
         customers.getServices().remove(this);
         return this;
     }
@@ -197,6 +193,7 @@ public class Services implements Serializable {
 
     // prettier-ignore
 
+
     @Override
     public String toString() {
         return "Services{" +
@@ -206,7 +203,8 @@ public class Services implements Serializable {
             ", periodType=" + periodType +
             ", countPeriod=" + countPeriod +
             ", group=" + group +
-            ", users=" + users +
+            ", startedPeriod=" + startedPeriod +
+            ", users=" + customers +
             '}';
     }
 }

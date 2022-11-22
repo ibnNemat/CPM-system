@@ -29,8 +29,7 @@
     },
     {
       "fieldName": "startedPeriod",
-      "fieldType": "LocalDate",
-      "fieldValidateRules": ["required"]
+      "fieldType": "LocalDate"
     }
   ],
   "fluentMethods": true,
@@ -48,7 +47,7 @@
       "otherEntityName": "customers",
       "otherEntityRelationshipName": "services",
       "ownerSide": true,
-      "relationshipName": "users",
+      "relationshipName": "customers",
       "relationshipType": "many-to-many"
     }
   ],

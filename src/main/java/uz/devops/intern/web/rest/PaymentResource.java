@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
@@ -21,6 +22,7 @@ import tech.jhipster.web.util.ResponseUtil;
 import uz.devops.intern.repository.PaymentRepository;
 import uz.devops.intern.service.PaymentService;
 import uz.devops.intern.service.dto.PaymentDTO;
+import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.web.rest.errors.BadRequestAlertException;
 
 /**
@@ -28,22 +30,22 @@ import uz.devops.intern.web.rest.errors.BadRequestAlertException;
  */
 @RestController
 @RequestMapping("/api")
+@PreAuthorize("hasAnyAuthority('ROLE_CUSTOMER', 'ROLE_MANAGER','ROLE_ADMIN')")
 public class PaymentResource {
-
     private final Logger log = LoggerFactory.getLogger(PaymentResource.class);
-
     private static final String ENTITY_NAME = "payment";
-
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
-
     private final PaymentService paymentService;
-
     private final PaymentRepository paymentRepository;
-
     public PaymentResource(PaymentService paymentService, PaymentRepository paymentRepository) {
         this.paymentService = paymentService;
         this.paymentRepository = paymentRepository;
+    }
+    @PreAuthorize("hasAnyAuthority('ROLE_CUSTOMER')")
+    @PutMapping("/payment/pay")
+    public ResponseEntity<ResponseDTO> payForService(@Valid @RequestBody PaymentDTO paymentDTO){
+        return ResponseEntity.ok(paymentService.payForService(paymentDTO));
     }
 
     /**
@@ -57,6 +59,7 @@ public class PaymentResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/payments/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<PaymentDTO> updatePayment(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody PaymentDTO paymentDTO
@@ -91,6 +94,7 @@ public class PaymentResource {
      * or with status {@code 500 (Internal Server Error)} if the paymentDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @PreAuthorize("hasAnyAuthority('ROLE_CUSTOMER')")
     @PatchMapping(value = "/payments/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<PaymentDTO> partialUpdatePayment(
         @PathVariable(value = "id", required = false) final Long id,

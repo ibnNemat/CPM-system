@@ -6,9 +6,22 @@ import uz.devops.intern.service.dto.OrganizationDTO;
 public class OrganizationsMapper {
     public static OrganizationDTO toDto(Organization o){
         OrganizationDTO organizationDTO = new OrganizationDTO();
-        organizationDTO.setId(o.getId());
-        organizationDTO.setName(o.getName());
-        organizationDTO.setOrgOwnerName(o.getOrgOwnerName());
+        if (o != null) {
+            organizationDTO.setId(o.getId());
+            organizationDTO.setName(o.getName());
+            organizationDTO.setOrgOwnerName(o.getOrgOwnerName());
+        }
+        return organizationDTO;
+    }
+
+    public static OrganizationDTO toDtoWithGroups(Organization o){
+        OrganizationDTO organizationDTO = new OrganizationDTO();
+        if (o != null) {
+            organizationDTO.setId(o.getId());
+            organizationDTO.setName(o.getName());
+            organizationDTO.setOrgOwnerName(o.getOrgOwnerName());
+            organizationDTO.setGroups(GroupMapper.groupsDTOSet(o.getGroups()));
+        }
         return organizationDTO;
     }
 

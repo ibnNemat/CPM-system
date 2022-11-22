@@ -25,12 +25,8 @@ public class Payment implements Serializable {
     @NotNull
     @Column(name = "payed_money", nullable = false)
     private Double payedMoney;
-
-    @NotNull
     @Column(name = "payment_for_period", nullable = false)
     private Double paymentForPeriod;
-
-    @NotNull
     @Column(name = "is_payed", nullable = false)
     private Boolean isPayed;
 
@@ -38,10 +34,8 @@ public class Payment implements Serializable {
     @Column(name = "started_period", nullable = false)
     private LocalDate startedPeriod;
 
-    @NotNull
     @Column(name = "finished_period", nullable = false)
     private LocalDate finishedPeriod;
-
     @ManyToOne
     @JsonIgnoreProperties(value = { "user", "groups", "services" }, allowSetters = true)
     private Customers customer;

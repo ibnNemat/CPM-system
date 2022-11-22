@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Set;
 import javax.validation.constraints.*;
 
-import uz.devops.intern.domain.Customers;
 import uz.devops.intern.domain.enumeration.PeriodType;
 import uz.devops.intern.domain.enumeration.ServiceType;
 
@@ -25,9 +24,10 @@ public class ServicesDTO implements Serializable {
     private PeriodType periodType;
     @NotNull
     private Integer countPeriod;
-    @NotNull
     private LocalDate startedPeriod;
     private GroupsDTO group;
+
+    private Set<CustomersDTO> customers = new HashSet<>();
 
     public LocalDate getStartedPeriod() {
         return startedPeriod;
@@ -37,14 +37,12 @@ public class ServicesDTO implements Serializable {
         this.startedPeriod = startedPeriod;
     }
 
-    private Set<CustomersDTO> users = new HashSet<>();
-
-    public Set<CustomersDTO> getUsers() {
-        return users;
+    public Set<CustomersDTO> getCustomers() {
+        return customers;
     }
 
-    public void setUsers(Set<CustomersDTO> users) {
-        this.users = users;
+    public void setCustomers(Set<CustomersDTO> customers) {
+        this.customers = customers;
     }
 
     public Long getId() {
@@ -118,16 +116,5 @@ public class ServicesDTO implements Serializable {
 
     // prettier-ignore
 
-    @Override
-    public String toString() {
-        return "ServicesDTO{" +
-            "id=" + id +
-            ", serviceType=" + serviceType +
-            ", price=" + price +
-            ", periodType=" + periodType +
-            ", countPeriod=" + countPeriod +
-            ", group=" + group +
-            ", users=" + users +
-            '}';
-    }
+
 }

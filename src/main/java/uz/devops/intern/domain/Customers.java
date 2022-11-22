@@ -15,38 +15,33 @@ import javax.validation.constraints.*;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Customers implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
     @Column(name = "id")
     private Long id;
 
-    @NotNull
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
-    @NotNull
     @Column(name = "password", nullable = false)
     private String password;
 
-    @NotNull
+
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
-
-    @NotNull
     @Column(name = "account", nullable = false)
     private Double account;
-
     @OneToOne
     @JoinColumn(unique = true)
     private User user;
 
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "customers")
     @JsonIgnoreProperties(value = { "organization", "users" }, allowSetters = true)
     private Set<Groups> groups = new HashSet<>();
 
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "customers")
     @JsonIgnoreProperties(value = { "group", "users" }, allowSetters = true)
     private Set<Services> services = new HashSet<>();
 
@@ -145,13 +140,13 @@ public class Customers implements Serializable {
 
     public Customers addGroups(Groups groups) {
         this.groups.add(groups);
-        groups.getUsers().add(this);
+        groups.getCustomers().add(this);
         return this;
     }
 
     public Customers removeGroups(Groups groups) {
         this.groups.remove(groups);
-        groups.getUsers().remove(this);
+        groups.getCustomers().remove(this);
         return this;
     }
 
@@ -170,13 +165,13 @@ public class Customers implements Serializable {
 
     public Customers addServices(Services services) {
         this.services.add(services);
-        services.getUsers().add(this);
+        services.getCustomers().add(this);
         return this;
     }
 
     public Customers removeServices(Services services) {
         this.services.remove(services);
-        services.getUsers().remove(this);
+        services.getCustomers().remove(this);
         return this;
     }
 

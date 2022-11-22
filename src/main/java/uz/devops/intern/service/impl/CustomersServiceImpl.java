@@ -10,6 +10,7 @@ import uz.devops.intern.domain.Customers;
 import uz.devops.intern.repository.CustomersRepository;
 import uz.devops.intern.service.CustomersService;
 import uz.devops.intern.service.dto.CustomersDTO;
+import uz.devops.intern.service.mapper.CustomerMapper;
 import uz.devops.intern.service.mapper.CustomersMapper;
 import uz.devops.intern.service.utils.ContextHolderUtil;
 
@@ -28,6 +29,15 @@ public class CustomersServiceImpl implements CustomersService {
     public CustomersServiceImpl(CustomersRepository customersRepository, CustomersMapper customersMapper) {
         this.customersRepository = customersRepository;
         this.customersMapper = customersMapper;
+    }
+
+    @Override
+    public CustomersDTO findByIdAccountGreaterThen(Long customerId, Double account) {
+         Optional<Customers> optionalCustomers = customersRepository.findByIdAndAccountGreaterThan(customerId, account);
+         if (optionalCustomers.isPresent()){
+             return optionalCustomers.map(CustomerMapper::toDtoWithNoUser).get();
+         }
+         return null;
     }
 
     @Override
@@ -82,7 +92,7 @@ public class CustomersServiceImpl implements CustomersService {
     @Transactional(readOnly = true)
     public Optional<CustomersDTO> findOne(Long id) {
         log.debug("Request to get Customers : {}", id);
-        return customersRepository.findOneWithEagerRelationships(id).map(customersMapper::toDto);
+        return customersRepository.findById(id).map(CustomerMapper::toDtoWithAll);
     }
 
     @Override

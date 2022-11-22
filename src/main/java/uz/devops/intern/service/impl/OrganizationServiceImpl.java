@@ -9,6 +9,7 @@ import uz.devops.intern.repository.OrganizationRepository;
 import uz.devops.intern.service.OrganizationService;
 import uz.devops.intern.service.dto.OrganizationDTO;
 import uz.devops.intern.service.mapper.OrganizationMapper;
+import uz.devops.intern.service.mapper.OrganizationsMapper;
 import uz.devops.intern.service.utils.ContextHolderUtil;
 
 import javax.annotation.Nullable;
@@ -43,7 +44,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         organizationDTO.setOrgOwnerName(orgOwner);
         Organization organization = organizationMapper.toEntity(organizationDTO);
         organization = organizationRepository.save(organization);
-        return organizationMapper.toDto(organization);
+        return OrganizationsMapper.toDtoWithGroups(organization);
     }
 
     @Override
@@ -51,7 +52,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         log.debug("Request to update Organization : {}", organizationDTO);
         Organization organization = organizationMapper.toEntity(organizationDTO);
         organization = organizationRepository.save(organization);
-        return organizationMapper.toDto(organization);
+        return OrganizationsMapper.toDtoWithGroups(organization);
     }
 
     @Override
@@ -66,21 +67,24 @@ public class OrganizationServiceImpl implements OrganizationService {
                 return existingOrganization;
             })
             .map(organizationRepository::save)
-            .map(organizationMapper::toDto);
+            .map(OrganizationsMapper::toDtoWithGroups);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<OrganizationDTO> findAll() {
         log.debug("Request to get all Organizations");
-        return organizationRepository.findAll().stream().map(organizationMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
+        return organizationRepository.findAll().stream()
+            .map(OrganizationsMapper::toDtoWithGroups)
+            .collect(Collectors.toCollection(LinkedList::new));
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<OrganizationDTO> findOne(Long id) {
         log.debug("Request to get Organization : {}", id);
-        return organizationRepository.findById(id).map(organizationMapper::toDto);
+        return organizationRepository.findById(id)
+            .map(OrganizationsMapper::toDtoWithGroups);
     }
 
     @Override
@@ -104,7 +108,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         List<Organization> organizations = organizationRepository.findAllByOrgOwnerName(username);
         return organizations.stream()
-            .map(organizationMapper::toDto)
+            .map(OrganizationsMapper::toDtoWithGroups)
             .toList();
     }
 }

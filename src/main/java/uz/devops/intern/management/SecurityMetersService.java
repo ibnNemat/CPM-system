@@ -6,18 +6,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SecurityMetersService {
-
     public static final String INVALID_TOKENS_METER_NAME = "security.authentication.invalid-tokens";
     public static final String INVALID_TOKENS_METER_DESCRIPTION =
         "Indicates validation error count of the tokens presented by the clients.";
     public static final String INVALID_TOKENS_METER_BASE_UNIT = "errors";
     public static final String INVALID_TOKENS_METER_CAUSE_DIMENSION = "cause";
-
     private final Counter tokenInvalidSignatureCounter;
     private final Counter tokenExpiredCounter;
     private final Counter tokenUnsupportedCounter;
     private final Counter tokenMalformedCounter;
-
     public SecurityMetersService(MeterRegistry registry) {
         this.tokenInvalidSignatureCounter = invalidTokensCounterForCauseBuilder("invalid-signature").register(registry);
         this.tokenExpiredCounter = invalidTokensCounterForCauseBuilder("expired").register(registry);

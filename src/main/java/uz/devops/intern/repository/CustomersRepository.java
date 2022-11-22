@@ -29,5 +29,6 @@ public interface CustomersRepository extends CustomersRepositoryWithBagRelations
         return this.fetchBagRelationships(this.findAll(pageable));
     }
 
-    List<Customers> findAllByUsername(String username);
+    Optional<Customers> findByIdAndAccountGreaterThan(Long customerId, Double account);
+
 }

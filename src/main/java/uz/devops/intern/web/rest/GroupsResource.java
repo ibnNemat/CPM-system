@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
@@ -29,6 +30,7 @@ import uz.devops.intern.web.rest.errors.BadRequestAlertException;
  */
 @RestController
 @RequestMapping("/api")
+@PreAuthorize("hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN')")
 public class GroupsResource {
 
     private final Logger log = LoggerFactory.getLogger(GroupsResource.class);
@@ -145,6 +147,7 @@ public class GroupsResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of groups in body.
      */
     @GetMapping("/groups")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<GroupsDTO>> getAllGroups(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Groups");
         Page<GroupsDTO> page = groupsService.findAll(pageable);
@@ -153,12 +156,14 @@ public class GroupsResource {
     }
 
     @GetMapping("/manager-groups")
-    public ResponseEntity<List<GroupsDTO>> findAl(){
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
+    public ResponseEntity<List<GroupsDTO>> findAllManagerGroups(){
         List<GroupsDTO> groupsDTOList = groupsService.findOnlyManagerGroups();
         return ResponseEntity.ok(groupsDTOList);
     }
 
     @GetMapping("/groups-relationship")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<Page<GroupsDTO>> findAllWithEagerRelationships(Pageable pageable){
         return ResponseEntity.ok(groupsService.findAllWithEagerRelationships(pageable));
     }

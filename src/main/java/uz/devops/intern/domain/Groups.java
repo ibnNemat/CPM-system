@@ -22,11 +22,9 @@ public class Groups implements Serializable {
     @SequenceGenerator(name = "sequenceGenerator")
     @Column(name = "id")
     private Long id;
-
     @NotNull
     @Column(name = "name", nullable = false, unique = true)
     private String name;
-
     @NotNull
     @Column(name = "group_owner_name", nullable = false)
     private String groupOwnerName;
@@ -40,7 +38,7 @@ public class Groups implements Serializable {
         inverseJoinColumns = @JoinColumn(name = "customers_id")
     )
     @JsonIgnoreProperties(value = { "user", "groups", "services" }, allowSetters = true)
-    private Set<Customers> users = new HashSet<>();
+    private Set<Customers> customers = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -97,27 +95,27 @@ public class Groups implements Serializable {
         return this;
     }
 
-    public Set<Customers> getUsers() {
-        return this.users;
+    public Set<Customers> getCustomers() {
+        return this.customers;
     }
 
-    public void setUsers(Set<Customers> users) {
-        this.users = users;
+    public void setCustomers(Set<Customers> users) {
+        this.customers = users;
     }
 
     public Groups users(Set<Customers> customers) {
-        this.setUsers(customers);
+        this.setCustomers(customers);
         return this;
     }
 
     public Groups addUsers(Customers customers) {
-        this.users.add(customers);
+        this.customers.add(customers);
         customers.getGroups().add(this);
         return this;
     }
 
     public Groups removeUsers(Customers customers) {
-        this.users.remove(customers);
+        this.customers.remove(customers);
         customers.getGroups().remove(this);
         return this;
     }

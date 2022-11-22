@@ -3,23 +3,37 @@ package uz.devops.intern.service.mapper;
 import uz.devops.intern.domain.Groups;
 import uz.devops.intern.service.dto.GroupsDTO;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class GroupMapper {
-    public static GroupsDTO ForSavingService(Groups g){
+    public static GroupsDTO toDtoForSaveServiceMethod(Groups g){
+        if (g == null){return null;}
+
         GroupsDTO groupsDTO = new GroupsDTO();
         groupsDTO.setId(g.getId());
         groupsDTO.setName(g.getName());
         groupsDTO.setGroupOwnerName(g.getGroupOwnerName());
-        groupsDTO.setUsers(CustomerMapper.toSetCustomerDto(g.getUsers()));
+        groupsDTO.setCustomers(CustomerMapper.toSetCustomerDto(g.getCustomers()));
         return groupsDTO;
     }
 
-    public static GroupsDTO ForSavingGroup(Groups g){
+
+    public static Set<GroupsDTO> groupsDTOSet(Set<Groups> groupsSet){
+        return groupsSet.stream()
+            .map(GroupMapper::toDtoForSaveServiceMethod)
+            .collect(Collectors.toSet());
+    }
+
+    public static GroupsDTO toDto(Groups g){
         GroupsDTO groupsDTO = new GroupsDTO();
-        groupsDTO.setId(g.getId());
-        groupsDTO.setName(g.getName());
-        groupsDTO.setGroupOwnerName(g.getGroupOwnerName());
-        groupsDTO.setOrganization(OrganizationsMapper.toDto(g.getOrganization()));
-        groupsDTO.setUsers(CustomerMapper.toSetCustomerDto(g.getUsers()));
+        if (g != null) {
+            groupsDTO.setId(g.getId());
+            groupsDTO.setName(g.getName());
+            groupsDTO.setGroupOwnerName(g.getGroupOwnerName());
+            groupsDTO.setOrganization(OrganizationsMapper.toDto(g.getOrganization()));
+            groupsDTO.setCustomers(CustomerMapper.toSetCustomerDto(g.getCustomers()));
+        }
         return groupsDTO;
     }
 

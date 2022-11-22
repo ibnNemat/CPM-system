@@ -5,7 +5,6 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-
     <!--
         Added the entity Customers.
     -->
@@ -15,16 +14,16 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="username" type="varchar(255)">
-                <constraints nullable="false" unique="true" uniqueConstraintName="ux_customers__username" />
+<!--                <constraints nullable="false" unique="true" uniqueConstraintName="ux_customers__username" />-->
             </column>
             <column name="password" type="varchar(255)">
-                <constraints nullable="false" />
+<!--                <constraints nullable="false" />-->
             </column>
             <column name="phone_number" type="varchar(255)">
-                <constraints nullable="false" />
+<!--                <constraints nullable="false" />-->
             </column>
             <column name="account" type="double">
-                <constraints nullable="false" />
+<!--                <constraints nullable="false" />-->
             </column>
             <column name="user_id" type="bigint">
                 <constraints nullable="true" unique="true" uniqueConstraintName="ux_customers__user_id" />

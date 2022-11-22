@@ -12,13 +12,11 @@
     },
     {
       "fieldName": "paymentForPeriod",
-      "fieldType": "Double",
-      "fieldValidateRules": ["required"]
+      "fieldType": "Double"
     },
     {
       "fieldName": "isPayed",
-      "fieldType": "Boolean",
-      "fieldValidateRules": ["required"]
+      "fieldType": "Boolean"
     },
     {
       "fieldName": "startedPeriod",
@@ -27,8 +25,7 @@
     },
     {
       "fieldName": "finishedPeriod",
-      "fieldType": "LocalDate",
-      "fieldValidateRules": ["required"]
+      "fieldType": "LocalDate"
     }
   ],
   "fluentMethods": true,

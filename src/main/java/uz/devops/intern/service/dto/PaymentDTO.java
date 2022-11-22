@@ -18,20 +18,16 @@ public class PaymentDTO implements Serializable {
     @NotNull
     private Double payedMoney;
 
-    @NotNull
     private Double paymentForPeriod;
 
-    @NotNull
     private Boolean isPayed;
 
     @NotNull
     private LocalDate startedPeriod;
 
-    @NotNull
     private LocalDate finishedPeriod;
 
     private CustomersDTO customer;
-
     private ServicesDTO service;
 
     private GroupsDTO group;
@@ -96,7 +92,7 @@ public class PaymentDTO implements Serializable {
         return service;
     }
 
-    public void setService(Services service) {
+    public void setService(ServicesDTO service) {
         this.service = service;
     }
 

@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
@@ -50,6 +51,7 @@ public class ServicesResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/services")
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN')")
     public ResponseEntity<ServicesDTO> createServices(@Valid @RequestBody ServicesDTO servicesDTO) throws URISyntaxException {
         log.debug("REST request to save Services : {}", servicesDTO);
         if (servicesDTO.getId() != null) {
@@ -73,6 +75,7 @@ public class ServicesResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/services/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN')")
     public ResponseEntity<ServicesDTO> updateServices(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody ServicesDTO servicesDTO
@@ -107,6 +110,8 @@ public class ServicesResource {
      * or with status {@code 500 (Internal Server Error)} if the servicesDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN')")
     @PatchMapping(value = "/services/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<ServicesDTO> partialUpdateServices(
         @PathVariable(value = "id", required = false) final Long id,
@@ -162,6 +167,7 @@ public class ServicesResource {
      * @param id the id of the servicesDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN')")
     @DeleteMapping("/services/{id}")
     public ResponseEntity<Void> deleteServices(@PathVariable Long id) {
         log.debug("REST request to delete Services : {}", id);

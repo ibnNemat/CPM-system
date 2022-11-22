@@ -26,7 +26,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: foundation240897@gmail.com
-    password: wmmsfcfjltngvlpu
+    password: udgdqcjzwhvfsuut
   main:
     allow-bean-definition-overriding: true
   mvc:
