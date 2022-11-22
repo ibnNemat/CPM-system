@@ -15,7 +15,7 @@ public class CustomerMapper {
             customersDTO.setUsername(customers.getUsername());
             customersDTO.setPassword(customers.getPassword());
             customersDTO.setId(customers.getId());
-            customersDTO.setAccount(customers.getAccount());
+            customersDTO.setBalance(customers.getBalance());
             customersDTO.setPhoneNumber(customers.getPhoneNumber());
         }
         return customersDTO;
@@ -28,7 +28,7 @@ public class CustomerMapper {
             customersDTO.setUsername(customers.getUsername());
             customersDTO.setPassword(customers.getPassword());
             customersDTO.setId(customers.getId());
-            customersDTO.setAccount(customers.getAccount());
+            customersDTO.setBalance(customers.getBalance());
             customersDTO.setPhoneNumber(customers.getPhoneNumber());
             if (customers.getUser() != null){
                 UserDTO userDTO = new UserDTO();
@@ -36,7 +36,6 @@ public class CustomerMapper {
                 customersDTO.setUser(userDTO);
             }
             customersDTO.setGroups(GroupMapper.groupsDTOSet(customers.getGroups()));
-            customersDTO.setServices(ServiceMapper.servicesDTOSet(customers.getServices()));
         }
         return customersDTO;
     }
@@ -46,7 +45,7 @@ public class CustomerMapper {
         customers.setUsername(c.getUsername());
         customers.setPassword(c.getPassword());
         customers.setId(c.getId());
-        customers.setAccount(c.getAccount());
+        customers.setBalance(c.getBalance());
         customers.setPhoneNumber(c.getPhoneNumber());
         return customers;
     }

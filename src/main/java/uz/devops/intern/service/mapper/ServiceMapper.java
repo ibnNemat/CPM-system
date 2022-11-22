@@ -10,13 +10,12 @@ import java.util.stream.Collectors;
 public class ServiceMapper {
     public static Services toEntity(ServicesDTO servicesDTO){
         Services services = new Services();
-        services.setServiceType(servicesDTO.getServiceType());
+        services.setName(servicesDTO.getName());
         services.setPrice(servicesDTO.getPrice());
         services.setStartedPeriod(servicesDTO.getStartedPeriod());
         services.setPeriodType(servicesDTO.getPeriodType());
         services.setCountPeriod(servicesDTO.getCountPeriod());
         services.setGroup(GroupMapper.toEntityForSavingService(servicesDTO.getGroup()));
-        services.setCustomers(CustomerMapper.toSetCustomerEntityForSavingService(servicesDTO.getCustomers()));
         return services;
     }
 
@@ -42,9 +41,8 @@ public class ServiceMapper {
 
     @NotNull
     private static ServicesDTO getServicesDTO(Services s, ServicesDTO servicesDTO) {
-        servicesDTO.setCustomers(CustomerMapper.toSetCustomerDto(s.getCustomers()));
         servicesDTO.setId( s.getId() );
-        servicesDTO.setServiceType( s.getServiceType() );
+        servicesDTO.setName( s.getName() );
         servicesDTO.setPrice( s.getPrice() );
         servicesDTO.setPeriodType( s.getPeriodType() );
         servicesDTO.setCountPeriod( s.getCountPeriod() );

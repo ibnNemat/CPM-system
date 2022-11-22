@@ -19,11 +19,8 @@ import uz.devops.intern.service.mapper.PaymentMapper;
 @Service
 @Transactional
 public class PaymentServiceImpl implements PaymentService {
-
     private final Logger log = LoggerFactory.getLogger(PaymentServiceImpl.class);
-
     private final PaymentRepository paymentRepository;
-
     private final PaymentMapper paymentMapper;
 
     public PaymentServiceImpl(PaymentRepository paymentRepository, PaymentMapper paymentMapper) {

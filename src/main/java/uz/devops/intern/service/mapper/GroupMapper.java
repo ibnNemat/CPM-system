@@ -14,6 +14,7 @@ public class GroupMapper {
         groupsDTO.setId(g.getId());
         groupsDTO.setName(g.getName());
         groupsDTO.setGroupOwnerName(g.getGroupOwnerName());
+        groupsDTO.setParentId(g.getParentId());
         groupsDTO.setCustomers(CustomerMapper.toSetCustomerDto(g.getCustomers()));
         return groupsDTO;
     }
@@ -31,6 +32,7 @@ public class GroupMapper {
             groupsDTO.setId(g.getId());
             groupsDTO.setName(g.getName());
             groupsDTO.setGroupOwnerName(g.getGroupOwnerName());
+            groupsDTO.setParentId(g.getParentId());
             groupsDTO.setOrganization(OrganizationsMapper.toDto(g.getOrganization()));
             groupsDTO.setCustomers(CustomerMapper.toSetCustomerDto(g.getCustomers()));
         }
