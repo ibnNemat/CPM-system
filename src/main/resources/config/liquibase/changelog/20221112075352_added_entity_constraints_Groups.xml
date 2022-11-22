@@ -9,14 +9,14 @@
     <changeSet id="20221112075352-2" author="jhipster">
 
         <addForeignKeyConstraint baseColumnNames="groups_id"
-                                 baseTableName="rel_groups__users"
-                                 constraintName="fk_rel_groups__users__groups_id"
+                                 baseTableName="rel_groups__customers"
+                                 constraintName="fk_rel_groups__customers__groups_id"
                                  referencedColumnNames="id"
                                  referencedTableName="groups"/>
 
-        <addForeignKeyConstraint baseColumnNames="users_id"
-                                 baseTableName="rel_groups__users"
-                                 constraintName="fk_rel_groups__users__users_id"
+        <addForeignKeyConstraint baseColumnNames="customers_id"
+                                 baseTableName="rel_groups__customers"
+                                 constraintName="fk_rel_groups__customers__customers_id"
                                  referencedColumnNames="id"
                                  referencedTableName="customers"/>
 

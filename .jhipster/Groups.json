@@ -29,7 +29,7 @@
       "otherEntityName": "customers",
       "otherEntityRelationshipName": "groups",
       "ownerSide": true,
-      "relationshipName": "users",
+      "relationshipName": "customers",
       "relationshipType": "many-to-many"
     },
     {

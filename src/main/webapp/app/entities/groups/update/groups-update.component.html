@@ -41,14 +41,14 @@
         </div>
 
         <div class="row mb-3">
-          <label jhiTranslate="cpmSystemApp.groups.users" for="field_users">Users</label>
+          <label jhiTranslate="cpmSystemApp.groups.customers" for="field_customers">Customers</label>
           <select
             class="form-control"
-            id="field_users"
-            data-cy="users"
+            id="field_customers"
+            data-cy="customers"
             multiple
-            name="users"
-            formControlName="users"
+            name="customers"
+            formControlName="customers"
             [compareWith]="compareCustomers"
           >
             <option [ngValue]="customersOption" *ngFor="let customersOption of customersSharedCollection">{{ customersOption.id }}</option>

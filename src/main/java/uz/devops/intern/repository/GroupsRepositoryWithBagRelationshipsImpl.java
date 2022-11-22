@@ -22,7 +22,7 @@ public class GroupsRepositoryWithBagRelationshipsImpl implements GroupsRepositor
 
     @Override
     public Optional<Groups> fetchBagRelationships(Optional<Groups> groups) {
-        return groups.map(this::fetchUsers);
+        return groups.map(this::fetchCustomers);
     }
 
     @Override
@@ -32,22 +32,22 @@ public class GroupsRepositoryWithBagRelationshipsImpl implements GroupsRepositor
 
     @Override
     public List<Groups> fetchBagRelationships(List<Groups> groups) {
-        return Optional.of(groups).map(this::fetchUsers).orElse(Collections.emptyList());
+        return Optional.of(groups).map(this::fetchCustomers).orElse(Collections.emptyList());
     }
 
-    Groups fetchUsers(Groups result) {
+    Groups fetchCustomers(Groups result) {
         return entityManager
-            .createQuery("select groups from Groups groups left join fetch groups.users where groups is :groups", Groups.class)
+            .createQuery("select groups from Groups groups left join fetch groups.customers where groups is :groups", Groups.class)
             .setParameter("groups", result)
             .setHint(QueryHints.PASS_DISTINCT_THROUGH, false)
             .getSingleResult();
     }
 
-    List<Groups> fetchUsers(List<Groups> groups) {
+    List<Groups> fetchCustomers(List<Groups> groups) {
         HashMap<Object, Integer> order = new HashMap<>();
         IntStream.range(0, groups.size()).forEach(index -> order.put(groups.get(index).getId(), index));
         List<Groups> result = entityManager
-            .createQuery("select distinct groups from Groups groups left join fetch groups.users where groups in :groups", Groups.class)
+            .createQuery("select distinct groups from Groups groups left join fetch groups.customers where groups in :groups", Groups.class)
             .setParameter("groups", groups)
             .setHint(QueryHints.PASS_DISTINCT_THROUGH, false)
             .getResultList();

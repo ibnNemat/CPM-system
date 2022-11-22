@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 
 import { PaymentDetailComponent } from './payment-detail.component';
 
-describe('PaymentDTO Management Detail Component', () => {
+describe('Payment Management Detail Component', () => {
   let comp: PaymentDetailComponent;
   let fixture: ComponentFixture<PaymentDetailComponent>;
 

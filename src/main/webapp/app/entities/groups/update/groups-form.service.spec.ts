@@ -23,7 +23,7 @@ describe('Groups Form Service', () => {
             name: expect.any(Object),
             groupOwnerName: expect.any(Object),
             parentId: expect.any(Object),
-            users: expect.any(Object),
+            customers: expect.any(Object),
             organization: expect.any(Object),
           })
         );
@@ -38,7 +38,7 @@ describe('Groups Form Service', () => {
             name: expect.any(Object),
             groupOwnerName: expect.any(Object),
             parentId: expect.any(Object),
-            users: expect.any(Object),
+            customers: expect.any(Object),
             organization: expect.any(Object),
           })
         );

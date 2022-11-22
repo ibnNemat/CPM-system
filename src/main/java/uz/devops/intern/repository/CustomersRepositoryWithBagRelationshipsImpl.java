@@ -19,12 +19,6 @@ public class CustomersRepositoryWithBagRelationshipsImpl implements CustomersRep
 
     @PersistenceContext
     private EntityManager entityManager;
-
-    @Override
-    public Optional<Customers> fetchBagRelationships(Optional<Customers> customers) {
-        return customers.map(this::fetchGroups).map(this::fetchServices);
-    }
-
     @Override
     public Page<Customers> fetchBagRelationships(Page<Customers> customers) {
         return new PageImpl<>(fetchBagRelationships(customers.getContent()), customers.getPageable(), customers.getTotalElements());

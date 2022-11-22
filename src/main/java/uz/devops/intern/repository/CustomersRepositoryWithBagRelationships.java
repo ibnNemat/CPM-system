@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import uz.devops.intern.domain.Customers;
 
 public interface CustomersRepositoryWithBagRelationships {
-    Optional<Customers> fetchBagRelationships(Optional<Customers> customers);
 
     List<Customers> fetchBagRelationships(List<Customers> customers);
 

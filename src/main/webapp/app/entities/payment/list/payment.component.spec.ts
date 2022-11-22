@@ -10,7 +10,7 @@ import { PaymentService } from '../service/payment.service';
 import { PaymentComponent } from './payment.component';
 import SpyInstance = jest.SpyInstance;
 
-describe('PaymentDTO Management Component', () => {
+describe('Payment Management Component', () => {
   let comp: PaymentComponent;
   let fixture: ComponentFixture<PaymentComponent>;
   let service: PaymentService;

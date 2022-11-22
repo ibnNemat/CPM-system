@@ -21,7 +21,7 @@ type CustomersFormGroupContent = {
   username: FormControl<ICustomers['username']>;
   password: FormControl<ICustomers['password']>;
   phoneNumber: FormControl<ICustomers['phoneNumber']>;
-  account: FormControl<ICustomers['account']>;
+  balance: FormControl<ICustomers['balance']>;
   user: FormControl<ICustomers['user']>;
   groups: FormControl<ICustomers['groups']>;
 };
@@ -52,7 +52,7 @@ export class CustomersFormService {
       phoneNumber: new FormControl(customersRawValue.phoneNumber, {
         validators: [Validators.required],
       }),
-      account: new FormControl(customersRawValue.account, {
+      balance: new FormControl(customersRawValue.balance, {
         validators: [Validators.required, Validators.min(0)],
       }),
       user: new FormControl(customersRawValue.user),

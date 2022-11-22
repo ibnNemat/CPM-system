@@ -10,7 +10,7 @@ import { PaymentService } from '../service/payment.service';
 
 import { PaymentDeleteDialogComponent } from './payment-delete-dialog.component';
 
-describe('PaymentDTO Management Delete Component', () => {
+describe('Payment Management Delete Component', () => {
   let comp: PaymentDeleteDialogComponent;
   let fixture: ComponentFixture<PaymentDeleteDialogComponent>;
   let service: PaymentService;

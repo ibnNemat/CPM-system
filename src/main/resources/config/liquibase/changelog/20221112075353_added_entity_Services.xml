@@ -26,9 +26,6 @@
             <column name="period_type" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
-            <column name="started_period" type="date">
-<!--                <constraints nullable="false" />-->
-            </column>
             <column name="count_period" type="integer">
                 <constraints nullable="false" />
             </column>

@@ -37,15 +37,15 @@ public class Customers implements Serializable {
 
     @NotNull
     @DecimalMin(value = "0")
-    @Column(name = "account", nullable = false)
-    private Double account;
+    @Column(name = "balance", nullable = false)
+    private Double balance;
 
     @OneToOne
     @JoinColumn(unique = true)
     private User user;
 
-    @ManyToMany(mappedBy = "users")
-    @JsonIgnoreProperties(value = { "users", "organization" }, allowSetters = true)
+    @ManyToMany(mappedBy = "customers")
+    @JsonIgnoreProperties(value = { "customers", "organization" }, allowSetters = true)
     private Set<Groups> groups = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -102,17 +102,17 @@ public class Customers implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public Double getAccount() {
-        return this.account;
+    public Double getBalance() {
+        return this.balance;
     }
 
-    public Customers account(Double account) {
-        this.setAccount(account);
+    public Customers balance(Double balance) {
+        this.setBalance(balance);
         return this;
     }
 
-    public void setAccount(Double account) {
-        this.account = account;
+    public void setBalance(Double balance) {
+        this.balance = balance;
     }
 
     public User getUser() {
@@ -134,10 +134,10 @@ public class Customers implements Serializable {
 
     public void setGroups(Set<Groups> groups) {
         if (this.groups != null) {
-            this.groups.forEach(i -> i.removeUsers(this));
+            this.groups.forEach(i -> i.removeCustomers(this));
         }
         if (groups != null) {
-            groups.forEach(i -> i.addUsers(this));
+            groups.forEach(i -> i.addCustomers(this));
         }
         this.groups = groups;
     }
@@ -149,13 +149,13 @@ public class Customers implements Serializable {
 
     public Customers addGroups(Groups groups) {
         this.groups.add(groups);
-        groups.getUsers().add(this);
+        groups.getCustomers().add(this);
         return this;
     }
 
     public Customers removeGroups(Groups groups) {
         this.groups.remove(groups);
-        groups.getUsers().remove(this);
+        groups.getCustomers().remove(this);
         return this;
     }
 
@@ -186,7 +186,7 @@ public class Customers implements Serializable {
             ", username='" + getUsername() + "'" +
             ", password='" + getPassword() + "'" +
             ", phoneNumber='" + getPhoneNumber() + "'" +
-            ", account=" + getAccount() +
+            ", balance=" + getBalance() +
             "}";
     }
 }

@@ -20,7 +20,7 @@
       "fieldValidateRules": ["required"]
     },
     {
-      "fieldName": "account",
+      "fieldName": "balance",
       "fieldType": "Double",
       "fieldValidateRules": ["required", "min"],
       "fieldValidateRulesMin": "0"
@@ -40,7 +40,7 @@
     },
     {
       "otherEntityName": "groups",
-      "otherEntityRelationshipName": "users",
+      "otherEntityRelationshipName": "customers",
       "ownerSide": false,
       "relationshipName": "groups",
       "relationshipType": "many-to-many"

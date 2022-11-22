@@ -21,18 +21,9 @@ public class GroupsDTO implements Serializable {
 
     private Long parentId;
 
-    private Set<CustomersDTO> users = new HashSet<>();
+    private Set<CustomersDTO> customers = new HashSet<>();
 
     private OrganizationDTO organization;
-//    @JsonIgnoreProperties(value = {"services", "customers", "user"})
-    private Set<CustomersDTO> customers;
-    public Set<CustomersDTO> getCustomers() {
-        return customers;
-    }
-
-    public void setCustomers(Set<CustomersDTO> customers) {
-        this.customers = customers;
-    }
 
     public Long getId() {
         return id;
@@ -66,12 +57,12 @@ public class GroupsDTO implements Serializable {
         this.parentId = parentId;
     }
 
-    public Set<CustomersDTO> getUsers() {
-        return users;
+    public Set<CustomersDTO> getCustomers() {
+        return customers;
     }
 
-    public void setUsers(Set<CustomersDTO> users) {
-        this.users = users;
+    public void setCustomers(Set<CustomersDTO> customers) {
+        this.customers = customers;
     }
 
     public OrganizationDTO getOrganization() {
@@ -111,7 +102,7 @@ public class GroupsDTO implements Serializable {
             ", name='" + getName() + "'" +
             ", groupOwnerName='" + getGroupOwnerName() + "'" +
             ", parentId=" + getParentId() +
-            ", users=" + getUsers() +
+            ", customers=" + getCustomers() +
             ", organization=" + getOrganization() +
             "}";
     }

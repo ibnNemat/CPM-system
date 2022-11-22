@@ -26,10 +26,10 @@
         <dd>
           <span>{{ groups.parentId }}</span>
         </dd>
-        <dt><span jhiTranslate="cpmSystemApp.groups.users">Users</span></dt>
+        <dt><span jhiTranslate="cpmSystemApp.groups.customers">Customers</span></dt>
         <dd>
-          <span *ngFor="let users of groups.users; let last = last">
-            <a [routerLink]="['/customers', users.id, 'view']">{{ users.id }}</a
+          <span *ngFor="let customers of groups.customers; let last = last">
+            <a [routerLink]="['/customers', customers.id, 'view']">{{ customers.id }}</a
             >{{ last ? '' : ', ' }}
           </span>
         </dd>

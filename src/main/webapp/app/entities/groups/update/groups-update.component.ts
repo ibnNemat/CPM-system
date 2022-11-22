@@ -88,7 +88,7 @@ export class GroupsUpdateComponent implements OnInit {
 
     this.customersSharedCollection = this.customersService.addCustomersToCollectionIfMissing<ICustomers>(
       this.customersSharedCollection,
-      ...(groups.users ?? [])
+      ...(groups.customers ?? [])
     );
     this.organizationsSharedCollection = this.organizationService.addOrganizationToCollectionIfMissing<IOrganization>(
       this.organizationsSharedCollection,
@@ -102,7 +102,7 @@ export class GroupsUpdateComponent implements OnInit {
       .pipe(map((res: HttpResponse<ICustomers[]>) => res.body ?? []))
       .pipe(
         map((customers: ICustomers[]) =>
-          this.customersService.addCustomersToCollectionIfMissing<ICustomers>(customers, ...(this.groups?.users ?? []))
+          this.customersService.addCustomersToCollectionIfMissing<ICustomers>(customers, ...(this.groups?.customers ?? []))
         )
       )
       .subscribe((customers: ICustomers[]) => (this.customersSharedCollection = customers));

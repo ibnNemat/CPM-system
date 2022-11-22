@@ -15,11 +15,11 @@ import uz.devops.intern.service.dto.OrganizationDTO;
  */
 @Mapper(componentModel = "spring")
 public interface GroupsMapper extends EntityMapper<GroupsDTO, Groups> {
-    @Mapping(target = "users", source = "users", qualifiedByName = "customersIdSet")
+    @Mapping(target = "customers", source = "customers", qualifiedByName = "customersIdSet")
     @Mapping(target = "organization", source = "organization", qualifiedByName = "organizationId")
     GroupsDTO toDto(Groups s);
 
-    @Mapping(target = "removeUsers", ignore = true)
+    @Mapping(target = "removeCustomers", ignore = true)
     Groups toEntity(GroupsDTO groupsDTO);
 
     @Named("customersId")
