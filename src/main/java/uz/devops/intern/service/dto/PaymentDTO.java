@@ -14,9 +14,11 @@ public class PaymentDTO implements Serializable {
     private Long id;
 
     @NotNull
-    private Double payedMoney;
+    @DecimalMin(value = "0")
+    private Double paidMoney;
 
     @NotNull
+    @DecimalMin(value = "10000")
     private Double paymentForPeriod;
 
     @NotNull
@@ -25,14 +27,11 @@ public class PaymentDTO implements Serializable {
     @NotNull
     private LocalDate startedPeriod;
 
-    @NotNull
     private LocalDate finishedPeriod;
 
     private CustomersDTO customer;
 
     private ServicesDTO service;
-
-    private GroupsDTO group;
 
     public Long getId() {
         return id;
@@ -42,12 +41,12 @@ public class PaymentDTO implements Serializable {
         this.id = id;
     }
 
-    public Double getPayedMoney() {
-        return payedMoney;
+    public Double getPaidMoney() {
+        return paidMoney;
     }
 
-    public void setPayedMoney(Double payedMoney) {
-        this.payedMoney = payedMoney;
+    public void setPaidMoney(Double paidMoney) {
+        this.paidMoney = paidMoney;
     }
 
     public Double getPaymentForPeriod() {
@@ -98,14 +97,6 @@ public class PaymentDTO implements Serializable {
         this.service = service;
     }
 
-    public GroupsDTO getGroup() {
-        return group;
-    }
-
-    public void setGroup(GroupsDTO group) {
-        this.group = group;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -132,14 +123,13 @@ public class PaymentDTO implements Serializable {
     public String toString() {
         return "PaymentDTO{" +
             "id=" + getId() +
-            ", payedMoney=" + getPayedMoney() +
+            ", paidMoney=" + getPaidMoney() +
             ", paymentForPeriod=" + getPaymentForPeriod() +
             ", isPayed='" + getIsPayed() + "'" +
             ", startedPeriod='" + getStartedPeriod() + "'" +
             ", finishedPeriod='" + getFinishedPeriod() + "'" +
             ", customer=" + getCustomer() +
             ", service=" + getService() +
-            ", group=" + getGroup() +
             "}";
     }
 }

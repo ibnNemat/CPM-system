@@ -40,8 +40,8 @@ class CustomersResourceIT {
     private static final String DEFAULT_PHONE_NUMBER = "AAAAAAAAAA";
     private static final String UPDATED_PHONE_NUMBER = "BBBBBBBBBB";
 
-    private static final Double DEFAULT_ACCOUNT = 1D;
-    private static final Double UPDATED_ACCOUNT = 2D;
+    private static final Double DEFAULT_ACCOUNT = 0D;
+    private static final Double UPDATED_ACCOUNT = 1D;
 
     private static final String ENTITY_API_URL = "/api/customers";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";

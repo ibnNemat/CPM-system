@@ -14,19 +14,10 @@
         </div>
 
         <div class="row mb-3">
-          <label class="form-label" jhiTranslate="cpmSystemApp.services.serviceType" for="field_serviceType">Service Type</label>
-          <select class="form-control" name="serviceType" formControlName="serviceType" id="field_serviceType" data-cy="serviceType">
-            <option [ngValue]="null">{{ 'cpmSystemApp.ServiceType.null' | translate }}</option>
-            <option *ngFor="let serviceType of serviceTypeValues" [value]="serviceType">
-              {{ 'cpmSystemApp.ServiceType.' + serviceType | translate }}
-            </option>
-          </select>
-          <div *ngIf="editForm.get('serviceType')!.invalid && (editForm.get('serviceType')!.dirty || editForm.get('serviceType')!.touched)">
-            <small
-              class="form-text text-danger"
-              *ngIf="editForm.get('serviceType')?.errors?.required"
-              jhiTranslate="entity.validation.required"
-            >
+          <label class="form-label" jhiTranslate="cpmSystemApp.services.name" for="field_name">Name</label>
+          <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name" />
+          <div *ngIf="editForm.get('name')!.invalid && (editForm.get('name')!.dirty || editForm.get('name')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('name')?.errors?.required" jhiTranslate="entity.validation.required">
               This field is required.
             </small>
           </div>
@@ -39,8 +30,48 @@
             <small class="form-text text-danger" *ngIf="editForm.get('price')?.errors?.required" jhiTranslate="entity.validation.required">
               This field is required.
             </small>
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('price')?.errors?.min"
+              jhiTranslate="entity.validation.min"
+              [translateValues]="{ min: 10000 }"
+            >
+              This field should be at least 10000.
+            </small>
             <small class="form-text text-danger" [hidden]="!editForm.get('price')?.errors?.number" jhiTranslate="entity.validation.number">
               This field should be a number.
+            </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="cpmSystemApp.services.startedPeriod" for="field_startedPeriod">Started Period</label>
+          <div class="input-group">
+            <input
+              id="field_startedPeriod"
+              data-cy="startedPeriod"
+              type="text"
+              class="form-control"
+              name="startedPeriod"
+              ngbDatepicker
+              #startedPeriodDp="ngbDatepicker"
+              formControlName="startedPeriod"
+            />
+            <button type="button" class="btn btn-secondary" (click)="startedPeriodDp.toggle()">
+              <fa-icon icon="calendar-alt"></fa-icon>
+            </button>
+          </div>
+          <div
+            *ngIf="
+              editForm.get('startedPeriod')!.invalid && (editForm.get('startedPeriod')!.dirty || editForm.get('startedPeriod')!.touched)
+            "
+          >
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('startedPeriod')?.errors?.required"
+              jhiTranslate="entity.validation.required"
+            >
+              This field is required.
             </small>
           </div>
         </div>
@@ -84,6 +115,14 @@
             </small>
             <small
               class="form-text text-danger"
+              *ngIf="editForm.get('countPeriod')?.errors?.min"
+              jhiTranslate="entity.validation.min"
+              [translateValues]="{ min: 1 }"
+            >
+              This field should be at least 1.
+            </small>
+            <small
+              class="form-text text-danger"
               [hidden]="!editForm.get('countPeriod')?.errors?.number"
               jhiTranslate="entity.validation.number"
             >
@@ -97,21 +136,6 @@
           <select class="form-control" id="field_group" data-cy="group" name="group" formControlName="group" [compareWith]="compareGroups">
             <option [ngValue]="null"></option>
             <option [ngValue]="groupsOption" *ngFor="let groupsOption of groupsSharedCollection">{{ groupsOption.id }}</option>
-          </select>
-        </div>
-
-        <div class="row mb-3">
-          <label jhiTranslate="cpmSystemApp.services.users" for="field_users">Users</label>
-          <select
-            class="form-control"
-            id="field_users"
-            data-cy="users"
-            multiple
-            name="users"
-            formControlName="users"
-            [compareWith]="compareCustomers"
-          >
-            <option [ngValue]="customersOption" *ngFor="let customersOption of customersSharedCollection">{{ customersOption.id }}</option>
           </select>
         </div>
       </div>

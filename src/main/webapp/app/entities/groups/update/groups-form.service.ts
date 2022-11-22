@@ -20,6 +20,7 @@ type GroupsFormGroupContent = {
   id: FormControl<IGroups['id'] | NewGroups['id']>;
   name: FormControl<IGroups['name']>;
   groupOwnerName: FormControl<IGroups['groupOwnerName']>;
+  parentId: FormControl<IGroups['parentId']>;
   users: FormControl<IGroups['users']>;
   organization: FormControl<IGroups['organization']>;
 };
@@ -44,9 +45,8 @@ export class GroupsFormService {
       name: new FormControl(groupsRawValue.name, {
         validators: [Validators.required],
       }),
-      groupOwnerName: new FormControl(groupsRawValue.groupOwnerName, {
-        validators: [Validators.required],
-      }),
+      groupOwnerName: new FormControl(groupsRawValue.groupOwnerName),
+      parentId: new FormControl(groupsRawValue.parentId),
       users: new FormControl(groupsRawValue.users ?? []),
       organization: new FormControl(groupsRawValue.organization),
     });

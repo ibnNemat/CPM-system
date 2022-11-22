@@ -5,6 +5,7 @@ export interface IGroups {
   id: number;
   name?: string | null;
   groupOwnerName?: string | null;
+  parentId?: number | null;
   users?: Pick<ICustomers, 'id'>[] | null;
   organization?: Pick<IOrganization, 'id'> | null;
 }

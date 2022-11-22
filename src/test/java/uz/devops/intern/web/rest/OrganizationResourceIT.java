@@ -147,26 +147,6 @@ class OrganizationResourceIT {
 
     @Test
     @Transactional
-    void checkOrgOwnerNameIsRequired() throws Exception {
-        int databaseSizeBeforeTest = organizationRepository.findAll().size();
-        // set the field null
-        organization.setOrgOwnerName(null);
-
-        // Create the Organization, which fails.
-        OrganizationDTO organizationDTO = organizationMapper.toDto(organization);
-
-        restOrganizationMockMvc
-            .perform(
-                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(organizationDTO))
-            )
-            .andExpect(status().isBadRequest());
-
-        List<Organization> organizationList = organizationRepository.findAll();
-        assertThat(organizationList).hasSize(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
     void getAllOrganizations() throws Exception {
         // Initialize the database
         organizationRepository.saveAndFlush(organization);

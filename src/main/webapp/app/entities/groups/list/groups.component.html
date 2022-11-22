@@ -50,6 +50,12 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
+          <th scope="col" jhiSortBy="parentId">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.groups.parentId">Parent Id</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
           <th scope="col" jhiSortBy="organization.id">
             <div class="d-flex">
               <span jhiTranslate="cpmSystemApp.groups.organization">Organization</span>
@@ -66,6 +72,7 @@
           </td>
           <td>{{ groups.name }}</td>
           <td>{{ groups.groupOwnerName }}</td>
+          <td>{{ groups.parentId }}</td>
           <td>
             <div *ngIf="groups.organization">
               <a [routerLink]="['/organization', groups.organization.id, 'view']">{{ groups.organization.id }}</a>

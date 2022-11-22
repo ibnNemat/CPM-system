@@ -12,8 +12,7 @@
     },
     {
       "fieldName": "orgOwnerName",
-      "fieldType": "String",
-      "fieldValidateRules": ["required"]
+      "fieldType": "String"
     }
   ],
   "fluentMethods": true,

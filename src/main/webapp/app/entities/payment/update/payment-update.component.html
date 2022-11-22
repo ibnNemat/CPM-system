@@ -14,26 +14,27 @@
         </div>
 
         <div class="row mb-3">
-          <label class="form-label" jhiTranslate="cpmSystemApp.payment.payedMoney" for="field_payedMoney">Payed Money</label>
-          <input
-            type="number"
-            class="form-control"
-            name="payedMoney"
-            id="field_payedMoney"
-            data-cy="payedMoney"
-            formControlName="payedMoney"
-          />
-          <div *ngIf="editForm.get('payedMoney')!.invalid && (editForm.get('payedMoney')!.dirty || editForm.get('payedMoney')!.touched)">
+          <label class="form-label" jhiTranslate="cpmSystemApp.payment.paidMoney" for="field_paidMoney">Paid Money</label>
+          <input type="number" class="form-control" name="paidMoney" id="field_paidMoney" data-cy="paidMoney" formControlName="paidMoney" />
+          <div *ngIf="editForm.get('paidMoney')!.invalid && (editForm.get('paidMoney')!.dirty || editForm.get('paidMoney')!.touched)">
             <small
               class="form-text text-danger"
-              *ngIf="editForm.get('payedMoney')?.errors?.required"
+              *ngIf="editForm.get('paidMoney')?.errors?.required"
               jhiTranslate="entity.validation.required"
             >
               This field is required.
             </small>
             <small
               class="form-text text-danger"
-              [hidden]="!editForm.get('payedMoney')?.errors?.number"
+              *ngIf="editForm.get('paidMoney')?.errors?.min"
+              jhiTranslate="entity.validation.min"
+              [translateValues]="{ min: 0 }"
+            >
+              This field should be at least 0.
+            </small>
+            <small
+              class="form-text text-danger"
+              [hidden]="!editForm.get('paidMoney')?.errors?.number"
               jhiTranslate="entity.validation.number"
             >
               This field should be a number.
@@ -65,6 +66,14 @@
               jhiTranslate="entity.validation.required"
             >
               This field is required.
+            </small>
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('paymentForPeriod')?.errors?.min"
+              jhiTranslate="entity.validation.min"
+              [translateValues]="{ min: 10000 }"
+            >
+              This field should be at least 10000.
             </small>
             <small
               class="form-text text-danger"
@@ -139,19 +148,6 @@
               <fa-icon icon="calendar-alt"></fa-icon>
             </button>
           </div>
-          <div
-            *ngIf="
-              editForm.get('finishedPeriod')!.invalid && (editForm.get('finishedPeriod')!.dirty || editForm.get('finishedPeriod')!.touched)
-            "
-          >
-            <small
-              class="form-text text-danger"
-              *ngIf="editForm.get('finishedPeriod')?.errors?.required"
-              jhiTranslate="entity.validation.required"
-            >
-              This field is required.
-            </small>
-          </div>
         </div>
 
         <div class="row mb-3">
@@ -181,14 +177,6 @@
           >
             <option [ngValue]="null"></option>
             <option [ngValue]="servicesOption" *ngFor="let servicesOption of servicesSharedCollection">{{ servicesOption.id }}</option>
-          </select>
-        </div>
-
-        <div class="row mb-3">
-          <label class="form-label" jhiTranslate="cpmSystemApp.payment.group" for="field_group">Group</label>
-          <select class="form-control" id="field_group" data-cy="group" name="group" formControlName="group" [compareWith]="compareGroups">
-            <option [ngValue]="null"></option>
-            <option [ngValue]="groupsOption" *ngFor="let groupsOption of groupsSharedCollection">{{ groupsOption.id }}</option>
           </select>
         </div>
       </div>

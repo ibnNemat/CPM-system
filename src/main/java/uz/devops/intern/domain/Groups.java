@@ -24,12 +24,14 @@ public class Groups implements Serializable {
     private Long id;
 
     @NotNull
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @NotNull
-    @Column(name = "group_owner_name", nullable = false)
+    @Column(name = "group_owner_name")
     private String groupOwnerName;
+
+    @Column(name = "parent_id")
+    private Long parentId;
 
     @ManyToMany
     @JoinTable(
@@ -37,7 +39,7 @@ public class Groups implements Serializable {
         joinColumns = @JoinColumn(name = "groups_id"),
         inverseJoinColumns = @JoinColumn(name = "users_id")
     )
-    @JsonIgnoreProperties(value = { "user", "groups", "services" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "user", "groups" }, allowSetters = true)
     private Set<Customers> users = new HashSet<>();
 
     @ManyToOne
@@ -83,6 +85,19 @@ public class Groups implements Serializable {
 
     public void setGroupOwnerName(String groupOwnerName) {
         this.groupOwnerName = groupOwnerName;
+    }
+
+    public Long getParentId() {
+        return this.parentId;
+    }
+
+    public Groups parentId(Long parentId) {
+        this.setParentId(parentId);
+        return this;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 
     public Set<Customers> getUsers() {
@@ -149,6 +164,7 @@ public class Groups implements Serializable {
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", groupOwnerName='" + getGroupOwnerName() + "'" +
+            ", parentId=" + getParentId() +
             "}";
     }
 }

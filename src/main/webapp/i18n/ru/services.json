@@ -18,12 +18,12 @@
         "title": "Services"
       },
       "id": "ID",
-      "serviceType": "Service Type",
+      "name": "Name",
       "price": "Price",
+      "startedPeriod": "Started Period",
       "periodType": "Period Type",
       "countPeriod": "Count Period",
-      "group": "Group",
-      "users": "Users"
+      "group": "Group"
     }
   }
 }

@@ -15,7 +15,6 @@ public class OrganizationDTO implements Serializable {
     @NotNull
     private String name;
 
-    @NotNull
     private String orgOwnerName;
 
     public Long getId() {

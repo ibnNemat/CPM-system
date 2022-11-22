@@ -1,37 +1,42 @@
-import { ServiceType } from 'app/entities/enumerations/service-type.model';
+import dayjs from 'dayjs/esm';
+
 import { PeriodType } from 'app/entities/enumerations/period-type.model';
 
 import { IServices, NewServices } from './services.model';
 
 export const sampleWithRequiredData: IServices = {
   id: 10413,
-  serviceType: ServiceType['MEDICAL'],
-  price: 50885,
-  periodType: PeriodType['MONTH'],
-  countPeriod: 95265,
+  name: 'Buckinghamshire maroon indexing',
+  price: 73284,
+  startedPeriod: dayjs('2022-11-12'),
+  periodType: PeriodType['ONETIME'],
+  countPeriod: 24137,
 };
 
 export const sampleWithPartialData: IServices = {
-  id: 18772,
-  serviceType: ServiceType['FOOD'],
-  price: 13790,
+  id: 63479,
+  name: 'Market',
+  price: 74814,
+  startedPeriod: dayjs('2022-11-11'),
   periodType: PeriodType['YEAR'],
-  countPeriod: 47844,
+  countPeriod: 88632,
 };
 
 export const sampleWithFullData: IServices = {
-  id: 43040,
-  serviceType: ServiceType['ACCOMMODATION'],
-  price: 25657,
-  periodType: PeriodType['ONETIME'],
-  countPeriod: 24136,
+  id: 53209,
+  name: 'Handmade relationships Handmade',
+  price: 85968,
+  startedPeriod: dayjs('2022-11-11'),
+  periodType: PeriodType['YEAR'],
+  countPeriod: 15695,
 };
 
 export const sampleWithNewData: NewServices = {
-  serviceType: ServiceType['ACCOMMODATION'],
-  price: 28337,
-  periodType: PeriodType['MONTH'],
-  countPeriod: 30159,
+  name: 'program bypass',
+  price: 37181,
+  startedPeriod: dayjs('2022-11-12'),
+  periodType: PeriodType['ONETIME'],
+  countPeriod: 99479,
   id: null,
 };
 

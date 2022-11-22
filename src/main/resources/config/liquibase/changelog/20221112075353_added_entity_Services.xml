@@ -14,10 +14,13 @@
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="service_type" type="varchar(255)">
+            <column name="name" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
             <column name="price" type="double">
+                <constraints nullable="false" />
+            </column>
+            <column name="started_period" type="date">
                 <constraints nullable="false" />
             </column>
             <column name="period_type" type="varchar(255)">
@@ -27,24 +30,10 @@
                 <constraints nullable="false" />
             </column>
             <column name="group_id" type="bigint">
-                <constraints nullable="true" />
+                <constraints nullable="true" unique="true" uniqueConstraintName="ux_services__group_id" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-    </changeSet>
-
-    <changeSet id="20221112075353-1-relations" author="jhipster">
-
-        <createTable tableName="rel_services__users">
-            <column name="users_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="services_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addPrimaryKey columnNames="services_id, users_id" tableName="rel_services__users"/>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
@@ -64,8 +53,9 @@
                   tableName="services"
                   usePreparedStatements="true">
             <column name="id" type="numeric"/>
-            <column name="service_type" type="string"/>
+            <column name="name" type="string"/>
             <column name="price" type="numeric"/>
+            <column name="started_period" type="date"/>
             <column name="period_type" type="string"/>
             <column name="count_period" type="numeric"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->

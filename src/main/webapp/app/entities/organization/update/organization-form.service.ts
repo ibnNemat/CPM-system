@@ -42,9 +42,7 @@ export class OrganizationFormService {
       name: new FormControl(organizationRawValue.name, {
         validators: [Validators.required],
       }),
-      orgOwnerName: new FormControl(organizationRawValue.orgOwnerName, {
-        validators: [Validators.required],
-      }),
+      orgOwnerName: new FormControl(organizationRawValue.orgOwnerName),
     });
   }
 

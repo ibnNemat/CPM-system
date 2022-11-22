@@ -11,8 +11,6 @@ import { ICustomers } from 'app/entities/customers/customers.model';
 import { CustomersService } from 'app/entities/customers/service/customers.service';
 import { IServices } from 'app/entities/services/services.model';
 import { ServicesService } from 'app/entities/services/service/services.service';
-import { IGroups } from 'app/entities/groups/groups.model';
-import { GroupsService } from 'app/entities/groups/service/groups.service';
 
 @Component({
   selector: 'jhi-payment-update',
@@ -24,7 +22,6 @@ export class PaymentUpdateComponent implements OnInit {
 
   customersSharedCollection: ICustomers[] = [];
   servicesSharedCollection: IServices[] = [];
-  groupsSharedCollection: IGroups[] = [];
 
   editForm: PaymentFormGroup = this.paymentFormService.createPaymentFormGroup();
 
@@ -33,15 +30,12 @@ export class PaymentUpdateComponent implements OnInit {
     protected paymentFormService: PaymentFormService,
     protected customersService: CustomersService,
     protected servicesService: ServicesService,
-    protected groupsService: GroupsService,
     protected activatedRoute: ActivatedRoute
   ) {}
 
   compareCustomers = (o1: ICustomers | null, o2: ICustomers | null): boolean => this.customersService.compareCustomers(o1, o2);
 
   compareServices = (o1: IServices | null, o2: IServices | null): boolean => this.servicesService.compareServices(o1, o2);
-
-  compareGroups = (o1: IGroups | null, o2: IGroups | null): boolean => this.groupsService.compareGroups(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ payment }) => {
@@ -99,7 +93,6 @@ export class PaymentUpdateComponent implements OnInit {
       this.servicesSharedCollection,
       payment.service
     );
-    this.groupsSharedCollection = this.groupsService.addGroupsToCollectionIfMissing<IGroups>(this.groupsSharedCollection, payment.group);
   }
 
   protected loadRelationshipsOptions(): void {
@@ -120,11 +113,5 @@ export class PaymentUpdateComponent implements OnInit {
         map((services: IServices[]) => this.servicesService.addServicesToCollectionIfMissing<IServices>(services, this.payment?.service))
       )
       .subscribe((services: IServices[]) => (this.servicesSharedCollection = services));
-
-    this.groupsService
-      .query()
-      .pipe(map((res: HttpResponse<IGroups[]>) => res.body ?? []))
-      .pipe(map((groups: IGroups[]) => this.groupsService.addGroupsToCollectionIfMissing<IGroups>(groups, this.payment?.group)))
-      .subscribe((groups: IGroups[]) => (this.groupsSharedCollection = groups));
   }
 }

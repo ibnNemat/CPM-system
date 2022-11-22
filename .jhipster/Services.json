@@ -6,14 +6,19 @@
   "entityTableName": "services",
   "fields": [
     {
-      "fieldName": "serviceType",
-      "fieldType": "ServiceType",
-      "fieldValidateRules": ["required"],
-      "fieldValues": "KNOWLEDGE,FOOD,ACCOMMODATION,MEDICAL"
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
     },
     {
       "fieldName": "price",
       "fieldType": "Double",
+      "fieldValidateRules": ["required", "min"],
+      "fieldValidateRulesMin": "10000"
+    },
+    {
+      "fieldName": "startedPeriod",
+      "fieldType": "LocalDate",
       "fieldValidateRules": ["required"]
     },
     {
@@ -25,7 +30,8 @@
     {
       "fieldName": "countPeriod",
       "fieldType": "Integer",
-      "fieldValidateRules": ["required"]
+      "fieldValidateRules": ["required", "min"],
+      "fieldValidateRulesMin": "1"
     }
   ],
   "fluentMethods": true,
@@ -36,15 +42,9 @@
   "relationships": [
     {
       "otherEntityName": "groups",
-      "relationshipName": "group",
-      "relationshipType": "many-to-one"
-    },
-    {
-      "otherEntityName": "customers",
-      "otherEntityRelationshipName": "services",
       "ownerSide": true,
-      "relationshipName": "users",
-      "relationshipType": "many-to-many"
+      "relationshipName": "group",
+      "relationshipType": "one-to-one"
     }
   ],
   "service": "serviceImpl"
