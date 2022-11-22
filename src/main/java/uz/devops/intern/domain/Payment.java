@@ -48,7 +48,7 @@ public class Payment implements Serializable {
     private Customers customer;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = { "group" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "groups" }, allowSetters = true)
     private Services service;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

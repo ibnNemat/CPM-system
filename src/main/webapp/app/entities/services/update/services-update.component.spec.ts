@@ -51,12 +51,12 @@ describe('Services Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call Groups query and add missing value', () => {
       const services: IServices = { id: 456 };
-      const group: IGroups = { id: 7809 };
-      services.group = group;
+      const groups: IGroups[] = [{ id: 7809 }];
+      services.groups = groups;
 
       const groupsCollection: IGroups[] = [{ id: 67615 }];
       jest.spyOn(groupsService, 'query').mockReturnValue(of(new HttpResponse({ body: groupsCollection })));
-      const additionalGroups = [group];
+      const additionalGroups = [...groups];
       const expectedCollection: IGroups[] = [...additionalGroups, ...groupsCollection];
       jest.spyOn(groupsService, 'addGroupsToCollectionIfMissing').mockReturnValue(expectedCollection);
 
@@ -73,13 +73,13 @@ describe('Services Management Update Component', () => {
 
     it('Should update editForm', () => {
       const services: IServices = { id: 456 };
-      const group: IGroups = { id: 97153 };
-      services.group = group;
+      const groups: IGroups = { id: 97153 };
+      services.groups = [groups];
 
       activatedRoute.data = of({ services });
       comp.ngOnInit();
 
-      expect(comp.groupsSharedCollection).toContain(group);
+      expect(comp.groupsSharedCollection).toContain(groups);
       expect(comp.services).toEqual(services);
     });
   });

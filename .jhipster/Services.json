@@ -42,9 +42,10 @@
   "relationships": [
     {
       "otherEntityName": "groups",
+      "otherEntityRelationshipName": "services",
       "ownerSide": true,
-      "relationshipName": "group",
-      "relationshipType": "one-to-one"
+      "relationshipName": "groups",
+      "relationshipType": "many-to-many"
     }
   ],
   "service": "serviceImpl"

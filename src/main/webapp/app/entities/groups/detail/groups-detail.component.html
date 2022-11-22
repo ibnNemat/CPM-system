@@ -22,10 +22,6 @@
         <dd>
           <span>{{ groups.groupOwnerName }}</span>
         </dd>
-        <dt><span jhiTranslate="cpmSystemApp.groups.parentId">Parent Id</span></dt>
-        <dd>
-          <span>{{ groups.parentId }}</span>
-        </dd>
         <dt><span jhiTranslate="cpmSystemApp.groups.customers">Customers</span></dt>
         <dd>
           <span *ngFor="let customers of groups.customers; let last = last">

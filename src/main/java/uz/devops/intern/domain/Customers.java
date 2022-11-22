@@ -45,7 +45,7 @@ public class Customers implements Serializable {
     private User user;
 
     @ManyToMany(mappedBy = "customers")
-    @JsonIgnoreProperties(value = { "customers", "organization" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "customers", "organization", "services" }, allowSetters = true)
     private Set<Groups> groups = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

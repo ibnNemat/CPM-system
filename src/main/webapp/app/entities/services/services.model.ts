@@ -9,7 +9,7 @@ export interface IServices {
   startedPeriod?: dayjs.Dayjs | null;
   periodType?: PeriodType | null;
   countPeriod?: number | null;
-  group?: Pick<IGroups, 'id'> | null;
+  groups?: Pick<IGroups, 'id'>[] | null;
 }
 
 export type NewServices = Omit<IServices, 'id'> & { id: null };

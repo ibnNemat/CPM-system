@@ -21,14 +21,24 @@ public class ServicesRepositoryWithBagRelationshipsImpl implements ServicesRepos
     private EntityManager entityManager;
 
     @Override
-    public List<Services> fetchBagRelationships(List<Services> services) {
-        return Optional.of(services).map(this::fetchUsers).orElse(Collections.emptyList());
+    public Optional<Services> fetchBagRelationships(Optional<Services> services) {
+        return services.map(this::fetchGroups);
     }
 
-    Services fetchUsers(Services result) {
+    @Override
+    public Page<Services> fetchBagRelationships(Page<Services> services) {
+        return new PageImpl<>(fetchBagRelationships(services.getContent()), services.getPageable(), services.getTotalElements());
+    }
+
+    @Override
+    public List<Services> fetchBagRelationships(List<Services> services) {
+        return Optional.of(services).map(this::fetchGroups).orElse(Collections.emptyList());
+    }
+
+    Services fetchGroups(Services result) {
         return entityManager
             .createQuery(
-                "select services from Services services left join fetch services.customers where services is :services",
+                "select services from Services services left join fetch services.groups where services is :services",
                 Services.class
             )
             .setParameter("services", result)
@@ -36,12 +46,12 @@ public class ServicesRepositoryWithBagRelationshipsImpl implements ServicesRepos
             .getSingleResult();
     }
 
-    List<Services> fetchUsers(List<Services> services) {
+    List<Services> fetchGroups(List<Services> services) {
         HashMap<Object, Integer> order = new HashMap<>();
         IntStream.range(0, services.size()).forEach(index -> order.put(services.get(index).getId(), index));
         List<Services> result = entityManager
             .createQuery(
-                "select distinct services from Services services left join fetch services.customers where services in :services",
+                "select distinct services from Services services left join fetch services.groups where services in :services",
                 Services.class
             )
             .setParameter("services", services)

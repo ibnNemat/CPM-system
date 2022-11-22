@@ -68,9 +68,9 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
-          <th scope="col" jhiSortBy="group.id">
+          <th scope="col" jhiSortBy="groups.id">
             <div class="d-flex">
-              <span jhiTranslate="cpmSystemApp.services.group">Group</span>
+              <span jhiTranslate="cpmSystemApp.services.groups">Groups</span>
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
@@ -88,9 +88,10 @@
           <td jhiTranslate="{{ 'cpmSystemApp.PeriodType.' + services.periodType }}">{{ services.periodType }}</td>
           <td>{{ services.countPeriod }}</td>
           <td>
-            <div *ngIf="services.group">
-              <a [routerLink]="['/groups', services.group.id, 'view']">{{ services.group.id }}</a>
-            </div>
+            <span *ngFor="let groups of services.groups; let last = last">
+              <a class="form-control-static" [routerLink]="['/groups', groups.id, 'view']">{{ groups.id }}</a
+              >{{ last ? '' : ', ' }}
+            </span>
           </td>
           <td class="text-end">
             <div class="btn-group">
