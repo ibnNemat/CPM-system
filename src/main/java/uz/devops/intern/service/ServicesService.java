@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.dto.ServicesDTO;
 
 /**
@@ -16,7 +17,7 @@ public interface ServicesService {
      * @param servicesDTO the entity to save.
      * @return the persisted entity.
      */
-    ServicesDTO save(ServicesDTO servicesDTO);
+    ResponseDTO<ServicesDTO> save(ServicesDTO servicesDTO);
 
     /**
      * Updates a services.

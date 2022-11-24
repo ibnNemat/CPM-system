@@ -41,6 +41,7 @@ public class CustomerMapper {
     }
 
     public static Customers toEntityWithNoUser(CustomersDTO c){
+        if (c == null) return null;
         Customers customers = new Customers();
         customers.setUsername(c.getUsername());
         customers.setPassword(c.getPassword());

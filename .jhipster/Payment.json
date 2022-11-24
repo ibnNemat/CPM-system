@@ -14,13 +14,12 @@
     {
       "fieldName": "paymentForPeriod",
       "fieldType": "Double",
-      "fieldValidateRules": ["required", "min"],
+      "fieldValidateRules": ["min"],
       "fieldValidateRulesMin": "10000"
     },
     {
       "fieldName": "isPayed",
-      "fieldType": "Boolean",
-      "fieldValidateRules": ["required"]
+      "fieldType": "Boolean"
     },
     {
       "fieldName": "startedPeriod",
@@ -46,6 +45,11 @@
     {
       "otherEntityName": "services",
       "relationshipName": "service",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "groups",
+      "relationshipName": "group",
       "relationshipType": "many-to-one"
     }
   ],

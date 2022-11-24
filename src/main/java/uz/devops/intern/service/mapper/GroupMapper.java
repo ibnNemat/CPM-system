@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class GroupMapper {
+
     public static GroupsDTO toDtoForSaveServiceMethod(Groups g){
         if (g == null){return null;}
 
@@ -14,11 +15,10 @@ public class GroupMapper {
         groupsDTO.setId(g.getId());
         groupsDTO.setName(g.getName());
         groupsDTO.setGroupOwnerName(g.getGroupOwnerName());
-        groupsDTO.setParentId(g.getParentId());
         groupsDTO.setCustomers(CustomerMapper.toSetCustomerDto(g.getCustomers()));
+        groupsDTO.setServices(ServiceMapper.servicesDTOSetWithoutGroups(g.getServices()));
         return groupsDTO;
     }
-
 
     public static Set<GroupsDTO> groupsDTOSet(Set<Groups> groupsSet){
         return groupsSet.stream()
@@ -32,13 +32,31 @@ public class GroupMapper {
             groupsDTO.setId(g.getId());
             groupsDTO.setName(g.getName());
             groupsDTO.setGroupOwnerName(g.getGroupOwnerName());
-            groupsDTO.setParentId(g.getParentId());
-            groupsDTO.setOrganization(OrganizationsMapper.toDto(g.getOrganization()));
-            groupsDTO.setCustomers(CustomerMapper.toSetCustomerDto(g.getCustomers()));
+            groupsDTO.setOrganization(OrganizationsMapper.toDtoWithoutGroups(g.getOrganization()));
+            if(g.getCustomers() != null)
+                groupsDTO.setCustomers(CustomerMapper.toSetCustomerDto(g.getCustomers()));
+            if (g.getServices() != null)
+                groupsDTO.setServices(ServiceMapper.servicesDTOSetWithoutGroups(g.getServices()));
         }
         return groupsDTO;
     }
 
+    public static Groups toEntity(GroupsDTO g){
+        Groups groups = new Groups();
+        if (g != null) {
+            groups.setId(g.getId());
+            groups.setName(g.getName());
+            groups.setGroupOwnerName(g.getGroupOwnerName());
+            groups.setOrganization(OrganizationsMapper.toEntity(g.getOrganization()));
+        }
+        return groups;
+    }
+
+    public static Set<Groups> groupsEntitySet(Set<GroupsDTO> groupsSet){
+        return groupsSet.stream()
+            .map(GroupMapper::toEntityForSavingService)
+            .collect(Collectors.toSet());
+    }
     public static Groups toEntityForSavingService(GroupsDTO g){
         Groups groups = new Groups();
         groups.setId(g.getId());

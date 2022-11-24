@@ -27,12 +27,10 @@ public class Payment implements Serializable {
     @Column(name = "paid_money", nullable = false)
     private Double paidMoney;
 
-    @NotNull
     @DecimalMin(value = "10000")
     @Column(name = "payment_for_period", nullable = false)
     private Double paymentForPeriod;
 
-    @NotNull
     @Column(name = "is_payed", nullable = false)
     private Boolean isPayed;
 
@@ -50,6 +48,17 @@ public class Payment implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties(value = { "groups" }, allowSetters = true)
     private Services service;
+    @ManyToOne
+    @JsonIgnoreProperties(value = { "customers", "organization", "services" }, allowSetters = true)
+    private Groups group;
+
+    public Groups getGroup() {
+        return group;
+    }
+
+    public void setGroup(Groups group) {
+        this.group = group;
+    }
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -177,15 +186,19 @@ public class Payment implements Serializable {
     }
 
     // prettier-ignore
+
     @Override
     public String toString() {
         return "Payment{" +
-            "id=" + getId() +
-            ", paidMoney=" + getPaidMoney() +
-            ", paymentForPeriod=" + getPaymentForPeriod() +
-            ", isPayed='" + getIsPayed() + "'" +
-            ", startedPeriod='" + getStartedPeriod() + "'" +
-            ", finishedPeriod='" + getFinishedPeriod() + "'" +
-            "}";
+            "id=" + id +
+            ", paidMoney=" + paidMoney +
+            ", paymentForPeriod=" + paymentForPeriod +
+            ", isPayed=" + isPayed +
+            ", startedPeriod=" + startedPeriod +
+            ", finishedPeriod=" + finishedPeriod +
+            ", customer=" + customer +
+            ", service=" + service +
+            ", group=" + group +
+            '}';
     }
 }

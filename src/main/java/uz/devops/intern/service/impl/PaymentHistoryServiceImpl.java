@@ -1,9 +1,5 @@
 package uz.devops.intern.service.impl;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,6 +9,11 @@ import uz.devops.intern.repository.PaymentHistoryRepository;
 import uz.devops.intern.service.PaymentHistoryService;
 import uz.devops.intern.service.dto.PaymentHistoryDTO;
 import uz.devops.intern.service.mapper.PaymentHistoryMapper;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing {@link PaymentHistory}.
@@ -33,36 +34,11 @@ public class PaymentHistoryServiceImpl implements PaymentHistoryService {
     }
 
     @Override
-    public PaymentHistoryDTO save(PaymentHistoryDTO paymentHistoryDTO) {
-        log.debug("Request to save PaymentHistory : {}", paymentHistoryDTO);
-        PaymentHistory paymentHistory = paymentHistoryMapper.toEntity(paymentHistoryDTO);
+    public PaymentHistory save(PaymentHistory paymentHistory) {
+        log.debug("Request to save PaymentHistory : {}", paymentHistory);
         paymentHistory = paymentHistoryRepository.save(paymentHistory);
-        return paymentHistoryMapper.toDto(paymentHistory);
+        return paymentHistory;
     }
-
-    @Override
-    public PaymentHistoryDTO update(PaymentHistoryDTO paymentHistoryDTO) {
-        log.debug("Request to update PaymentHistory : {}", paymentHistoryDTO);
-        PaymentHistory paymentHistory = paymentHistoryMapper.toEntity(paymentHistoryDTO);
-        paymentHistory = paymentHistoryRepository.save(paymentHistory);
-        return paymentHistoryMapper.toDto(paymentHistory);
-    }
-
-    @Override
-    public Optional<PaymentHistoryDTO> partialUpdate(PaymentHistoryDTO paymentHistoryDTO) {
-        log.debug("Request to partially update PaymentHistory : {}", paymentHistoryDTO);
-
-        return paymentHistoryRepository
-            .findById(paymentHistoryDTO.getId())
-            .map(existingPaymentHistory -> {
-                paymentHistoryMapper.partialUpdate(existingPaymentHistory, paymentHistoryDTO);
-
-                return existingPaymentHistory;
-            })
-            .map(paymentHistoryRepository::save)
-            .map(paymentHistoryMapper::toDto);
-    }
-
     @Override
     @Transactional(readOnly = true)
     public List<PaymentHistoryDTO> findAll() {

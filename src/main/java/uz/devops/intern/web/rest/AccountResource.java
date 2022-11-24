@@ -15,7 +15,7 @@ import uz.devops.intern.security.SecurityUtils;
 import uz.devops.intern.service.MailService;
 import uz.devops.intern.service.UserService;
 import uz.devops.intern.service.dto.AdminUserDTO;
-import uz.devops.intern.service.dto.PasswordChangeDTO;
+import uz.devops.intern.service.dto.*;
 import uz.devops.intern.web.rest.errors.*;
 import uz.devops.intern.web.rest.vm.KeyAndPasswordVM;
 import uz.devops.intern.web.rest.vm.ManagedUserVM;
@@ -26,7 +26,6 @@ import uz.devops.intern.web.rest.vm.ManagedUserVM;
 @RestController
 @RequestMapping("/api")
 public class AccountResource {
-
     private static class AccountResourceException extends RuntimeException {
 
         private AccountResourceException(String message) {

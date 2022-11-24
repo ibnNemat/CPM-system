@@ -154,7 +154,7 @@ public class UserService {
             customers.setUsername(user.getLogin());
             customers.setPassword(user.getPassword());
             customers.setPhoneNumber(userDTO.getPhoneNumber());
-            customers.account(userDTO.getAccount());
+            customers.balance(userDTO.getAccount());
 
             customersRepository.save(customers);
         }

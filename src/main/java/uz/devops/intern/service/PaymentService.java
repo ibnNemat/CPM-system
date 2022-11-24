@@ -1,14 +1,21 @@
 package uz.devops.intern.service;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import uz.devops.intern.domain.Payment;
 import uz.devops.intern.service.dto.PaymentDTO;
+import uz.devops.intern.service.dto.ResponseDTO;
 
 /**
  * Service Interface for managing {@link uz.devops.intern.domain.Payment}.
  */
 public interface PaymentService {
+    ResponseDTO<List<PaymentDTO>> getAllCustomerPayments();
+    List<PaymentDTO> getAllPaymentsCreatedByGroupManager();
+    List<Payment> saveAll(List<Payment> paymentList);
+    ResponseDTO payForService(PaymentDTO paymentDTO);
     /**
      * Save a payment.
      *

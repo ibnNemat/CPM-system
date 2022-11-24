@@ -8,6 +8,7 @@ import uz.devops.intern.service.dto.OrganizationDTO;
  * Service Interface for managing {@link uz.devops.intern.domain.Organization}.
  */
 public interface OrganizationService {
+    List<OrganizationDTO> managerOrganizations();
     /**
      * Save a organization.
      *
