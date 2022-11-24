@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
@@ -24,8 +25,8 @@ import uz.devops.intern.web.rest.errors.BadRequestAlertException;
  */
 @RestController
 @RequestMapping("/api")
+@PreAuthorize("hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN')")
 public class OrganizationResource {
-
     private final Logger log = LoggerFactory.getLogger(OrganizationResource.class);
 
     private static final String ENTITY_NAME = "organization";
@@ -139,9 +140,17 @@ public class OrganizationResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of organizations in body.
      */
     @GetMapping("/organizations")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public List<OrganizationDTO> getAllOrganizations() {
         log.debug("REST request to get all Organizations");
         return organizationService.findAll();
+    }
+
+    @GetMapping("/manager-organizations")
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
+    public List<OrganizationDTO> getAllManagerOrganizations() {
+        log.debug("REST request to get Manager Organizations");
+        return organizationService.managerOrganizations();
     }
 
     /**

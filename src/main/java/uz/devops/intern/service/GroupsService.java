@@ -1,14 +1,17 @@
 package uz.devops.intern.service;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import uz.devops.intern.domain.Groups;
 import uz.devops.intern.service.dto.GroupsDTO;
 
 /**
  * Service Interface for managing {@link uz.devops.intern.domain.Groups}.
  */
 public interface GroupsService {
+    List<GroupsDTO> findOnlyManagerGroups();
     /**
      * Save a groups.
      *
@@ -63,4 +66,6 @@ public interface GroupsService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    List<Groups> getGroupsIncludeToPayment(List<Long> ids);
 }

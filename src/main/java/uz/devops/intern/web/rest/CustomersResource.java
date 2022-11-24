@@ -23,6 +23,7 @@ import tech.jhipster.web.util.ResponseUtil;
 import uz.devops.intern.repository.CustomersRepository;
 import uz.devops.intern.service.CustomersService;
 import uz.devops.intern.service.dto.CustomersDTO;
+import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.web.rest.errors.BadRequestAlertException;
 
 /**
@@ -71,35 +72,18 @@ public class CustomersResource {
     /**
      * {@code PUT  /customers/:id} : Updates an existing customers.
      *
-     * @param id the id of the customersDTO to save.
      * @param customersDTO the customersDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated customersDTO,
      * or with status {@code 400 (Bad Request)} if the customersDTO is not valid,
      * or with status {@code 500 (Internal Server Error)} if the customersDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/customers/{id}")
-    public ResponseEntity<CustomersDTO> updateCustomers(
-        @PathVariable(value = "id", required = false) final Long id,
-        @Valid @RequestBody CustomersDTO customersDTO
-    ) throws URISyntaxException {
-        log.debug("REST request to update Customers : {}, {}", id, customersDTO);
-        if (customersDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, customersDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
+    @PutMapping("/customers")
+    public ResponseEntity<ResponseDTO<CustomersDTO>> updateCustomers(@Valid @RequestBody CustomersDTO customersDTO) throws URISyntaxException {
+        log.debug("REST request to update Customers : {}, {}", customersDTO);
 
-        if (!customersRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        CustomersDTO result = customersService.update(customersDTO);
-        return ResponseEntity
-            .ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, customersDTO.getId().toString()))
-            .body(result);
+        ResponseDTO<CustomersDTO> result = customersService.update(customersDTO);
+        return ResponseEntity.ok(result);
     }
 
     /**
@@ -142,12 +126,21 @@ public class CustomersResource {
      * {@code GET  /customers} : get all the customers.
      *
      * @param pageable the pagination information.
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of customers in body.
      */
     @GetMapping("/customers")
-    public ResponseEntity<List<CustomersDTO>> getAllCustomers(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<CustomersDTO>> getAllCustomers(
+        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false, defaultValue = "false") boolean eagerload
+    ) {
         log.debug("REST request to get a page of Customers");
-        Page<CustomersDTO> page = customersService.findAll(pageable);
+        Page<CustomersDTO> page;
+        if (eagerload) {
+            page = customersService.findAllWithEagerRelationships(pageable);
+        } else {
+            page = customersService.findAll(pageable);
+        }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

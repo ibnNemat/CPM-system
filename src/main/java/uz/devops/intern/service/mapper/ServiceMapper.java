@@ -9,13 +9,28 @@ import java.util.stream.Collectors;
 
 public class ServiceMapper {
     public static Services toEntity(ServicesDTO servicesDTO){
+        if (servicesDTO == null) return null;
         Services services = new Services();
+        services.setId(servicesDTO.getId());
         services.setName(servicesDTO.getName());
         services.setPrice(servicesDTO.getPrice());
         services.setStartedPeriod(servicesDTO.getStartedPeriod());
         services.setPeriodType(servicesDTO.getPeriodType());
         services.setCountPeriod(servicesDTO.getCountPeriod());
-        services.setGroup(GroupMapper.toEntityForSavingService(servicesDTO.getGroup()));
+        services.setGroups(GroupMapper.groupsEntitySet(servicesDTO.getGroups()));
+        return services;
+    }
+
+    public static Services toEntityWithoutGroup(ServicesDTO servicesDTO){
+        if (servicesDTO == null) return null;
+
+        Services services = new Services();
+        services.setId(servicesDTO.getId());
+        services.setName(servicesDTO.getName());
+        services.setPrice(servicesDTO.getPrice());
+        services.setStartedPeriod(servicesDTO.getStartedPeriod());
+        services.setPeriodType(servicesDTO.getPeriodType());
+        services.setCountPeriod(servicesDTO.getCountPeriod());
         return services;
     }
 
@@ -25,7 +40,7 @@ public class ServiceMapper {
         }
 
         ServicesDTO servicesDTO = new ServicesDTO();
-        servicesDTO.setGroup(GroupMapper.toDtoForSaveServiceMethod(s.getGroup()));
+        servicesDTO.setGroups(GroupMapper.groupsDTOSet(s.getGroups()));
         return getServicesDTO(s, servicesDTO);
     }
 
@@ -35,7 +50,7 @@ public class ServiceMapper {
         }
 
         ServicesDTO servicesDTO = new ServicesDTO();
-        servicesDTO.setGroup(GroupMapper.toDto(s.getGroup()));
+        servicesDTO.setGroups(GroupMapper.groupsDTOSet(s.getGroups()));
         return getServicesDTO(s, servicesDTO);
     }
 
@@ -56,4 +71,18 @@ public class ServiceMapper {
             .collect(Collectors.toSet());
     }
 
+    public static Set<ServicesDTO> servicesDTOSetWithoutGroups(Set<Services> services){
+        return services.stream()
+            .map(ServiceMapper::toDtoWithoutGroups)
+            .collect(Collectors.toSet());
+    }
+
+    public static ServicesDTO toDtoWithoutGroups(Services s) {
+        if ( s == null ) {
+            return null;
+        }
+
+        ServicesDTO servicesDTO = new ServicesDTO();
+        return getServicesDTO(s, servicesDTO);
+    }
 }

@@ -11,7 +11,6 @@ import java.time.LocalDate;
 @Component
 public class TestClass {
     private final TimerTaskToSendMessage timerTaskToSendMessage;
-
     public TestClass(TimerTaskToSendMessage timerTaskToSendMessage) {
         this.timerTaskToSendMessage = timerTaskToSendMessage;
     }

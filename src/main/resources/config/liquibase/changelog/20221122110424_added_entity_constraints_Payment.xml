@@ -19,5 +19,10 @@
                                  constraintName="fk_payment__service_id"
                                  referencedColumnNames="id"
                                  referencedTableName="services"/>
+        <addForeignKeyConstraint baseColumnNames="group_id"
+                                 baseTableName="payment"
+                                 constraintName="fk_payment__group_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="groups"/>
     </changeSet>
 </databaseChangeLog>

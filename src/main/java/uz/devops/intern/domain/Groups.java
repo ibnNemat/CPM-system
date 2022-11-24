@@ -30,7 +30,7 @@ public class Groups implements Serializable {
     @Column(name = "group_owner_name")
     private String groupOwnerName;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "rel_groups__customers",
         joinColumns = @JoinColumn(name = "groups_id"),
@@ -41,9 +41,10 @@ public class Groups implements Serializable {
 
     @ManyToOne
     @JsonIgnoreProperties(value = { "groups" }, allowSetters = true)
+
     private Organization organization;
 
-    @ManyToMany(mappedBy = "groups")
+    @ManyToMany(mappedBy = "groups", fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = { "groups" }, allowSetters = true)
     private Set<Services> services = new HashSet<>();
 

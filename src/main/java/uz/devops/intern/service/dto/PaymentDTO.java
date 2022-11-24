@@ -10,28 +10,33 @@ import javax.validation.constraints.*;
  */
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class PaymentDTO implements Serializable {
-
     private Long id;
-
     @NotNull
     @DecimalMin(value = "0")
     private Double paidMoney;
-
-    @NotNull
     @DecimalMin(value = "10000")
     private Double paymentForPeriod;
-
-    @NotNull
     private Boolean isPayed;
-
     @NotNull
     private LocalDate startedPeriod;
-
     private LocalDate finishedPeriod;
-
     private CustomersDTO customer;
-
     private ServicesDTO service;
+    private GroupsDTO group;
+    public GroupsDTO getGroup() {
+        return group;
+    }
+    public void setGroup(GroupsDTO group) {
+        this.group = group;
+    }
+
+    public Boolean getPayed() {
+        return isPayed;
+    }
+
+    public void setPayed(Boolean payed) {
+        isPayed = payed;
+    }
 
     public Long getId() {
         return id;
@@ -122,14 +127,15 @@ public class PaymentDTO implements Serializable {
     @Override
     public String toString() {
         return "PaymentDTO{" +
-            "id=" + getId() +
-            ", paidMoney=" + getPaidMoney() +
-            ", paymentForPeriod=" + getPaymentForPeriod() +
-            ", isPayed='" + getIsPayed() + "'" +
-            ", startedPeriod='" + getStartedPeriod() + "'" +
-            ", finishedPeriod='" + getFinishedPeriod() + "'" +
-            ", customer=" + getCustomer() +
-            ", service=" + getService() +
-            "}";
+            "id=" + id +
+            ", paidMoney=" + paidMoney +
+            ", paymentForPeriod=" + paymentForPeriod +
+            ", isPayed=" + isPayed +
+            ", startedPeriod=" + startedPeriod +
+            ", finishedPeriod=" + finishedPeriod +
+            ", customer=" + customer +
+            ", service=" + service +
+            ", group=" + group +
+            '}';
     }
 }

@@ -14,9 +14,7 @@ import javax.validation.constraints.*;
 @Table(name = "customers")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Customers implements Serializable {
-
     private static final long serialVersionUID = 1L;
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
@@ -39,11 +37,9 @@ public class Customers implements Serializable {
     @DecimalMin(value = "0")
     @Column(name = "balance", nullable = false)
     private Double balance;
-
     @OneToOne
     @JoinColumn(unique = true)
     private User user;
-
     @ManyToMany(mappedBy = "customers")
     @JsonIgnoreProperties(value = { "customers", "organization", "services" }, allowSetters = true)
     private Set<Groups> groups = new HashSet<>();

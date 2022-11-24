@@ -1,9 +1,5 @@
 package uz.devops.intern.service.impl;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,6 +9,14 @@ import uz.devops.intern.repository.OrganizationRepository;
 import uz.devops.intern.service.OrganizationService;
 import uz.devops.intern.service.dto.OrganizationDTO;
 import uz.devops.intern.service.mapper.OrganizationMapper;
+import uz.devops.intern.service.mapper.OrganizationsMapper;
+import uz.devops.intern.service.utils.ContextHolderUtil;
+
+import javax.annotation.Nullable;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing {@link Organization}.
@@ -20,11 +24,8 @@ import uz.devops.intern.service.mapper.OrganizationMapper;
 @Service
 @Transactional
 public class OrganizationServiceImpl implements OrganizationService {
-
     private final Logger log = LoggerFactory.getLogger(OrganizationServiceImpl.class);
-
     private final OrganizationRepository organizationRepository;
-
     private final OrganizationMapper organizationMapper;
 
     public OrganizationServiceImpl(OrganizationRepository organizationRepository, OrganizationMapper organizationMapper) {
@@ -35,9 +36,15 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public OrganizationDTO save(OrganizationDTO organizationDTO) {
         log.debug("Request to save Organization : {}", organizationDTO);
+        String orgOwner = ContextHolderUtil.getUsernameFromContextHolder();
+        if (orgOwner == null){
+            log.error("Error while saving new organization: user principal not found!");
+            return null;
+        }
+        organizationDTO.setOrgOwnerName(orgOwner);
         Organization organization = organizationMapper.toEntity(organizationDTO);
         organization = organizationRepository.save(organization);
-        return organizationMapper.toDto(organization);
+        return OrganizationsMapper.toDtoWithGroups(organization);
     }
 
     @Override
@@ -45,7 +52,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         log.debug("Request to update Organization : {}", organizationDTO);
         Organization organization = organizationMapper.toEntity(organizationDTO);
         organization = organizationRepository.save(organization);
-        return organizationMapper.toDto(organization);
+        return OrganizationsMapper.toDtoWithGroups(organization);
     }
 
     @Override
@@ -60,26 +67,48 @@ public class OrganizationServiceImpl implements OrganizationService {
                 return existingOrganization;
             })
             .map(organizationRepository::save)
-            .map(organizationMapper::toDto);
+            .map(OrganizationsMapper::toDtoWithGroups);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<OrganizationDTO> findAll() {
         log.debug("Request to get all Organizations");
-        return organizationRepository.findAll().stream().map(organizationMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
+        return organizationRepository.findAll().stream()
+            .map(OrganizationsMapper::toDtoWithGroups)
+            .collect(Collectors.toCollection(LinkedList::new));
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<OrganizationDTO> findOne(Long id) {
         log.debug("Request to get Organization : {}", id);
-        return organizationRepository.findById(id).map(organizationMapper::toDto);
+        return organizationRepository.findById(id)
+            .map(OrganizationsMapper::toDtoWithGroups);
     }
 
     @Override
     public void delete(Long id) {
         log.debug("Request to delete Organization : {}", id);
         organizationRepository.deleteById(id);
+    }
+
+    @Override
+    public List<OrganizationDTO> managerOrganizations() {
+        return getOrganizationDTOS(log, organizationRepository, organizationMapper);
+    }
+
+    @Nullable
+    public static List<OrganizationDTO> getOrganizationDTOS(Logger log, OrganizationRepository organizationRepository, OrganizationMapper organizationMapper) {
+        String username = ContextHolderUtil.getUsernameFromContextHolder();
+        if (username == null){
+            log.error("Error while getting organizations: user principal not found!");
+            return null;
+        }
+
+        List<Organization> organizations = organizationRepository.findAllByOrgOwnerName(username);
+        return organizations.stream()
+            .map(OrganizationsMapper::toDtoWithGroups)
+            .toList();
     }
 }

@@ -26,9 +26,10 @@ public class TimerTaskToSendMessage {
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                Optional<Payment> paymentOptional = paymentRepository.findByCustomerAndGroupAndServiceAndStartedPeriodAndIsPayedFalse(
-                    customer, group, service, startedPeriod
-                );
+                Optional<Payment> paymentOptional = paymentRepository
+                    .findByCustomerAndGroupAndServiceAndStartedPeriodAndIsPayedFalse(
+                    customer, group, service, startedPeriod);
+
                 if (paymentOptional.isPresent()){
                     Payment payment = paymentOptional.get();
                     System.out.println("============= Qarzdorlik ==============");
