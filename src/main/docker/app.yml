@@ -19,6 +19,7 @@ services:
     # volumes:
     #   - ~/volumes/jhipster/cpm_system/postgresql/:/var/lib/postgresql/data/
     environment:
+      -
       - POSTGRES_USER=cpm_system
       - POSTGRES_PASSWORD=123
       - POSTGRES_HOST_AUTH_METHOD=trust

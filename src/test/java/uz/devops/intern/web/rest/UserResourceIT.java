@@ -54,16 +54,13 @@ class UserResourceIT {
 
     private static final String DEFAULT_IMAGEURL = "http://placehold.it/50x50";
     private static final String UPDATED_IMAGEURL = "http://placehold.it/40x40";
-
     private static final String DEFAULT_LANGKEY = "en";
     private static final String UPDATED_LANGKEY = "fr";
-
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private UserMapper userMapper;
-
     @Autowired
     private EntityManager em;
 

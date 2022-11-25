@@ -25,7 +25,6 @@ import uz.devops.intern.security.AuthoritiesConstants;
 import uz.devops.intern.service.UserService;
 import uz.devops.intern.service.dto.AdminUserDTO;
 import uz.devops.intern.service.dto.PasswordChangeDTO;
-import uz.devops.intern.service.dto.UserDTO;
 import uz.devops.intern.web.rest.vm.KeyAndPasswordVM;
 import uz.devops.intern.web.rest.vm.ManagedUserVM;
 
@@ -36,24 +35,17 @@ import uz.devops.intern.web.rest.vm.ManagedUserVM;
 @WithMockUser(value = TEST_USER_LOGIN)
 @IntegrationTest
 class AccountResourceIT {
-
     static final String TEST_USER_LOGIN = "test";
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private AuthorityRepository authorityRepository;
-
     @Autowired
     private UserService userService;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
-
     @Autowired
     private MockMvc restAccountMockMvc;
-
     @Test
     @WithUnauthenticatedMockUser
     void testNonAuthenticatedUser() throws Exception {

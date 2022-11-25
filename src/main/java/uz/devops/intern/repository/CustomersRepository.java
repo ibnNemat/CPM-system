@@ -3,6 +3,7 @@ package uz.devops.intern.repository;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 import uz.devops.intern.domain.Customers;
+import uz.devops.intern.domain.User;
 import uz.devops.intern.service.dto.CustomersDTO;
 
 import java.util.Optional;
@@ -20,4 +21,6 @@ public interface CustomersRepository extends JpaRepository<Customers, Long>, Gro
     void decreaseCustomerBalance(Double paidMoney, Long customerId);
 
     Optional<Customers> findByUsername(String username);
+
+    Optional<Customers> findByUser(User user);
 }

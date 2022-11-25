@@ -116,15 +116,19 @@ public class PaymentServiceImpl implements PaymentService {
 
             LocalDate oldFinishedPeriodDateWithPlusDate = paymentInDataBase.getFinishedPeriod().plusDays(1);
             Payment newPayment = new Payment();
+            boolean bool = false;
             while(requestPaidMoney >= paymentForPeriod){
                 newPayment = buildNewPayment(service, paymentForPeriod, group, customerPayer, oldFinishedPeriodDateWithPlusDate);
                 requestPaidMoney -= paymentForPeriod;
                 paymentList.add(newPayment);
                 oldFinishedPeriodDateWithPlusDate = newPayment.getFinishedPeriod().plusDays(1);
+                bool = true;
             }
 
             if (requestPaidMoney != 0){
-                oldFinishedPeriodDateWithPlusDate = newPayment.getFinishedPeriod().plusDays(1);
+                if (bool){
+                    oldFinishedPeriodDateWithPlusDate = newPayment.getFinishedPeriod().plusDays(1);
+                }
                 newPayment = buildNewPayment(service, paymentForPeriod, group, customerPayer, oldFinishedPeriodDateWithPlusDate);
                 newPayment.setIsPayed(false);
                 newPayment.setPaidMoney(requestPaidMoney);
