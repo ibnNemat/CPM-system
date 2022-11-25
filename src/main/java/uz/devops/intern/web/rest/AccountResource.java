@@ -66,6 +66,16 @@ public class AccountResource {
         mailService.sendActivationEmail(user);
     }
 
+    @PostMapping("/test-register")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Transactional
+    public void testMockRegister(@Valid @RequestBody ManagedUserVM managedUserVM) {
+        if (isPasswordLengthInvalid(managedUserVM.getPassword())) {
+            throw new InvalidPasswordException();
+        }
+        User user = userService.registerUser(managedUserVM, managedUserVM.getPassword());
+    }
+
     /**
      * {@code GET  /activate} : activate the registered user.
      *

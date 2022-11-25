@@ -24,15 +24,12 @@ public class Customers implements Serializable {
     @NotNull
     @Column(name = "username", nullable = false, unique = true)
     private String username;
-
     @NotNull
     @Column(name = "password", nullable = false)
     private String password;
-
     @NotNull
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
-
     @NotNull
     @DecimalMin(value = "0")
     @Column(name = "balance", nullable = false)
