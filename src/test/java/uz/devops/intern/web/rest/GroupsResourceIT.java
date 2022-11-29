@@ -40,7 +40,6 @@ import uz.devops.intern.service.mapper.GroupsMapper;
 @AutoConfigureMockMvc
 @WithMockUser
 class GroupsResourceIT {
-
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
 
@@ -99,7 +98,6 @@ class GroupsResourceIT {
     public void initTest() {
         groups = createEntity(em);
     }
-
     @Test
     @Transactional
     void createGroups() throws Exception {
@@ -183,7 +181,6 @@ class GroupsResourceIT {
     @SuppressWarnings({ "unchecked" })
     void getAllGroupsWithEagerRelationshipsIsNotEnabled() throws Exception {
         when(groupsServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
-
         restGroupsMockMvc.perform(get(ENTITY_API_URL + "?eagerload=false")).andExpect(status().isOk());
         verify(groupsRepositoryMock, times(1)).findAll(any(Pageable.class));
     }

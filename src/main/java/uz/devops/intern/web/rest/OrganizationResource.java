@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
@@ -36,11 +37,8 @@ public class OrganizationResource {
 
     private final OrganizationService organizationService;
 
-    private final OrganizationRepository organizationRepository;
-
-    public OrganizationResource(OrganizationService organizationService, OrganizationRepository organizationRepository) {
+    public OrganizationResource(OrganizationService organizationService) {
         this.organizationService = organizationService;
-        this.organizationRepository = organizationRepository;
     }
 
     /**
@@ -65,32 +63,17 @@ public class OrganizationResource {
     }
 
     /**
-     * {@code PUT  /organizations/:id} : Updates an existing organization.
+     * {@code PUT  /organizations/update} : Updates an existing organization.
      *
-     * @param id the id of the organizationDTO to save.
      * @param organizationDTO the organizationDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated organizationDTO,
      * or with status {@code 400 (Bad Request)} if the organizationDTO is not valid,
      * or with status {@code 500 (Internal Server Error)} if the organizationDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/organizations/{id}")
-    public ResponseEntity<OrganizationDTO> updateOrganization(
-        @PathVariable(value = "id", required = false) final Long id,
-        @Valid @RequestBody OrganizationDTO organizationDTO
-    ) throws URISyntaxException {
-        log.debug("REST request to update Organization : {}, {}", id, organizationDTO);
-        if (organizationDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, organizationDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!organizationRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
+    @PutMapping("/organizations/update")
+    public ResponseEntity<OrganizationDTO> updateOrganization(@Valid @RequestBody OrganizationDTO organizationDTO) throws URISyntaxException {
+        log.debug("REST request to update Organization : {}", organizationDTO);
         OrganizationDTO result = organizationService.update(organizationDTO);
         return ResponseEntity
             .ok()
@@ -99,47 +82,11 @@ public class OrganizationResource {
     }
 
     /**
-     * {@code PATCH  /organizations/:id} : Partial updates given fields of an existing organization, field will ignore if it is null
-     *
-     * @param id the id of the organizationDTO to save.
-     * @param organizationDTO the organizationDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated organizationDTO,
-     * or with status {@code 400 (Bad Request)} if the organizationDTO is not valid,
-     * or with status {@code 404 (Not Found)} if the organizationDTO is not found,
-     * or with status {@code 500 (Internal Server Error)} if the organizationDTO couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PatchMapping(value = "/organizations/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<OrganizationDTO> partialUpdateOrganization(
-        @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody OrganizationDTO organizationDTO
-    ) throws URISyntaxException {
-        log.debug("REST request to partial update Organization partially : {}, {}", id, organizationDTO);
-        if (organizationDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, organizationDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!organizationRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Optional<OrganizationDTO> result = organizationService.partialUpdate(organizationDTO);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, organizationDTO.getId().toString())
-        );
-    }
-
-    /**
      * {@code GET  /organizations} : get all the organizations.
      *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of organizations in body.
      */
-    @GetMapping("/organizations")
+    @GetMapping(value = "/organizations")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public List<OrganizationDTO> getAllOrganizations() {
         log.debug("REST request to get all Organizations");

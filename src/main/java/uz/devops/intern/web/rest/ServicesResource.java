@@ -26,22 +26,17 @@ import uz.devops.intern.web.rest.errors.BadRequestAlertException;
  */
 @RestController
 @RequestMapping("/api")
+@PreAuthorize("hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN')")
 public class ServicesResource {
-
     private final Logger log = LoggerFactory.getLogger(ServicesResource.class);
-
     private static final String ENTITY_NAME = "services";
-
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
     private final ServicesService servicesService;
 
-    private final ServicesRepository servicesRepository;
-
-    public ServicesResource(ServicesService servicesService, ServicesRepository servicesRepository) {
+    public ServicesResource(ServicesService servicesService) {
         this.servicesService = servicesService;
-        this.servicesRepository = servicesRepository;
     }
 
     /**
@@ -52,7 +47,6 @@ public class ServicesResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/services")
-    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN')")
     public ResponseEntity<ResponseDTO<ServicesDTO>> createServices(@Valid @RequestBody ServicesDTO servicesDTO) throws URISyntaxException {
         log.debug("REST request to save Services : {}", servicesDTO);
         if (servicesDTO.getId() != null) {
@@ -73,21 +67,13 @@ public class ServicesResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/services/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN')")
     public ResponseEntity<ServicesDTO> updateServices(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody ServicesDTO servicesDTO
     ) throws URISyntaxException {
         log.debug("REST request to update Services : {}, {}", id, servicesDTO);
-        if (servicesDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
         if (!Objects.equals(id, servicesDTO.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!servicesRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
         ServicesDTO result = servicesService.update(servicesDTO);
@@ -97,53 +83,29 @@ public class ServicesResource {
             .body(result);
     }
 
+
     /**
-     * {@code PATCH  /services/:id} : Partial updates given fields of an existing services, field will ignore if it is null
+     * {@code GET  /services} : get all the services.
      *
-     * @param id the id of the servicesDTO to save.
-     * @param servicesDTO the servicesDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated servicesDTO,
-     * or with status {@code 400 (Bad Request)} if the servicesDTO is not valid,
-     * or with status {@code 404 (Not Found)} if the servicesDTO is not found,
-     * or with status {@code 500 (Internal Server Error)} if the servicesDTO couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     * @return the ServicesDTOLIst with status {@code 200 (OK)} and the list of services in body.
      */
-
-    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN')")
-    @PatchMapping(value = "/services/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<ServicesDTO> partialUpdateServices(
-        @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody ServicesDTO servicesDTO
-    ) throws URISyntaxException {
-        log.debug("REST request to partial update Services partially : {}, {}", id, servicesDTO);
-        if (servicesDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, servicesDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!servicesRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Optional<ServicesDTO> result = servicesService.partialUpdate(servicesDTO);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, servicesDTO.getId().toString())
-        );
+    @GetMapping("/services")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    public List<ServicesDTO> getAllServices() {
+        log.debug("REST request to get all Services");
+        return servicesService.findAll();
     }
 
     /**
      * {@code GET  /services} : get all the services.
      *
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of services in body.
+     * @return the {@link ResponseDTO} with status {@code 200 (OK)} and the list of services in body.
      */
-    @GetMapping("/services")
-    public List<ServicesDTO> getAllServices() {
+    @GetMapping("/manager-services")
+    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER')")
+    public ResponseDTO<List<ServicesDTO>> getAllManagerServices() {
         log.debug("REST request to get all Services");
-        return servicesService.findAll();
+        return servicesService.getAllManagerServices();
     }
 
     /**

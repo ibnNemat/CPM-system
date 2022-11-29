@@ -1,5 +1,6 @@
 package uz.devops.intern.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -15,7 +16,6 @@ import javax.validation.constraints.*;
 public class Payment implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
@@ -35,10 +35,12 @@ public class Payment implements Serializable {
     private Boolean isPayed;
 
     @NotNull
+    @JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "started_period", nullable = false)
     private LocalDate startedPeriod;
 
     @Column(name = "finished_period")
+    @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate finishedPeriod;
 
     @ManyToOne
@@ -110,6 +112,15 @@ public class Payment implements Serializable {
         return this;
     }
 
+    public Payment Group(Groups group) {
+        this.setGroup(group);
+        return this;
+    }
+
+    public Payment Service(Services service) {
+        this.setService(service);
+        return this;
+    }
     public void setIsPayed(Boolean isPayed) {
         this.isPayed = isPayed;
     }

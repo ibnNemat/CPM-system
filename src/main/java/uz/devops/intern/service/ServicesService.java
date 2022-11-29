@@ -41,6 +41,12 @@ public interface ServicesService {
      * @return the list of entities.
      */
     List<ServicesDTO> findAll();
+    /**
+     * Get all the manager services.
+     *
+     * @return the list of entities.
+     */
+    ResponseDTO<List<ServicesDTO>> getAllManagerServices();
 
     /**
      * Get all the services with eager load of many-to-many relationships.

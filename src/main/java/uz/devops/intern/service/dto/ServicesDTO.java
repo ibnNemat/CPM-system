@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import javax.validation.constraints.*;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import uz.devops.intern.domain.enumeration.PeriodType;
 
 /**
@@ -22,8 +24,8 @@ public class ServicesDTO implements Serializable {
     @NotNull
     @DecimalMin(value = "10000")
     private Double price;
-
     @NotNull
+    @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate startedPeriod;
 
     @NotNull

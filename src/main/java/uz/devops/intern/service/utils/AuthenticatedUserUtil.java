@@ -13,7 +13,6 @@ import java.util.Optional;
 public class AuthenticatedUserUtil {
     @Autowired
     private CustomersRepository customersRepository;
-
     public Customers getAuthenticatedUser(){
         Optional<String> loginOptional = SecurityUtils.getCurrentUserLogin();
         if (loginOptional.isEmpty()) return null;

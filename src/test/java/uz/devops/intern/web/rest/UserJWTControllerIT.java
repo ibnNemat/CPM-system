@@ -52,7 +52,8 @@ class UserJWTControllerIT {
         login.setUsername("user-jwt-controller");
         login.setPassword("test");
         mockMvc
-            .perform(post("/api/authenticate").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(login)))
+            .perform(post("/api/authenticate")
+                .contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(login)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id_token").isString())
             .andExpect(jsonPath("$.id_token").isNotEmpty())

@@ -12,6 +12,7 @@ import uz.devops.intern.domain.Payment;
 import uz.devops.intern.domain.Services;
 import uz.devops.intern.repository.ServicesRepository;
 import uz.devops.intern.schedule.TimerTaskToSendMessage;
+import uz.devops.intern.service.CustomersService;
 import uz.devops.intern.service.GroupsService;
 import uz.devops.intern.service.PaymentService;
 import uz.devops.intern.service.ServicesService;
@@ -19,13 +20,17 @@ import uz.devops.intern.service.dto.ResponseCode;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.dto.ResponseMessage;
 import uz.devops.intern.service.dto.ServicesDTO;
+import uz.devops.intern.service.mapper.PaymentsMapper;
 import uz.devops.intern.service.mapper.ServiceMapper;
 import uz.devops.intern.service.mapper.ServicesMapper;
+import uz.devops.intern.service.utils.AuthenticatedUserUtil;
+import uz.devops.intern.service.utils.ContextHolderUtil;
+import uz.devops.intern.web.rest.errors.BadRequestAlertException;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
+import static uz.devops.intern.service.dto.ResponseCode.NOT_FOUND;
 import static uz.devops.intern.service.dto.ResponseMessage.*;
 import static uz.devops.intern.service.dto.ResponseCode.OK;
 
@@ -40,12 +45,17 @@ public class ServicesServiceImpl implements ServicesService {
     private final PaymentService paymentService;
     private final TimerTaskToSendMessage taskToSendMessage;
     private final GroupsService groupService;
-    public ServicesServiceImpl(ServicesRepository servicesRepository, ServicesMapper servicesMapper, PaymentService paymentService, TimerTaskToSendMessage taskToSendMessage, GroupsService groupService) {
+    private static final String ENTITY_NAME = "services";
+    private final CustomersService customerService;
+    private final AuthenticatedUserUtil authenticatedUserUtil;
+    public ServicesServiceImpl(ServicesRepository servicesRepository, ServicesMapper servicesMapper, PaymentService paymentService, TimerTaskToSendMessage taskToSendMessage, GroupsService groupService, CustomersService customerService, AuthenticatedUserUtil authenticatedUserUtil) {
         this.servicesRepository = servicesRepository;
         this.servicesMapper = servicesMapper;
         this.paymentService = paymentService;
         this.taskToSendMessage = taskToSendMessage;
         this.groupService = groupService;
+        this.customerService = customerService;
+        this.authenticatedUserUtil = authenticatedUserUtil;
     }
 
     @Override
@@ -54,6 +64,7 @@ public class ServicesServiceImpl implements ServicesService {
         if (servicesDTO.getGroups().size() == 0){
             return new ResponseDTO<ServicesDTO>(ResponseCode.NOT_FOUND, "group not found", false, null);
         }
+
         Services services = ServiceMapper.toEntity(servicesDTO);
         services = servicesRepository.save(services);
 
@@ -103,12 +114,20 @@ public class ServicesServiceImpl implements ServicesService {
             }
         }
         paymentService.saveAll(paymentList);
+
         return new ResponseDTO<ServicesDTO>(OK, ResponseMessage.OK, true, null);
     }
 
     @Override
     public ServicesDTO update(ServicesDTO servicesDTO) {
         log.debug("Request to update Services : {}", servicesDTO);
+        if (servicesDTO.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!servicesRepository.existsById(servicesDTO.getId())) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         Services services = ServiceMapper.toEntity(servicesDTO);
 
         services = servicesRepository.save(services);
@@ -136,7 +155,19 @@ public class ServicesServiceImpl implements ServicesService {
         log.debug("Request to get all Services");
         return servicesRepository.findAll().stream()
             .map(ServiceMapper::toDtoForGetting)
-            .collect(Collectors.toCollection(LinkedList::new));
+            .toList();
+    }
+
+    @Override
+    public ResponseDTO<List<ServicesDTO>> getAllManagerServices() {
+        log.debug("Request to get all Manager services");
+        String username = ContextHolderUtil.getUsernameFromContextHolder();
+
+        List<ServicesDTO> servicesDTOList = servicesRepository.findAll()
+            .stream()
+            .map(ServiceMapper::toDtoForGetting)
+            .toList();
+        return new ResponseDTO<>(OK, ResponseMessage.OK, true, servicesDTOList);
     }
 
     @Override

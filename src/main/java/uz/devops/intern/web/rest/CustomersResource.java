@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
@@ -32,7 +33,6 @@ import uz.devops.intern.web.rest.errors.BadRequestAlertException;
 @RestController
 @RequestMapping("/api")
 public class CustomersResource {
-
     private final Logger log = LoggerFactory.getLogger(CustomersResource.class);
 
     private static final String ENTITY_NAME = "customers";
@@ -57,6 +57,7 @@ public class CustomersResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/customers")
+    @PreAuthorize("hasAnyAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<CustomersDTO> createCustomers(@Valid @RequestBody CustomersDTO customersDTO) throws URISyntaxException {
         log.debug("REST request to save Customers : {}", customersDTO);
         if (customersDTO.getId() != null) {

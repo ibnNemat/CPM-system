@@ -45,19 +45,18 @@ import uz.devops.intern.service.mapper.ServicesMapper;
 class ServicesResourceIT {
 
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
-    private static final String UPDATED_NAME = "BBBBBBBBBB";
 
+    private static final String UPDATED_NAME = "BBBBBBBBBB";
     private static final Double DEFAULT_PRICE = 10000D;
-    private static final Double UPDATED_PRICE = 10001D;
 
     private static final LocalDate DEFAULT_STARTED_PERIOD = LocalDate.ofEpochDay(0L);
     private static final LocalDate UPDATED_STARTED_PERIOD = LocalDate.now(ZoneId.systemDefault());
+    private static final Double UPDATED_PRICE = 10001D;
+    private static final PeriodType UPDATED_PERIOD_TYPE = PeriodType.DAY;
+    private static final Integer UPDATED_COUNT_PERIOD = 2;
 
     private static final PeriodType DEFAULT_PERIOD_TYPE = PeriodType.ONETIME;
-    private static final PeriodType UPDATED_PERIOD_TYPE = PeriodType.DAY;
-
     private static final Integer DEFAULT_COUNT_PERIOD = 1;
-    private static final Integer UPDATED_COUNT_PERIOD = 2;
 
     private static final String ENTITY_API_URL = "/api/services";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -209,7 +208,8 @@ class ServicesResourceIT {
         ServicesDTO servicesDTO = servicesMapper.toDto(services);
 
         restServicesMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(servicesDTO)))
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(TestUtil.convertObjectToJsonBytes(servicesDTO)))
             .andExpect(status().isBadRequest());
 
         List<Services> servicesList = servicesRepository.findAll();

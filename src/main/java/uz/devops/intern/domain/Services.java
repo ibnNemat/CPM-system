@@ -1,5 +1,6 @@
 package uz.devops.intern.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -36,6 +37,7 @@ public class Services implements Serializable {
 
     @NotNull
     @Column(name = "started_period", nullable = false)
+    @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate startedPeriod;
 
     @NotNull
@@ -48,7 +50,7 @@ public class Services implements Serializable {
     @Column(name = "count_period", nullable = false)
     private Integer countPeriod;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "rel_services__groups",
         joinColumns = @JoinColumn(name = "services_id"),

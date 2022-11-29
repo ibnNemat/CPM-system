@@ -28,4 +28,7 @@ public interface ServicesRepository extends ServicesRepositoryWithBagRelationshi
     default Page<Services> findAllWithEagerRelationships(Pageable pageable) {
         return this.fetchBagRelationships(this.findAll(pageable));
     }
+
+//    @Query("select s from Services s where s")
+    List<Services> findAllByGroupsGroupOwnerName(String ownerName);
 }

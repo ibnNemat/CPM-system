@@ -1,4 +1,4 @@
-package uz.devops.intern.web.rest;
+package uz.devops.intern.web.rest.cpm_test;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import uz.devops.intern.IntegrationTest;
 import uz.devops.intern.config.Constants;
@@ -29,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @IntegrationTest
-public class RegisterClient {
+public class RegisterClientTest {
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -42,12 +43,8 @@ public class RegisterClient {
     private static String login = logins[0];
     private static String [] emails = {"example1@gmail.com", "example2@gmail.com"};
     private static String email = emails[0];
-
     @BeforeEach
-    public void postNewRoleToAuthorityTable(){
-//        List<User> userList =  userRepository.findAll();
-//        System.out.println(userList);
-
+    public void initMethod(){
         Set<Authority> newAuthorities = new HashSet<>();
         Authority authorityCustomer = new Authority();
         authorityCustomer.setName("ROLE_CUSTOMER");
@@ -86,6 +83,7 @@ public class RegisterClient {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(TestUtil.convertObjectToJsonBytes(validUser)))
             .andExpect(status().isCreated());
+
         Optional<User> optionalUser = userRepository.findOneByLogin(login);
         Assertions.assertTrue(optionalUser.isPresent());
         User user = optionalUser.get();

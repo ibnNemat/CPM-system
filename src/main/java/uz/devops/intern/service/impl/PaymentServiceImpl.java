@@ -18,6 +18,7 @@ import uz.devops.intern.service.mapper.PaymentMapper;
 import uz.devops.intern.service.mapper.PaymentsMapper;
 import uz.devops.intern.service.utils.AuthenticatedUserUtil;
 import uz.devops.intern.service.utils.ContextHolderUtil;
+import uz.devops.intern.web.rest.errors.BadRequestAlertException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final GroupsService groupsService;
     private final AuthenticatedUserUtil authenticatedUserUtil;
     private final PaymentMapper paymentMapper;
+    private static final String ENTITY_NAME = "payment";
     public PaymentServiceImpl(PaymentRepository paymentRepository, CustomersService customersService, ServicesRepository servicesRepository, PaymentHistoryService paymentHistoryService, GroupsService groupsService, AuthenticatedUserUtil authenticatedUserUtil, PaymentMapper paymentMapper) {
         this.paymentRepository = paymentRepository;
         this.customersService = customersService;
@@ -68,6 +70,14 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentDTO update(PaymentDTO paymentDTO) {
         log.debug("Request to update PaymentDTO : {}", paymentDTO);
+        if (paymentDTO.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+
+        if (!paymentRepository.existsById(paymentDTO.getId())) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         uz.devops.intern.domain.Payment payment = PaymentsMapper.toEntity(paymentDTO);
         payment = paymentRepository.save(payment);
         return PaymentsMapper.toDto(payment);
@@ -134,16 +144,14 @@ public class PaymentServiceImpl implements PaymentService {
                 newPayment.setPaidMoney(requestPaidMoney);
                 paymentList.add(newPayment);
             }
+
             paymentRepository.saveAll(paymentList);
             customersService.decreaseCustomerBalance(requestPaidMoney, customerPayer.getId());
             createPaymentHistory(service, customerPayer, group, requestPaidMoney);
-
             return new ResponseDTO(OK, "Successfully payed", true, null);
         }
 
-        paymentRepository.paymentForCurrentPeriod(
-            requestPaidMoney, customerPayer.getId(), group.getId(), service.getId(), startedDate
-        );
+        paymentInDataBase.setPaidMoney(paymentInDataBase.getPaidMoney()+requestPaidMoney);
         customersService.decreaseCustomerBalance(requestPaidMoney, customerPayer.getId());
         createPaymentHistory(service, customerPayer, group, requestPaidMoney);
 
@@ -183,12 +191,13 @@ public class PaymentServiceImpl implements PaymentService {
 
     private ResponseDTO<Double> checkCustomerBalance(Payment payment) {
         Customers customer = payment.getCustomer();
-        CustomersDTO customerInDataBase = customersService.findByIdBalanceGreaterThen(
-            customer.getId(), payment.getPaidMoney()
-        );
-        if (customerInDataBase == null) {
+        Optional<CustomersDTO> customerInDataBaseOptional = customersService.findOne(customer.getId());
+
+        if (customerInDataBaseOptional.isEmpty()) {
             return new ResponseDTO<>(NOT_FOUND, ResponseMessage.NOT_FOUND, false, null);
         }
+
+        CustomersDTO customerInDataBase = customerInDataBaseOptional.get();
         Double customerAccount = customerInDataBase.getBalance();
         if (customerAccount < payment.getPaidMoney()) {
             return new ResponseDTO<>(NOT_ENOUGH, ResponseMessage.NOT_ENOUGH, false, null);
