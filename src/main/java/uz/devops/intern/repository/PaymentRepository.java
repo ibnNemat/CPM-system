@@ -28,6 +28,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
         Double payment, Long customerId, Long groupId, Long serviceID, LocalDate startedPeriodDate
     );
 
+    List<Payment> findAllByCustomerAndGroupAndServiceAndStartedPeriod(Long customerId, Long groupId, Long serviceID, LocalDate startedPeriodDate);
+
     @Query("select p from Payment p where p.group.groupOwnerName = ?1")
     List<Payment> findAllByGroupOwnerName(String managerName);
 

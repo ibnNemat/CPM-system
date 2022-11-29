@@ -62,10 +62,10 @@ public class GroupsResource {
         if (groupsDTO.getId() != null) {
             throw new BadRequestAlertException("A new groups cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
         GroupsDTO result = groupsService.save(groupsDTO);
         return ResponseEntity
             .created(new URI("/api/groups/" + result.getId()))
-//            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, ""))
             .body(result);
     }
@@ -83,18 +83,10 @@ public class GroupsResource {
     @PutMapping("/groups/{id}")
     public ResponseEntity<GroupsDTO> updateGroups(
         @PathVariable(value = "id", required = false) final Long id,
-        @Valid @RequestBody GroupsDTO groupsDTO
-    ) throws URISyntaxException {
+        @Valid @RequestBody GroupsDTO groupsDTO) throws URISyntaxException {
         log.debug("REST request to update Groups : {}, {}", id, groupsDTO);
-        if (groupsDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
         if (!Objects.equals(id, groupsDTO.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!groupsRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
         GroupsDTO result = groupsService.update(groupsDTO);
@@ -118,20 +110,11 @@ public class GroupsResource {
     @PatchMapping(value = "/groups/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<GroupsDTO> partialUpdateGroups(
         @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody GroupsDTO groupsDTO
-    ) throws URISyntaxException {
+        @NotNull @RequestBody GroupsDTO groupsDTO) throws URISyntaxException {
         log.debug("REST request to partial update Groups partially : {}, {}", id, groupsDTO);
-        if (groupsDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
         if (!Objects.equals(id, groupsDTO.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
-
-        if (!groupsRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
         Optional<GroupsDTO> result = groupsService.partialUpdate(groupsDTO);
 
         return ResponseUtil.wrapOrNotFound(
@@ -160,12 +143,6 @@ public class GroupsResource {
     public ResponseEntity<List<GroupsDTO>> findAllManagerGroups(){
         List<GroupsDTO> groupsDTOList = groupsService.findOnlyManagerGroups();
         return ResponseEntity.ok(groupsDTOList);
-    }
-
-    @GetMapping("/groups-relationship")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Page<GroupsDTO>> findAllWithEagerRelationships(Pageable pageable){
-        return ResponseEntity.ok(groupsService.findAllWithEagerRelationships(pageable));
     }
 
     /**

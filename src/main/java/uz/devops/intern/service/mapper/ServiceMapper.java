@@ -50,6 +50,7 @@ public class ServiceMapper {
         }
 
         ServicesDTO servicesDTO = new ServicesDTO();
+        servicesDTO.setId(s.getId());
         servicesDTO.setGroups(GroupMapper.groupsDTOSet(s.getGroups()));
         return getServicesDTO(s, servicesDTO);
     }

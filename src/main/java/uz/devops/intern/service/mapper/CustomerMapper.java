@@ -25,17 +25,9 @@ public class CustomerMapper {
         CustomersDTO customersDTO = new CustomersDTO();
         if (customers != null) {
             customersDTO.setId(customersDTO.getId());
-            customersDTO.setUsername(customers.getUsername());
-            customersDTO.setPassword(customers.getPassword());
-            customersDTO.setId(customers.getId());
-            customersDTO.setBalance(customers.getBalance());
-            customersDTO.setPhoneNumber(customers.getPhoneNumber());
-            if (customers.getUser() != null){
-                UserDTO userDTO = new UserDTO();
-                userDTO.setId(customers.getUser().getId());
-                customersDTO.setUser(userDTO);
-            }
-            customersDTO.setGroups(GroupMapper.groupsDTOSet(customers.getGroups()));
+            buildCustomers(customers, customersDTO);
+            if (customers.getGroups() != null)
+                customersDTO.setGroups(GroupMapper.groupsDTOSet(customers.getGroups()));
         }
         return customersDTO;
     }
@@ -56,28 +48,35 @@ public class CustomerMapper {
             .map(CustomerMapper::toDtoWithNoUser)
             .collect(Collectors.toSet());
     }
-
-    public static Set<CustomersDTO> toSetCustomerDtoForSavingService(Set<Customers> customersSet){
-        return customersSet.stream()
-            .map(CustomerMapper::toDtoOnlyCustomerId)
-            .collect(Collectors.toSet());
-    }
-
     private static CustomersDTO toDtoOnlyCustomerId(Customers customers) {
         CustomersDTO c = new CustomersDTO();
         c.setId(customers.getId());
         return c;
     }
 
-    public static Set<Customers> toSetCustomerEntityForSavingService(Set<CustomersDTO> c){
-        return c.stream()
-            .map(CustomerMapper::toEntityOnlyCustomerId)
-            .collect(Collectors.toSet());
-    }
-
     private static Customers toEntityOnlyCustomerId(CustomersDTO customersDTO) {
         Customers customers = new Customers();
         customers.setId(customersDTO.getId());
         return customers;
+    }
+
+    public static CustomersDTO toDtoForTest(Customers customers){
+        CustomersDTO customersDTO = new CustomersDTO();
+        if (customers != null) {
+            buildCustomers(customers, customersDTO);
+        }
+        return customersDTO;
+    }
+
+    private static void buildCustomers(Customers customers, CustomersDTO customersDTO) {
+        customersDTO.setUsername(customers.getUsername());
+        customersDTO.setPassword(customers.getPassword());
+        customersDTO.setBalance(customers.getBalance());
+        customersDTO.setPhoneNumber(customers.getPhoneNumber());
+        if (customers.getUser() != null){
+            UserDTO userDTO = new UserDTO();
+            userDTO.setId(customers.getUser().getId());
+            customersDTO.setUser(userDTO);
+        }
     }
 }

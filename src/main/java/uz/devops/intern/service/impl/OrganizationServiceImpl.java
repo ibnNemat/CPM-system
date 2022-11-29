@@ -11,10 +11,12 @@ import uz.devops.intern.service.dto.OrganizationDTO;
 import uz.devops.intern.service.mapper.OrganizationMapper;
 import uz.devops.intern.service.mapper.OrganizationsMapper;
 import uz.devops.intern.service.utils.ContextHolderUtil;
+import uz.devops.intern.web.rest.errors.BadRequestAlertException;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -27,6 +29,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     private final Logger log = LoggerFactory.getLogger(OrganizationServiceImpl.class);
     private final OrganizationRepository organizationRepository;
     private final OrganizationMapper organizationMapper;
+    private static final String ENTITY_NAME = "organization";
 
     public OrganizationServiceImpl(OrganizationRepository organizationRepository, OrganizationMapper organizationMapper) {
         this.organizationRepository = organizationRepository;
@@ -50,6 +53,13 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public OrganizationDTO update(OrganizationDTO organizationDTO) {
         log.debug("Request to update Organization : {}", organizationDTO);
+        if (organizationDTO.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!organizationRepository.existsById(organizationDTO.getId())) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         Organization organization = organizationMapper.toEntity(organizationDTO);
         organization = organizationRepository.save(organization);
         return OrganizationsMapper.toDtoWithGroups(organization);

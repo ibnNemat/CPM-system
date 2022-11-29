@@ -91,15 +91,8 @@ public class PaymentResource {
         @Valid @RequestBody PaymentDTO paymentDTO
     ) throws URISyntaxException {
         log.debug("REST request to update PaymentDTO : {}, {}", id, paymentDTO);
-        if (paymentDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
         if (!Objects.equals(id, paymentDTO.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!paymentRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
         PaymentDTO result = paymentService.update(paymentDTO);

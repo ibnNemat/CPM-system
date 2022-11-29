@@ -1,5 +1,7 @@
 package uz.devops.intern.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -18,7 +20,9 @@ public class PaymentDTO implements Serializable {
     private Double paymentForPeriod;
     private Boolean isPayed;
     @NotNull
+    @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate startedPeriod;
+    @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate finishedPeriod;
     private CustomersDTO customer;
     private ServicesDTO service;

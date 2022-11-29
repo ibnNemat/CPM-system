@@ -13,9 +13,11 @@ import uz.devops.intern.service.dto.GroupsDTO;
 import uz.devops.intern.service.mapper.GroupMapper;
 import uz.devops.intern.service.mapper.GroupsMapper;
 import uz.devops.intern.service.utils.ContextHolderUtil;
+import uz.devops.intern.web.rest.errors.BadRequestAlertException;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -27,6 +29,7 @@ public class GroupsServiceImpl implements GroupsService {
     private final Logger log = LoggerFactory.getLogger(GroupsServiceImpl.class);
     private final GroupsRepository groupsRepository;
     private final GroupsMapper groupsMapper;
+    private static final String ENTITY_NAME = "groups";
     public GroupsServiceImpl(EntityManager entityManager, GroupsRepository groupsRepository, GroupsMapper groupsMapper) {
         this.entityManager = entityManager;
         this.groupsRepository = groupsRepository;
@@ -72,6 +75,13 @@ public class GroupsServiceImpl implements GroupsService {
     @Override
     public GroupsDTO update(GroupsDTO groupsDTO) {
         log.debug("Request to update Groups : {}", groupsDTO);
+        if (groupsDTO.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+
+        if (!groupsRepository.existsById(groupsDTO.getId())) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
         Groups groups = groupsMapper.toEntity(groupsDTO);
         groups = groupsRepository.save(groups);
         return GroupMapper.toDto(groups);
@@ -80,7 +90,13 @@ public class GroupsServiceImpl implements GroupsService {
     @Override
     public Optional<GroupsDTO> partialUpdate(GroupsDTO groupsDTO) {
         log.debug("Request to partially update Groups : {}", groupsDTO);
+        if (groupsDTO.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
 
+        if (!groupsRepository.existsById(groupsDTO.getId())) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
         return groupsRepository
             .findById(groupsDTO.getId())
             .map(existingGroups -> {
