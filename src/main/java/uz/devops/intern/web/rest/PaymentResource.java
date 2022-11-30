@@ -68,10 +68,9 @@ public class PaymentResource {
      */
     @GetMapping("/customer-payments")
     @PreAuthorize("hasAnyAuthority('ROLE_CUSTOMER')")
-    public ResponseEntity<ResponseDTO<List<PaymentDTO>>> getAllCustomerPayments() {
+    public ResponseDTO<List<PaymentDTO>> getAllCustomerPayments() {
         log.debug("REST request to get PaymentList");
-        ResponseDTO<List<PaymentDTO>> responsePaymentsDTO = paymentService.getAllCustomerPayments();
-        return ResponseEntity.ok(responsePaymentsDTO);
+        return paymentService.getAllCustomerPayments();
     }
 
     /**

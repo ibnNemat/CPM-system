@@ -1,0 +1,32 @@
+{
+  "cpmSystemApp": {
+    "telegramEntity": {
+      "home": {
+        "title": "Telegram Entities",
+        "refreshListLabel": "Обновить список",
+        "createLabel": "Создать новый Telegram Entity",
+        "createOrEditLabel": "Создать или отредактировать Telegram Entity",
+        "notFound": "Telegram Entities не найдено"
+      },
+      "created": "Новый Telegram Entity создан с идентификатором {{ param }}",
+      "updated": "Telegram Entity обновлен с идентификатором {{ param }}",
+      "deleted": "Telegram Entity удален с идентификатором {{ param }}",
+      "delete": {
+        "question": "Вы уверены что хотите удалить Telegram Entity {{ id }}?"
+      },
+      "detail": {
+        "title": "Telegram Entity"
+      },
+      "id": "ID",
+      "isBot": "Is Bot",
+      "firstname": "Firstname",
+      "lastname": "Lastname",
+      "username": "Username",
+      "telegramId": "Telegram Id",
+      "canJoinGroups": "Can Join Groups",
+      "languageCode": "Language Code",
+      "isActive": "Is Active",
+      "user": "User"
+    }
+  }
+}

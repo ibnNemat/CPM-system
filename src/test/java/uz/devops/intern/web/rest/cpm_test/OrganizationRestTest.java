@@ -154,6 +154,7 @@ public class OrganizationRestTest {
         Set<Organization> organizations = new HashSet<>();
         for (String orgName : orgNames) {
             Organization newOrganization = createEntity(orgName);
+
             organizations.add(newOrganization);
         }
         List<Organization> organizationList = organizationRepository.saveAllAndFlush(organizations);

@@ -32,8 +32,7 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.emptyString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -118,17 +117,17 @@ public class AllProcessCPMSystemTest {
         savedUserCustomerEntity = userRepository.saveAll(users).get(0);
         userRepository.flush();
 
-        savedAuthenticatedCustomer = createEntityCustomers(logins[0]);
+        savedAuthenticatedCustomer = createEntityCustomers(logins[0], savedUserCustomerEntity);
         savedAuthenticatedCustomer = customersRepository.saveAndFlush(savedAuthenticatedCustomer);
     }
 
-    public Customers createEntityCustomers(String customerName){
+    public Customers createEntityCustomers(String customerName, User user){
         return new Customers()
             .username(customerName)
             .password(DEFAULT_PASSWORD)
             .balance(1_000_000D)
             .phoneNumber(DEFAULT_PHONE_NUMBER)
-            .user(savedUserCustomerEntity);
+            .user(user);
     }
 
     public Organization createEntityOrganization(){
@@ -136,10 +135,7 @@ public class AllProcessCPMSystemTest {
             .name(DEFAULT_ORG_NAME)
             .orgOwnerName(logins[1]);
     }
-    public Groups createEntityGroup(String groupName, Organization organizationEntity) {
-        Set<Customers> customersSet = new HashSet<>();
-        customersSet.add(savedAuthenticatedCustomer);
-
+    public Groups createEntityGroup(String groupName, Organization organizationEntity, Set<Customers> customersSet) {
         return new Groups()
             .name(groupName)
             .groupOwnerName(logins[1])
@@ -147,13 +143,29 @@ public class AllProcessCPMSystemTest {
             .customers(customersSet);
     }
 
-    public Services createServiceEntity(Groups savedGroupEntity){
+    public Set<Groups> createEntityGroupsAndSave(Organization organizationEntity) {
+        Set<Customers> customersSet = new HashSet<>();
+        customersSet.add(savedAuthenticatedCustomer);
+        String [] groupOwners = {logins[1], "owner 1", logins[1], "owner 3" ,logins[1]};
+        String [] groupNames = {DEFAULT_GROUP_NAME, "group 2", "group 3", "group 4", "group 5"};
         Set<Groups> groups = new HashSet<>();
-        groups.add(savedGroupEntity);
 
+        for (int i = 0; i < groupOwners.length; i++) {
+            Groups newGroup = new Groups()
+                .name(groupNames[i])
+                .groupOwnerName(groupOwners[i])
+                .organization(organizationEntity)
+                .customers(customersSet);
+            groups.add(newGroup);
+        }
+
+        return new HashSet<>(groupsRepository.saveAllAndFlush(groups));
+    }
+
+    public Services createServiceEntity(Set<Groups> savedEntityGroups){
         return new Services()
             .name(DEFAULT_SERVICE_NAME)
-            .groups(groups)
+            .groups(savedEntityGroups)
             .price(DEFAULT_SERVICE_PRICE)
             .periodType(DEFAULT_PERIOD_TYPE)
             .countPeriod(DEFAULT_COUNT_PERIOD)
@@ -170,6 +182,55 @@ public class AllProcessCPMSystemTest {
             .Service(serviceEntity)
             .paymentForPeriod(DEFAULT_SERVICE_PRICE)
             .paidMoney(0D);
+    }
+
+    public List<Customers> createNewUserCustomerAndSave(){
+        User newUser1 =  buildUserEntity("ROLE_CUSTOMER", "newUser1", "someGmail1@gmail.com");
+        User newUser2 =  buildUserEntity("ROLE_CUSTOMER", "newUser2", "someGmail2@gmail.com");
+
+        userRepository.saveAll(List.of(newUser1, newUser2));
+        userRepository.flush();
+
+        Customers newCustomer1 = createEntityCustomers("newUser1", newUser1);
+        Customers newCustomer2 = createEntityCustomers("newUser2", newUser2);
+
+        return customersRepository.saveAllAndFlush(List.of(newCustomer1, newCustomer2));
+
+    }
+
+    public List<Payment> createMultiplePayments(){
+        organizationEntity = createEntityOrganization();
+        organizationRepository.saveAndFlush(organizationEntity);
+
+        List<Customers> customers = createNewUserCustomerAndSave();
+        Customers newCustomer1 = customers.get(0);
+        Customers newCustomer2 = customers.get(1);
+
+        groupEntity = createEntityGroup(
+            DEFAULT_GROUP_NAME, organizationEntity,
+            Set.of(savedAuthenticatedCustomer, newCustomer1, newCustomer2));
+        groupsRepository.saveAndFlush(groupEntity);
+
+        serviceEntity = createServiceEntity(Set.of(groupEntity));
+        servicesRepository.saveAndFlush(serviceEntity);
+
+        List<Payment> paymentList = new ArrayList<>();
+        List<Customers> customersList = List.of(
+            savedAuthenticatedCustomer, newCustomer2, savedAuthenticatedCustomer, newCustomer1, newCustomer2);
+
+        for (Customers customer: customersList){
+            Payment newPayment = new Payment()
+                .isPayed(false)
+                .startedPeriod(DEFAULT_STARTED_PERIOD)
+                .finishedPeriod(DEFAULT_FINISHED_PERIOD)
+                .customer(customer)
+                .Group(groupEntity)
+                .Service(serviceEntity)
+                .paymentForPeriod(DEFAULT_SERVICE_PRICE)
+                .paidMoney(0D);
+            paymentList.add(newPayment);
+        }
+        return paymentList;
     }
 
 
@@ -325,7 +386,7 @@ public class AllProcessCPMSystemTest {
     @Order(4)
     @Test
     @Transactional
-    void checkPermissionCreateOrganization() throws Exception {
+    void checkPermissionWhileCreatingOrganization() throws Exception {
         organizationEntity = createEntityOrganization();
 
         OrganizationDTO organizationDTO = OrganizationsMapper.toDtoWithGroups(organizationEntity);
@@ -338,12 +399,33 @@ public class AllProcessCPMSystemTest {
             .andDo(print())
             .andExpect(status().isForbidden());
     }
-
     @Test
     @Transactional
     @Order(5)
+    void checkPermissionWhileCreatingGroup() throws Exception {
+        organizationEntity = createEntityOrganization();
+        organizationRepository.saveAndFlush(organizationEntity);
+
+        groupEntity = createEntityGroup(DEFAULT_GROUP_NAME, organizationEntity, Set.of(savedAuthenticatedCustomer));
+        groupsRepository.saveAndFlush(groupEntity);
+
+        GroupsDTO groupsDTO = GroupMapper.toDto(groupEntity);
+        mockMvc.perform(
+            post("/api/groups")
+                .header("Authorization", tokenCustomer)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(groupsDTO))
+            )
+            .andDo(print())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Transactional
+    @Order(6)
     void testCreateNewCustomer() throws Exception {
-        Customers customers = createEntityCustomers("Dovud");
+        Customers customers = createEntityCustomers("Dovud", savedUserCustomerEntity);
         CustomersDTO customersDTO = CustomerMapper.toDtoForTest(customers);
 
         mockMvc.perform(post("/api/customers")
@@ -355,7 +437,7 @@ public class AllProcessCPMSystemTest {
             .andExpect(status().isCreated());
     }
 
-    @Order(6)
+    @Order(7)
     @Test
     @Transactional
     void checkCreateExistingOrganization() throws Exception {
@@ -379,7 +461,7 @@ public class AllProcessCPMSystemTest {
 
     @Test
     @Transactional
-    @Order(7)
+    @Order(8)
     void testCreateOrganization() throws Exception {
         int databaseSizeBeforeCreate = organizationRepository.findAll().size();
         organizationEntity = createEntityOrganization();
@@ -407,13 +489,13 @@ public class AllProcessCPMSystemTest {
 
     @Test
     @Transactional
-    @Order(8)
+    @Order(9)
     void testCreateGroups() throws Exception {
         int databaseSizeBeforeCreate = groupsRepository.findAll().size();
         organizationEntity = createEntityOrganization();
         organizationRepository.saveAndFlush(organizationEntity);
 
-        groupEntity = createEntityGroup(DEFAULT_GROUP_NAME, organizationEntity);
+        groupEntity = createEntityGroup(DEFAULT_GROUP_NAME, organizationEntity, Set.of(savedAuthenticatedCustomer));
 
         GroupsDTO groupsDTO = GroupMapper.toDto(groupEntity);
 
@@ -433,16 +515,16 @@ public class AllProcessCPMSystemTest {
 
     @Test
     @Transactional
-    @Order(9)
+    @Order(10)
     void testCreateServiceAndPaymentForCustomer() throws Exception {
         int databaseSizeBeforeCreate = servicesRepository.findAll().size();
         organizationEntity = createEntityOrganization();
         organizationRepository.saveAndFlush(organizationEntity);
 
-        groupEntity = createEntityGroup(DEFAULT_GROUP_NAME, organizationEntity);
+        groupEntity = createEntityGroup(DEFAULT_GROUP_NAME, organizationEntity, Set.of(savedAuthenticatedCustomer));
         groupsRepository.saveAndFlush(groupEntity);
 
-        serviceEntity = createServiceEntity(groupEntity);
+        serviceEntity = createServiceEntity(Set.of(groupEntity));
         ServicesDTO servicesDTO = ServiceMapper.toDtoForSaveServiceMethod(serviceEntity);
 
         String response = mockMvc.perform(post("/api/services")
@@ -487,17 +569,17 @@ public class AllProcessCPMSystemTest {
         paymentEntity = paymentOptional.get();
     }
 
-    @Order(10)
+    @Order(11)
     @Test
     @Transactional
     void testCustomerPaymentForOnePeriod() throws Exception{
         organizationEntity = createEntityOrganization();
         organizationRepository.saveAndFlush(organizationEntity);
 
-        groupEntity = createEntityGroup(DEFAULT_GROUP_NAME, organizationEntity);
+        groupEntity = createEntityGroup(DEFAULT_GROUP_NAME, organizationEntity, Set.of(savedAuthenticatedCustomer));
         groupsRepository.saveAndFlush(groupEntity);
 
-        serviceEntity = createServiceEntity(groupEntity);
+        serviceEntity = createServiceEntity(Set.of(groupEntity));
         servicesRepository.saveAndFlush(serviceEntity);
 
         paymentEntity = createPaymentEntity(groupEntity, serviceEntity);
@@ -532,7 +614,7 @@ public class AllProcessCPMSystemTest {
         assertThat(testPayment.getStartedPeriod()).isEqualTo(DEFAULT_STARTED_PERIOD);
     }
 
-    @Order(11)
+    @Order(12)
     @ParameterizedTest
     @ValueSource(doubles = {2.5, 3.4, 6.5, 4.0})
     @Transactional
@@ -541,10 +623,10 @@ public class AllProcessCPMSystemTest {
         organizationEntity = createEntityOrganization();
         organizationRepository.saveAndFlush(organizationEntity);
 
-        groupEntity = createEntityGroup(DEFAULT_GROUP_NAME, organizationEntity);
+        groupEntity = createEntityGroup(DEFAULT_GROUP_NAME, organizationEntity, Set.of(savedAuthenticatedCustomer));
         groupsRepository.saveAndFlush(groupEntity);
 
-        serviceEntity = createServiceEntity(groupEntity);
+        serviceEntity = createServiceEntity(Set.of(groupEntity));
         servicesRepository.saveAndFlush(serviceEntity);
 
         paymentEntity = createPaymentEntity(groupEntity, serviceEntity);
@@ -568,6 +650,7 @@ public class AllProcessCPMSystemTest {
 
         List<Payment> paymentList = paymentRepository.findAll();
         Payment remainingPayment = null;
+
         for (Payment p: paymentList){
             if (!p.getIsPayed()){
                 remainingPayment = p;
@@ -587,17 +670,17 @@ public class AllProcessCPMSystemTest {
         }
     }
 
-    @Order(12)
+    @Order(13)
     @Test
     @Transactional
     void checkCustomerPaymentWithNotEnoughMoney() throws Exception{
         organizationEntity = createEntityOrganization();
         organizationRepository.saveAndFlush(organizationEntity);
 
-        groupEntity = createEntityGroup(DEFAULT_GROUP_NAME, organizationEntity);
+        groupEntity = createEntityGroup(DEFAULT_GROUP_NAME, organizationEntity, Set.of(savedAuthenticatedCustomer));
         groupsRepository.saveAndFlush(groupEntity);
 
-        serviceEntity = createServiceEntity(groupEntity);
+        serviceEntity = createServiceEntity(Set.of(groupEntity));
         servicesRepository.saveAndFlush(serviceEntity);
 
         paymentEntity = createPaymentEntity(groupEntity, serviceEntity);
@@ -633,5 +716,66 @@ public class AllProcessCPMSystemTest {
 
         List<Payment> paymentList = paymentRepository.findAll();
         assertThat(paymentList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    @Order(14)
+    void getAllManagerGroups() throws Exception {
+        organizationEntity = createEntityOrganization();
+        organizationRepository.saveAndFlush(organizationEntity);
+
+        Set<Groups> savedEntityGroups = createEntityGroupsAndSave(organizationEntity);
+        groupsRepository.saveAllAndFlush(savedEntityGroups);
+
+        String response = mockMvc.perform(
+            get("/api/manager-groups")
+                .header("Authorization", tokenManager)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_GROUP_NAME)))
+            .andExpect(jsonPath("$.[*].groupOwnerName").value(hasItem(logins[1])))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        List<Groups> responseGroupList = objectMapper.readValue(response, new TypeReference<List<Groups>>() {});
+        Assertions.assertNotNull(responseGroupList);
+        Assertions.assertEquals(3, responseGroupList.size());
+    }
+
+    @Order(15)
+    @Test
+    @Transactional
+    void getAllCustomerPayments() throws Exception {
+        List<Payment> paymentList = createMultiplePayments();
+        paymentRepository.saveAllAndFlush(paymentList);
+
+        String response = mockMvc
+            .perform(
+                get("/api/customer-payments")
+                    .header("Authorization", tokenCustomer)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        ResponseDTO<List<PaymentDTO>> responseDTO = objectMapper.readValue(response, new TypeReference<ResponseDTO<List<PaymentDTO>>>() {});
+        Assertions.assertNotNull(responseDTO);
+        Assertions.assertNotNull(responseDTO.getResponseData());
+        Assertions.assertTrue(responseDTO.getSuccess());
+
+        List<PaymentDTO> responsePaymentList = responseDTO.getResponseData();
+        Assertions.assertEquals(2, responsePaymentList.size());
+
+        for (PaymentDTO paymentDTO : responsePaymentList) {
+            Assertions.assertEquals(savedAuthenticatedCustomer.getId(), paymentDTO.getCustomer().getId());
+            Assertions.assertEquals(savedAuthenticatedCustomer.getUsername(), paymentDTO.getCustomer().getUsername());
+        }
     }
 }
