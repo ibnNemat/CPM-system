@@ -1,0 +1,55 @@
+{
+  "applications": "*",
+  "changelogDate": "20221130153758",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "telegram_entity",
+  "fields": [
+    {
+      "fieldName": "isBot",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "firstname",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "lastname",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "username",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "telegramId",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "canJoinGroups",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "languageCode",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "isActive",
+      "fieldType": "Boolean"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "TelegramEntity",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "user",
+      "ownerSide": true,
+      "relationshipName": "user",
+      "relationshipType": "one-to-one"
+    }
+  ],
+  "service": "serviceImpl"
+}

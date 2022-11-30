@@ -28,10 +28,12 @@ import uz.devops.intern.service.mapper.OrganizationMapper;
  */
 @IntegrationTest
 @AutoConfigureMockMvc
-@WithMockUser(authorities = {"ROLE_MANAGER"})
+@WithMockUser
 class OrganizationResourceIT {
+
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
+
     private static final String DEFAULT_ORG_OWNER_NAME = "AAAAAAAAAA";
     private static final String UPDATED_ORG_OWNER_NAME = "BBBBBBBBBB";
 
@@ -62,9 +64,7 @@ class OrganizationResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Organization createEntity(EntityManager em) {
-        Organization organization = new Organization()
-            .name(DEFAULT_NAME)
-            .orgOwnerName(DEFAULT_ORG_OWNER_NAME);
+        Organization organization = new Organization().name(DEFAULT_NAME).orgOwnerName(DEFAULT_ORG_OWNER_NAME);
         return organization;
     }
 
@@ -75,9 +75,7 @@ class OrganizationResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Organization createUpdatedEntity(EntityManager em) {
-        Organization organization = new Organization()
-            .name(UPDATED_NAME)
-            .orgOwnerName(UPDATED_ORG_OWNER_NAME);
+        Organization organization = new Organization().name(UPDATED_NAME).orgOwnerName(UPDATED_ORG_OWNER_NAME);
         return organization;
     }
 
@@ -94,9 +92,7 @@ class OrganizationResourceIT {
         OrganizationDTO organizationDTO = organizationMapper.toDto(organization);
         restOrganizationMockMvc
             .perform(
-                post(ENTITY_API_URL)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(organizationDTO))
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(organizationDTO))
             )
             .andExpect(status().isCreated());
 
@@ -104,8 +100,7 @@ class OrganizationResourceIT {
         List<Organization> organizationList = organizationRepository.findAll();
         assertThat(organizationList).hasSize(databaseSizeBeforeCreate + 1);
         Organization testOrganization = organizationList.get(organizationList.size() - 1);
-        assertThat(testOrganization.getName())
-            .isEqualTo(DEFAULT_NAME);
+        assertThat(testOrganization.getName()).isEqualTo(DEFAULT_NAME);
         assertThat(testOrganization.getOrgOwnerName()).isEqualTo(DEFAULT_ORG_OWNER_NAME);
     }
 
@@ -142,9 +137,7 @@ class OrganizationResourceIT {
 
         restOrganizationMockMvc
             .perform(
-                post(ENTITY_API_URL)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(organizationDTO))
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(organizationDTO))
             )
             .andExpect(status().isBadRequest());
 

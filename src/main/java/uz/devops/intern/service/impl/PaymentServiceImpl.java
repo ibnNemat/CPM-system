@@ -253,6 +253,7 @@ public class PaymentServiceImpl implements PaymentService {
         Customers customer = authenticatedUserUtil.getAuthenticatedUser();
         if (customer == null)
             return new ResponseDTO<>(NOT_FOUND, "customer not found", false, null);
+
         List<Payment> customerPayments = paymentRepository.findAllByCustomer(customer);
         if (customerPayments.size() == 0)
             return new ResponseDTO<>(NOT_FOUND, "customer payments not found", false, null);
