@@ -98,10 +98,17 @@
         </div>
 
         <div class="row mb-3">
-          <label class="form-label" jhiTranslate="cpmSystemApp.customerTelegram.user" for="field_user">User</label>
-          <select class="form-control" id="field_user" data-cy="user" name="user" formControlName="user" [compareWith]="compareUser">
+          <label class="form-label" jhiTranslate="cpmSystemApp.customerTelegram.customer" for="field_customer">Customer</label>
+          <select
+            class="form-control"
+            id="field_customer"
+            data-cy="customer"
+            name="customer"
+            formControlName="customer"
+            [compareWith]="compareCustomers"
+          >
             <option [ngValue]="null"></option>
-            <option [ngValue]="userOption" *ngFor="let userOption of usersSharedCollection">{{ userOption.id }}</option>
+            <option [ngValue]="customersOption" *ngFor="let customersOption of customersSharedCollection">{{ customersOption.id }}</option>
           </select>
         </div>
       </div>

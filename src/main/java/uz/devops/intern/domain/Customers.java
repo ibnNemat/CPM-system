@@ -28,7 +28,7 @@ public class Customers implements Serializable {
     @Column(name = "password", nullable = false)
     private String password;
     @NotNull
-    @Column(name = "phone_number", nullable = false)
+    @Column(name = "phone_number", nullable = false, unique = true)
     private String phoneNumber;
     @NotNull
     @DecimalMin(value = "0")

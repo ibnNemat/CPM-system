@@ -53,9 +53,9 @@
   "readOnly": false,
   "relationships": [
     {
-      "otherEntityName": "user",
+      "otherEntityName": "customers",
       "ownerSide": true,
-      "relationshipName": "user",
+      "relationshipName": "customer",
       "relationshipType": "one-to-one"
     }
   ],

@@ -72,7 +72,7 @@ relationship OneToMany {
 }
 
 relationship OneToOne {
-    CustomerTelegram{user} to User
+    CustomerTelegram{customer} to Customers
     Customers{user} to User
 }
 

@@ -17,7 +17,7 @@
     {
       "fieldName": "phoneNumber",
       "fieldType": "String",
-      "fieldValidateRules": ["required"]
+      "fieldValidateRules": ["required", "unique"]
     },
     {
       "fieldName": "balance",

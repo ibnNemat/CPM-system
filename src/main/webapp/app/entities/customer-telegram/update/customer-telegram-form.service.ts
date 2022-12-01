@@ -28,7 +28,7 @@ type CustomerTelegramFormGroupContent = {
   canJoinGroups: FormControl<ICustomerTelegram['canJoinGroups']>;
   languageCode: FormControl<ICustomerTelegram['languageCode']>;
   isActive: FormControl<ICustomerTelegram['isActive']>;
-  user: FormControl<ICustomerTelegram['user']>;
+  customer: FormControl<ICustomerTelegram['customer']>;
 };
 
 export type CustomerTelegramFormGroup = FormGroup<CustomerTelegramFormGroupContent>;
@@ -58,7 +58,7 @@ export class CustomerTelegramFormService {
       canJoinGroups: new FormControl(customerTelegramRawValue.canJoinGroups),
       languageCode: new FormControl(customerTelegramRawValue.languageCode),
       isActive: new FormControl(customerTelegramRawValue.isActive),
-      user: new FormControl(customerTelegramRawValue.user),
+      customer: new FormControl(customerTelegramRawValue.customer),
     });
   }
 

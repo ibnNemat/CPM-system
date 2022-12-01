@@ -114,6 +114,11 @@ public class CustomersServiceImpl implements CustomersService {
     }
 
     @Override
+    public Optional<CustomersDTO> findByPhoneNumber(String phoneNumber) {
+        return Optional.empty();
+    }
+
+    @Override
     public void decreaseCustomerBalance(Double paidMoney, Long customerId){
         customersRepository.decreaseCustomerBalance(paidMoney, customerId);
     }

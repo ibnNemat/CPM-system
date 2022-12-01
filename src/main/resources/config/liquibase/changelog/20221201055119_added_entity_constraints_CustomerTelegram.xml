@@ -8,10 +8,10 @@
     -->
     <changeSet id="20221201055119-2" author="jhipster">
 
-        <addForeignKeyConstraint baseColumnNames="user_id"
+        <addForeignKeyConstraint baseColumnNames="customer_id"
                                  baseTableName="customer_telegram"
-                                 constraintName="fk_customer_telegram__user_id"
+                                 constraintName="fk_customer_telegram__customer_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="jhi_user"/>
+                                 referencedTableName="customers"/>
     </changeSet>
 </databaseChangeLog>

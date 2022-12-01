@@ -56,9 +56,11 @@
         <dd>
           <span>{{ customerTelegram.isActive }}</span>
         </dd>
-        <dt><span jhiTranslate="cpmSystemApp.customerTelegram.user">User</span></dt>
+        <dt><span jhiTranslate="cpmSystemApp.customerTelegram.customer">Customer</span></dt>
         <dd>
-          <span>{{ customerTelegram.user?.id }}</span>
+          <div *ngIf="customerTelegram.customer">
+            <a [routerLink]="['/customers', customerTelegram.customer.id, 'view']">{{ customerTelegram.customer.id }}</a>
+          </div>
         </dd>
       </dl>
 

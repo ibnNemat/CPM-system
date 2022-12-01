@@ -31,7 +31,7 @@ public class CustomerTelegramDTO implements Serializable {
 
     private Boolean isActive;
 
-    private UserDTO user;
+    private CustomersDTO customer;
 
     public Long getId() {
         return id;
@@ -121,12 +121,12 @@ public class CustomerTelegramDTO implements Serializable {
         this.isActive = isActive;
     }
 
-    public UserDTO getUser() {
-        return user;
+    public CustomersDTO getCustomer() {
+        return customer;
     }
 
-    public void setUser(UserDTO user) {
-        this.user = user;
+    public void setCustomer(CustomersDTO customer) {
+        this.customer = customer;
     }
 
     @Override
@@ -165,7 +165,7 @@ public class CustomerTelegramDTO implements Serializable {
             ", canJoinGroups='" + getCanJoinGroups() + "'" +
             ", languageCode='" + getLanguageCode() + "'" +
             ", isActive='" + getIsActive() + "'" +
-            ", user=" + getUser() +
+            ", customer=" + getCustomer() +
             "}";
     }
 }
