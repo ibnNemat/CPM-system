@@ -33,8 +33,9 @@ public class CustomerTelegramResource {
         this.customerTelegramService = customerTelegramService;
     }
 
-    @PostMapping("/")
+    @PostMapping
     public void sendMessage(@RequestBody Update update){
+        log.info("Rest, Message: {}", update.getMessage());
         SendMessage sendMessage = customerTelegramService.botCommands(update);
         telegramClient.sendMessage(sendMessage);
     }
