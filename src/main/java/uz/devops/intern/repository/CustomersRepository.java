@@ -23,4 +23,5 @@ public interface CustomersRepository extends JpaRepository<Customers, Long>, Gro
     Optional<Customers> findByUsername(String username);
 
     Optional<Customers> findByUser(User user);
+    Optional<Customers> findByPhoneNumber(String phoneNumber);
 }

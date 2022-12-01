@@ -1,16 +1,34 @@
 package uz.devops.intern.redis;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
 import org.telegram.telegrambots.meta.api.objects.User;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
+//@NoArgsConstructor
+//@AllArgsConstructor
 @RedisHash(timeToLive = 60 * 60 * 24)
 public class CustomerTelegramRedis {
-    private Long Id;
+    private Long id;
     private User telegramUser;
+    public CustomerTelegramRedis(){}
+
+    public CustomerTelegramRedis(Long id, User telegramUser) {
+        this.id = id;
+        this.telegramUser = telegramUser;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getTelegramUser() {
+        return telegramUser;
+    }
+
+    public void setTelegramUser(User telegramUser) {
+        this.telegramUser = telegramUser;
+    }
 }
