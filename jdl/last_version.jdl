@@ -31,12 +31,14 @@ entity Payment {
     finishedPeriod LocalDate
 }
 
-entity TelegramEntity {
+entity CustomerTelegram {
     isBot Boolean
     firstname String
     lastname String
     username String
     telegramId Long
+    phoneNumber String
+    step Integer
     canJoinGroups Boolean
     languageCode String
     isActive Boolean
@@ -70,7 +72,7 @@ relationship OneToMany {
 }
 
 relationship OneToOne {
-    TelegramEntity{user} to User
+    CustomerTelegram{user} to User
     Customers{user} to User
 }
 

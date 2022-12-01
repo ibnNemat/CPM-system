@@ -1,0 +1,34 @@
+{
+  "cpmSystemApp": {
+    "customerTelegram": {
+      "home": {
+        "title": "Customer Telegrams",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Customer Telegram",
+        "createOrEditLabel": "Create or edit a Customer Telegram",
+        "notFound": "No Customer Telegrams found"
+      },
+      "created": "A new Customer Telegram is created with identifier {{ param }}",
+      "updated": "A Customer Telegram is updated with identifier {{ param }}",
+      "deleted": "A Customer Telegram is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Customer Telegram {{ id }}?"
+      },
+      "detail": {
+        "title": "Customer Telegram"
+      },
+      "id": "ID",
+      "isBot": "Is Bot",
+      "firstname": "Firstname",
+      "lastname": "Lastname",
+      "username": "Username",
+      "telegramId": "Telegram Id",
+      "phoneNumber": "Phone Number",
+      "step": "Step",
+      "canJoinGroups": "Can Join Groups",
+      "languageCode": "Language Code",
+      "isActive": "Is Active",
+      "user": "User"
+    }
+  }
+}

@@ -15,6 +15,7 @@
         "payment": "Payment",
         "paymentHistory": "Payment History",
         "telegramEntity": "Telegram Entity",
+        "customerTelegram": "Customer Telegram",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
       },
       "account": {

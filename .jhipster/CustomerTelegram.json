@@ -1,9 +1,9 @@
 {
   "applications": "*",
-  "changelogDate": "20221130153758",
+  "changelogDate": "20221201055119",
   "dto": "mapstruct",
   "embedded": false,
-  "entityTableName": "telegram_entity",
+  "entityTableName": "customer_telegram",
   "fields": [
     {
       "fieldName": "isBot",
@@ -26,6 +26,14 @@
       "fieldType": "Long"
     },
     {
+      "fieldName": "phoneNumber",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "step",
+      "fieldType": "Integer"
+    },
+    {
       "fieldName": "canJoinGroups",
       "fieldType": "Boolean"
     },
@@ -40,7 +48,7 @@
   ],
   "fluentMethods": true,
   "jpaMetamodelFiltering": false,
-  "name": "TelegramEntity",
+  "name": "CustomerTelegram",
   "pagination": "no",
   "readOnly": false,
   "relationships": [

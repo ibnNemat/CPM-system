@@ -4,13 +4,13 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <!--
-        Added the constraints for entity TelegramEntity.
+        Added the constraints for entity CustomerTelegram.
     -->
-    <changeSet id="20221130153758-2" author="jhipster">
+    <changeSet id="20221201055119-2" author="jhipster">
 
         <addForeignKeyConstraint baseColumnNames="user_id"
-                                 baseTableName="telegram_entity"
-                                 constraintName="fk_telegram_entity__user_id"
+                                 baseTableName="customer_telegram"
+                                 constraintName="fk_customer_telegram__user_id"
                                  referencedColumnNames="id"
                                  referencedTableName="jhi_user"/>
     </changeSet>

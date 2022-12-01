@@ -1,0 +1,160 @@
+<div>
+  <h2 id="page-heading" data-cy="CustomerTelegramHeading">
+    <span jhiTranslate="cpmSystemApp.customerTelegram.home.title">Customer Telegrams</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <span jhiTranslate="cpmSystemApp.customerTelegram.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-customer-telegram"
+        [routerLink]="['/customer-telegram/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span jhiTranslate="cpmSystemApp.customerTelegram.home.createLabel"> Create a new Customer Telegram </span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  <div class="alert alert-warning" id="no-result" *ngIf="customerTelegrams?.length === 0">
+    <span jhiTranslate="cpmSystemApp.customerTelegram.home.notFound">No Customer Telegrams found</span>
+  </div>
+
+  <div class="table-responsive table-entities" id="entities" *ngIf="customerTelegrams && customerTelegrams.length > 0">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+          <th scope="col" jhiSortBy="id">
+            <div class="d-flex">
+              <span jhiTranslate="global.field.id">ID</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="isBot">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.customerTelegram.isBot">Is Bot</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="firstname">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.customerTelegram.firstname">Firstname</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="lastname">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.customerTelegram.lastname">Lastname</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="username">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.customerTelegram.username">Username</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="telegramId">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.customerTelegram.telegramId">Telegram Id</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="phoneNumber">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.customerTelegram.phoneNumber">Phone Number</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="step">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.customerTelegram.step">Step</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="canJoinGroups">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.customerTelegram.canJoinGroups">Can Join Groups</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="languageCode">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.customerTelegram.languageCode">Language Code</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="isActive">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.customerTelegram.isActive">Is Active</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="user.id">
+            <div class="d-flex">
+              <span jhiTranslate="cpmSystemApp.customerTelegram.user">User</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let customerTelegram of customerTelegrams; trackBy: trackId" data-cy="entityTable">
+          <td>
+            <a [routerLink]="['/customer-telegram', customerTelegram.id, 'view']">{{ customerTelegram.id }}</a>
+          </td>
+          <td>{{ customerTelegram.isBot }}</td>
+          <td>{{ customerTelegram.firstname }}</td>
+          <td>{{ customerTelegram.lastname }}</td>
+          <td>{{ customerTelegram.username }}</td>
+          <td>{{ customerTelegram.telegramId }}</td>
+          <td>{{ customerTelegram.phoneNumber }}</td>
+          <td>{{ customerTelegram.step }}</td>
+          <td>{{ customerTelegram.canJoinGroups }}</td>
+          <td>{{ customerTelegram.languageCode }}</td>
+          <td>{{ customerTelegram.isActive }}</td>
+          <td>
+            {{ customerTelegram.user?.id }}
+          </td>
+          <td class="text-end">
+            <div class="btn-group">
+              <button
+                type="submit"
+                [routerLink]="['/customer-telegram', customerTelegram.id, 'view']"
+                class="btn btn-info btn-sm"
+                data-cy="entityDetailsButton"
+              >
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+              </button>
+
+              <button
+                type="submit"
+                [routerLink]="['/customer-telegram', customerTelegram.id, 'edit']"
+                class="btn btn-primary btn-sm"
+                data-cy="entityEditButton"
+              >
+                <fa-icon icon="pencil-alt"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+              </button>
+
+              <button type="submit" (click)="delete(customerTelegram)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <fa-icon icon="times"></fa-icon>
+                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

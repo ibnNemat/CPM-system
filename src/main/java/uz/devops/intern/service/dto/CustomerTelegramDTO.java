@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * A DTO for the {@link uz.devops.intern.domain.TelegramEntity} entity.
+ * A DTO for the {@link uz.devops.intern.domain.CustomerTelegram} entity.
  */
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class TelegramEntityDTO implements Serializable {
+public class CustomerTelegramDTO implements Serializable {
 
     private Long id;
 
@@ -20,6 +20,10 @@ public class TelegramEntityDTO implements Serializable {
     private String username;
 
     private Long telegramId;
+
+    private String phoneNumber;
+
+    private Integer step;
 
     private Boolean canJoinGroups;
 
@@ -77,6 +81,22 @@ public class TelegramEntityDTO implements Serializable {
         this.telegramId = telegramId;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public Integer getStep() {
+        return step;
+    }
+
+    public void setStep(Integer step) {
+        this.step = step;
+    }
+
     public Boolean getCanJoinGroups() {
         return canJoinGroups;
     }
@@ -114,15 +134,15 @@ public class TelegramEntityDTO implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof TelegramEntityDTO)) {
+        if (!(o instanceof CustomerTelegramDTO)) {
             return false;
         }
 
-        TelegramEntityDTO telegramEntityDTO = (TelegramEntityDTO) o;
+        CustomerTelegramDTO customerTelegramDTO = (CustomerTelegramDTO) o;
         if (this.id == null) {
             return false;
         }
-        return Objects.equals(this.id, telegramEntityDTO.id);
+        return Objects.equals(this.id, customerTelegramDTO.id);
     }
 
     @Override
@@ -133,13 +153,15 @@ public class TelegramEntityDTO implements Serializable {
     // prettier-ignore
     @Override
     public String toString() {
-        return "TelegramEntityDTO{" +
+        return "CustomerTelegramDTO{" +
             "id=" + getId() +
             ", isBot='" + getIsBot() + "'" +
             ", firstname='" + getFirstname() + "'" +
             ", lastname='" + getLastname() + "'" +
             ", username='" + getUsername() + "'" +
             ", telegramId=" + getTelegramId() +
+            ", phoneNumber='" + getPhoneNumber() + "'" +
+            ", step=" + getStep() +
             ", canJoinGroups='" + getCanJoinGroups() + "'" +
             ", languageCode='" + getLanguageCode() + "'" +
             ", isActive='" + getIsActive() + "'" +
