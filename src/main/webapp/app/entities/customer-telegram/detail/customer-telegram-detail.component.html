@@ -1,0 +1,74 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <div *ngIf="customerTelegram">
+      <h2 data-cy="customerTelegramDetailsHeading">
+        <span jhiTranslate="cpmSystemApp.customerTelegram.detail.title">Customer Telegram</span>
+      </h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="global.field.id">ID</span></dt>
+        <dd>
+          <span>{{ customerTelegram.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.customerTelegram.isBot">Is Bot</span></dt>
+        <dd>
+          <span>{{ customerTelegram.isBot }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.customerTelegram.firstname">Firstname</span></dt>
+        <dd>
+          <span>{{ customerTelegram.firstname }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.customerTelegram.lastname">Lastname</span></dt>
+        <dd>
+          <span>{{ customerTelegram.lastname }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.customerTelegram.username">Username</span></dt>
+        <dd>
+          <span>{{ customerTelegram.username }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.customerTelegram.telegramId">Telegram Id</span></dt>
+        <dd>
+          <span>{{ customerTelegram.telegramId }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.customerTelegram.phoneNumber">Phone Number</span></dt>
+        <dd>
+          <span>{{ customerTelegram.phoneNumber }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.customerTelegram.step">Step</span></dt>
+        <dd>
+          <span>{{ customerTelegram.step }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.customerTelegram.canJoinGroups">Can Join Groups</span></dt>
+        <dd>
+          <span>{{ customerTelegram.canJoinGroups }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.customerTelegram.languageCode">Language Code</span></dt>
+        <dd>
+          <span>{{ customerTelegram.languageCode }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.customerTelegram.isActive">Is Active</span></dt>
+        <dd>
+          <span>{{ customerTelegram.isActive }}</span>
+        </dd>
+        <dt><span jhiTranslate="cpmSystemApp.customerTelegram.user">User</span></dt>
+        <dd>
+          <span>{{ customerTelegram.user?.id }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/customer-telegram', customerTelegram.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

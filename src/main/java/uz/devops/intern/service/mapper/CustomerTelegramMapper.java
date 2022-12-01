@@ -1,18 +1,18 @@
 package uz.devops.intern.service.mapper;
 
 import org.mapstruct.*;
-import uz.devops.intern.domain.TelegramEntity;
+import uz.devops.intern.domain.CustomerTelegram;
 import uz.devops.intern.domain.User;
-import uz.devops.intern.service.dto.TelegramEntityDTO;
+import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.UserDTO;
 
 /**
- * Mapper for the entity {@link TelegramEntity} and its DTO {@link TelegramEntityDTO}.
+ * Mapper for the entity {@link CustomerTelegram} and its DTO {@link CustomerTelegramDTO}.
  */
 @Mapper(componentModel = "spring")
-public interface TelegramEntityMapper extends EntityMapper<TelegramEntityDTO, TelegramEntity> {
+public interface CustomerTelegramMapper extends EntityMapper<CustomerTelegramDTO, CustomerTelegram> {
     @Mapping(target = "user", source = "user", qualifiedByName = "userId")
-    TelegramEntityDTO toDto(TelegramEntity s);
+    CustomerTelegramDTO toDto(CustomerTelegram s);
 
     @Named("userId")
     @BeanMapping(ignoreByDefault = true)

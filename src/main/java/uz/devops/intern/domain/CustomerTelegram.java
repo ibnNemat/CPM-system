@@ -4,12 +4,12 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 /**
- * A TelegramEntity.
+ * A CustomerTelegram.
  */
 @Entity
-@Table(name = "telegram_entity")
+@Table(name = "customer_telegram")
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class TelegramEntity implements Serializable {
+public class CustomerTelegram implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,6 +34,12 @@ public class TelegramEntity implements Serializable {
     @Column(name = "telegram_id")
     private Long telegramId;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Column(name = "step")
+    private Integer step;
+
     @Column(name = "can_join_groups")
     private Boolean canJoinGroups;
 
@@ -53,7 +59,7 @@ public class TelegramEntity implements Serializable {
         return this.id;
     }
 
-    public TelegramEntity id(Long id) {
+    public CustomerTelegram id(Long id) {
         this.setId(id);
         return this;
     }
@@ -66,7 +72,7 @@ public class TelegramEntity implements Serializable {
         return this.isBot;
     }
 
-    public TelegramEntity isBot(Boolean isBot) {
+    public CustomerTelegram isBot(Boolean isBot) {
         this.setIsBot(isBot);
         return this;
     }
@@ -79,7 +85,7 @@ public class TelegramEntity implements Serializable {
         return this.firstname;
     }
 
-    public TelegramEntity firstname(String firstname) {
+    public CustomerTelegram firstname(String firstname) {
         this.setFirstname(firstname);
         return this;
     }
@@ -92,7 +98,7 @@ public class TelegramEntity implements Serializable {
         return this.lastname;
     }
 
-    public TelegramEntity lastname(String lastname) {
+    public CustomerTelegram lastname(String lastname) {
         this.setLastname(lastname);
         return this;
     }
@@ -105,7 +111,7 @@ public class TelegramEntity implements Serializable {
         return this.username;
     }
 
-    public TelegramEntity username(String username) {
+    public CustomerTelegram username(String username) {
         this.setUsername(username);
         return this;
     }
@@ -118,7 +124,7 @@ public class TelegramEntity implements Serializable {
         return this.telegramId;
     }
 
-    public TelegramEntity telegramId(Long telegramId) {
+    public CustomerTelegram telegramId(Long telegramId) {
         this.setTelegramId(telegramId);
         return this;
     }
@@ -127,11 +133,37 @@ public class TelegramEntity implements Serializable {
         this.telegramId = telegramId;
     }
 
+    public String getPhoneNumber() {
+        return this.phoneNumber;
+    }
+
+    public CustomerTelegram phoneNumber(String phoneNumber) {
+        this.setPhoneNumber(phoneNumber);
+        return this;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public Integer getStep() {
+        return this.step;
+    }
+
+    public CustomerTelegram step(Integer step) {
+        this.setStep(step);
+        return this;
+    }
+
+    public void setStep(Integer step) {
+        this.step = step;
+    }
+
     public Boolean getCanJoinGroups() {
         return this.canJoinGroups;
     }
 
-    public TelegramEntity canJoinGroups(Boolean canJoinGroups) {
+    public CustomerTelegram canJoinGroups(Boolean canJoinGroups) {
         this.setCanJoinGroups(canJoinGroups);
         return this;
     }
@@ -144,7 +176,7 @@ public class TelegramEntity implements Serializable {
         return this.languageCode;
     }
 
-    public TelegramEntity languageCode(String languageCode) {
+    public CustomerTelegram languageCode(String languageCode) {
         this.setLanguageCode(languageCode);
         return this;
     }
@@ -157,7 +189,7 @@ public class TelegramEntity implements Serializable {
         return this.isActive;
     }
 
-    public TelegramEntity isActive(Boolean isActive) {
+    public CustomerTelegram isActive(Boolean isActive) {
         this.setIsActive(isActive);
         return this;
     }
@@ -174,7 +206,7 @@ public class TelegramEntity implements Serializable {
         this.user = user;
     }
 
-    public TelegramEntity user(User user) {
+    public CustomerTelegram user(User user) {
         this.setUser(user);
         return this;
     }
@@ -186,10 +218,10 @@ public class TelegramEntity implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof TelegramEntity)) {
+        if (!(o instanceof CustomerTelegram)) {
             return false;
         }
-        return id != null && id.equals(((TelegramEntity) o).id);
+        return id != null && id.equals(((CustomerTelegram) o).id);
     }
 
     @Override
@@ -201,13 +233,15 @@ public class TelegramEntity implements Serializable {
     // prettier-ignore
     @Override
     public String toString() {
-        return "TelegramEntity{" +
+        return "CustomerTelegram{" +
             "id=" + getId() +
             ", isBot='" + getIsBot() + "'" +
             ", firstname='" + getFirstname() + "'" +
             ", lastname='" + getLastname() + "'" +
             ", username='" + getUsername() + "'" +
             ", telegramId=" + getTelegramId() +
+            ", phoneNumber='" + getPhoneNumber() + "'" +
+            ", step=" + getStep() +
             ", canJoinGroups='" + getCanJoinGroups() + "'" +
             ", languageCode='" + getLanguageCode() + "'" +
             ", isActive='" + getIsActive() + "'" +

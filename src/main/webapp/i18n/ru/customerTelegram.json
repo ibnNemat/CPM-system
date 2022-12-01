@@ -1,0 +1,34 @@
+{
+  "cpmSystemApp": {
+    "customerTelegram": {
+      "home": {
+        "title": "Customer Telegrams",
+        "refreshListLabel": "Обновить список",
+        "createLabel": "Создать новый Customer Telegram",
+        "createOrEditLabel": "Создать или отредактировать Customer Telegram",
+        "notFound": "Customer Telegrams не найдено"
+      },
+      "created": "Новый Customer Telegram создан с идентификатором {{ param }}",
+      "updated": "Customer Telegram обновлен с идентификатором {{ param }}",
+      "deleted": "Customer Telegram удален с идентификатором {{ param }}",
+      "delete": {
+        "question": "Вы уверены что хотите удалить Customer Telegram {{ id }}?"
+      },
+      "detail": {
+        "title": "Customer Telegram"
+      },
+      "id": "ID",
+      "isBot": "Is Bot",
+      "firstname": "Firstname",
+      "lastname": "Lastname",
+      "username": "Username",
+      "telegramId": "Telegram Id",
+      "phoneNumber": "Phone Number",
+      "step": "Step",
+      "canJoinGroups": "Can Join Groups",
+      "languageCode": "Language Code",
+      "isActive": "Is Active",
+      "user": "User"
+    }
+  }
+}

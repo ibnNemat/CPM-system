@@ -7,10 +7,10 @@
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <!--
-        Added the entity TelegramEntity.
+        Added the entity CustomerTelegram.
     -->
-    <changeSet id="20221130153758-1" author="jhipster">
-        <createTable tableName="telegram_entity">
+    <changeSet id="20221201055119-1" author="jhipster">
+        <createTable tableName="customer_telegram">
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -29,6 +29,12 @@
             <column name="telegram_id" type="bigint">
                 <constraints nullable="true" />
             </column>
+            <column name="phone_number" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="step" type="integer">
+                <constraints nullable="true" />
+            </column>
             <column name="can_join_groups" type="boolean">
                 <constraints nullable="true" />
             </column>
@@ -39,7 +45,7 @@
                 <constraints nullable="true" />
             </column>
             <column name="user_id" type="bigint">
-                <constraints nullable="true" unique="true" uniqueConstraintName="ux_telegram_entity__user_id" />
+                <constraints nullable="true" unique="true" uniqueConstraintName="ux_customer_telegram__user_id" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
@@ -55,11 +61,11 @@
           This can be customized by adding or removing 'faker' in the 'spring.liquibase.contexts'
           Spring Boot configuration key.
     -->
-    <changeSet id="20221130153758-1-data" author="jhipster" context="faker">
+    <changeSet id="20221201055119-1-data" author="jhipster" context="faker">
         <loadData
-                  file="config/liquibase/fake-data/telegram_entity.csv"
+                  file="config/liquibase/fake-data/customer_telegram.csv"
                   separator=";"
-                  tableName="telegram_entity"
+                  tableName="customer_telegram"
                   usePreparedStatements="true">
             <column name="id" type="numeric"/>
             <column name="is_bot" type="boolean"/>
@@ -67,6 +73,8 @@
             <column name="lastname" type="string"/>
             <column name="username" type="string"/>
             <column name="telegram_id" type="numeric"/>
+            <column name="phone_number" type="string"/>
+            <column name="step" type="numeric"/>
             <column name="can_join_groups" type="boolean"/>
             <column name="language_code" type="string"/>
             <column name="is_active" type="boolean"/>

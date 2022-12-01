@@ -44,6 +44,11 @@ import { RouterModule } from '@angular/router';
         data: { pageTitle: 'cpmSystemApp.telegramEntity.home.title' },
         loadChildren: () => import('./telegram-entity/telegram-entity.module').then(m => m.TelegramEntityModule),
       },
+      {
+        path: 'customer-telegram',
+        data: { pageTitle: 'cpmSystemApp.customerTelegram.home.title' },
+        loadChildren: () => import('./customer-telegram/customer-telegram.module').then(m => m.CustomerTelegramModule),
+      },
       /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
     ]),
   ],
