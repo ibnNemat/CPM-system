@@ -9,9 +9,8 @@ import { of, Subject, from } from 'rxjs';
 import { CustomerTelegramFormService } from './customer-telegram-form.service';
 import { CustomerTelegramService } from '../service/customer-telegram.service';
 import { ICustomerTelegram } from '../customer-telegram.model';
-
-import { IUser } from 'app/entities/user/user.model';
-import { UserService } from 'app/entities/user/user.service';
+import { ICustomers } from 'app/entities/customers/customers.model';
+import { CustomersService } from 'app/entities/customers/service/customers.service';
 
 import { CustomerTelegramUpdateComponent } from './customer-telegram-update.component';
 
@@ -21,7 +20,7 @@ describe('CustomerTelegram Management Update Component', () => {
   let activatedRoute: ActivatedRoute;
   let customerTelegramFormService: CustomerTelegramFormService;
   let customerTelegramService: CustomerTelegramService;
-  let userService: UserService;
+  let customersService: CustomersService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -44,43 +43,43 @@ describe('CustomerTelegram Management Update Component', () => {
     activatedRoute = TestBed.inject(ActivatedRoute);
     customerTelegramFormService = TestBed.inject(CustomerTelegramFormService);
     customerTelegramService = TestBed.inject(CustomerTelegramService);
-    userService = TestBed.inject(UserService);
+    customersService = TestBed.inject(CustomersService);
 
     comp = fixture.componentInstance;
   });
 
   describe('ngOnInit', () => {
-    it('Should call User query and add missing value', () => {
+    it('Should call Customers query and add missing value', () => {
       const customerTelegram: ICustomerTelegram = { id: 456 };
-      const user: IUser = { id: 74797 };
-      customerTelegram.user = user;
+      const customer: ICustomers = { id: 29894 };
+      customerTelegram.customer = customer;
 
-      const userCollection: IUser[] = [{ id: 13928 }];
-      jest.spyOn(userService, 'query').mockReturnValue(of(new HttpResponse({ body: userCollection })));
-      const additionalUsers = [user];
-      const expectedCollection: IUser[] = [...additionalUsers, ...userCollection];
-      jest.spyOn(userService, 'addUserToCollectionIfMissing').mockReturnValue(expectedCollection);
+      const customersCollection: ICustomers[] = [{ id: 47903 }];
+      jest.spyOn(customersService, 'query').mockReturnValue(of(new HttpResponse({ body: customersCollection })));
+      const additionalCustomers = [customer];
+      const expectedCollection: ICustomers[] = [...additionalCustomers, ...customersCollection];
+      jest.spyOn(customersService, 'addCustomersToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ customerTelegram });
       comp.ngOnInit();
 
-      expect(userService.query).toHaveBeenCalled();
-      expect(userService.addUserToCollectionIfMissing).toHaveBeenCalledWith(
-        userCollection,
-        ...additionalUsers.map(expect.objectContaining)
+      expect(customersService.query).toHaveBeenCalled();
+      expect(customersService.addCustomersToCollectionIfMissing).toHaveBeenCalledWith(
+        customersCollection,
+        ...additionalCustomers.map(expect.objectContaining)
       );
-      expect(comp.usersSharedCollection).toEqual(expectedCollection);
+      expect(comp.customersSharedCollection).toEqual(expectedCollection);
     });
 
     it('Should update editForm', () => {
       const customerTelegram: ICustomerTelegram = { id: 456 };
-      const user: IUser = { id: 25273 };
-      customerTelegram.user = user;
+      const customer: ICustomers = { id: 74116 };
+      customerTelegram.customer = customer;
 
       activatedRoute.data = of({ customerTelegram });
       comp.ngOnInit();
 
-      expect(comp.usersSharedCollection).toContain(user);
+      expect(comp.customersSharedCollection).toContain(customer);
       expect(comp.customerTelegram).toEqual(customerTelegram);
     });
   });
@@ -154,13 +153,13 @@ describe('CustomerTelegram Management Update Component', () => {
   });
 
   describe('Compare relationships', () => {
-    describe('compareUser', () => {
-      it('Should forward to userService', () => {
+    describe('compareCustomers', () => {
+      it('Should forward to customersService', () => {
         const entity = { id: 123 };
         const entity2 = { id: 456 };
-        jest.spyOn(userService, 'compareUser');
-        comp.compareUser(entity, entity2);
-        expect(userService.compareUser).toHaveBeenCalledWith(entity, entity2);
+        jest.spyOn(customersService, 'compareCustomers');
+        comp.compareCustomers(entity, entity2);
+        expect(customersService.compareCustomers).toHaveBeenCalledWith(entity, entity2);
       });
     });
   });

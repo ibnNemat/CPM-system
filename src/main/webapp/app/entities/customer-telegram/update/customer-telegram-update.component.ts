@@ -7,8 +7,8 @@ import { finalize, map } from 'rxjs/operators';
 import { CustomerTelegramFormService, CustomerTelegramFormGroup } from './customer-telegram-form.service';
 import { ICustomerTelegram } from '../customer-telegram.model';
 import { CustomerTelegramService } from '../service/customer-telegram.service';
-import { IUser } from 'app/entities/user/user.model';
-import { UserService } from 'app/entities/user/user.service';
+import { ICustomers } from 'app/entities/customers/customers.model';
+import { CustomersService } from 'app/entities/customers/service/customers.service';
 
 @Component({
   selector: 'jhi-customer-telegram-update',
@@ -18,18 +18,18 @@ export class CustomerTelegramUpdateComponent implements OnInit {
   isSaving = false;
   customerTelegram: ICustomerTelegram | null = null;
 
-  usersSharedCollection: IUser[] = [];
+  customersSharedCollection: ICustomers[] = [];
 
   editForm: CustomerTelegramFormGroup = this.customerTelegramFormService.createCustomerTelegramFormGroup();
 
   constructor(
     protected customerTelegramService: CustomerTelegramService,
     protected customerTelegramFormService: CustomerTelegramFormService,
-    protected userService: UserService,
+    protected customersService: CustomersService,
     protected activatedRoute: ActivatedRoute
   ) {}
 
-  compareUser = (o1: IUser | null, o2: IUser | null): boolean => this.userService.compareUser(o1, o2);
+  compareCustomers = (o1: ICustomers | null, o2: ICustomers | null): boolean => this.customersService.compareCustomers(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ customerTelegram }) => {
@@ -79,14 +79,21 @@ export class CustomerTelegramUpdateComponent implements OnInit {
     this.customerTelegram = customerTelegram;
     this.customerTelegramFormService.resetForm(this.editForm, customerTelegram);
 
-    this.usersSharedCollection = this.userService.addUserToCollectionIfMissing<IUser>(this.usersSharedCollection, customerTelegram.user);
+    this.customersSharedCollection = this.customersService.addCustomersToCollectionIfMissing<ICustomers>(
+      this.customersSharedCollection,
+      customerTelegram.customer
+    );
   }
 
   protected loadRelationshipsOptions(): void {
-    this.userService
+    this.customersService
       .query()
-      .pipe(map((res: HttpResponse<IUser[]>) => res.body ?? []))
-      .pipe(map((users: IUser[]) => this.userService.addUserToCollectionIfMissing<IUser>(users, this.customerTelegram?.user)))
-      .subscribe((users: IUser[]) => (this.usersSharedCollection = users));
+      .pipe(map((res: HttpResponse<ICustomers[]>) => res.body ?? []))
+      .pipe(
+        map((customers: ICustomers[]) =>
+          this.customersService.addCustomersToCollectionIfMissing<ICustomers>(customers, this.customerTelegram?.customer)
+        )
+      )
+      .subscribe((customers: ICustomers[]) => (this.customersSharedCollection = customers));
   }
 }

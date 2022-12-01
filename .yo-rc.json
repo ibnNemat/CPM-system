@@ -19,7 +19,7 @@
     "enableHibernateCache": false,
     "enableSwaggerCodegen": true,
     "enableTranslation": true,
-    "entities": ["Customers", "Organization", "Groups", "Services", "Payment", "PaymentHistory", "TelegramEntity", "CustomerTelegram"],
+    "entities": ["Customers", "Organization", "Groups", "Services", "Payment", "PaymentHistory", "CustomerTelegram"],
     "entitySuffix": "",
     "jhiPrefix": "jhi",
     "jhipsterVersion": "7.9.3",

@@ -1,4 +1,4 @@
-package devops.intern.cpmtelegrambot.feign;
+package uz.devops.intern.feign;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,6 +1,5 @@
-package devops.intern.cpmtelegrambot.component;
+package uz.devops.intern.component;
 
-import devops.intern.cpmtelegrambot.feign.TelegramClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +8,11 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
+import uz.devops.intern.feign.TelegramClient;
 
 @Component
-public class GroupManagerMain extends TelegramLongPollingBot {
-    private final Logger log = LoggerFactory.getLogger(GroupManagerMain.class);
+public class ControllerTelegramGroupManager extends TelegramLongPollingBot {
+    private final Logger log = LoggerFactory.getLogger(ControllerTelegramGroupManager.class);
     private static final String BOT_USERNAME = "devopsInternBot";
     private static final String BOT_TOKEN = "5543292898:AAGoR3GLOCOL7Lir7sjYyCFYS7BLiUwNbHA";
     @Autowired
@@ -43,7 +43,6 @@ public class GroupManagerMain extends TelegramLongPollingBot {
 
         User user = update.getMessage().getFrom();
 
-//        System.out.println(user.toString());
         try {
 //            execute(sendMessage);
             telegramClient.sendMessage(sendMessage);

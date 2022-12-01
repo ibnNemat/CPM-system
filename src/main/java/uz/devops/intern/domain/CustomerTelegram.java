@@ -1,5 +1,6 @@
 package uz.devops.intern.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import javax.persistence.*;
 
@@ -49,9 +50,10 @@ public class CustomerTelegram implements Serializable {
     @Column(name = "is_active")
     private Boolean isActive;
 
+    @JsonIgnoreProperties(value = { "user", "groups" }, allowSetters = true)
     @OneToOne
     @JoinColumn(unique = true)
-    private User user;
+    private Customers customer;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -198,16 +200,16 @@ public class CustomerTelegram implements Serializable {
         this.isActive = isActive;
     }
 
-    public User getUser() {
-        return this.user;
+    public Customers getCustomer() {
+        return this.customer;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setCustomer(Customers customers) {
+        this.customer = customers;
     }
 
-    public CustomerTelegram user(User user) {
-        this.setUser(user);
+    public CustomerTelegram customer(Customers customers) {
+        this.setCustomer(customers);
         return this;
     }
 

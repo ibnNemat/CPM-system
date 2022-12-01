@@ -44,8 +44,8 @@
             <column name="is_active" type="boolean">
                 <constraints nullable="true" />
             </column>
-            <column name="user_id" type="bigint">
-                <constraints nullable="true" unique="true" uniqueConstraintName="ux_customer_telegram__user_id" />
+            <column name="customer_id" type="bigint">
+                <constraints nullable="true" unique="true" uniqueConstraintName="ux_customer_telegram__customer_id" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>

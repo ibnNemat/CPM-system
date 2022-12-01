@@ -1,4 +1,4 @@
-package devops.intern.cpmtelegrambot.redis;
+package uz.devops.intern.redis;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
