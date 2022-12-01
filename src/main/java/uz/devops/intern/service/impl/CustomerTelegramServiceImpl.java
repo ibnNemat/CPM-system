@@ -47,17 +47,19 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         String sendStringMessage = "";
         SendMessage sendMessage = new SendMessage();
         String requestMessage = message.getText();
+        System.out.println(requestMessage);
 
         switch(requestMessage){
-            case "/start" -> startCommand(telegramUser);
-            case "/help" -> helpCommand(message);
+            case "/start": startCommand(telegramUser, sendMessage, sendStringMessage); break;
+            case "/help":
+                return helpCommand(message);
         }
 
         sendMessage = registerCustomerClient(requestMessage, telegramUser, sendStringMessage, sendMessage);
         if (sendMessage != null){
             return sendMessage;
         }
-
+        sendMessage = new SendMessage();
         sendMessage.setChatId(telegramUser.getId());
         sendMessage.setText("Hozicha hammasi joyida, dasturdan foydalanishingiz mumkin\n" +
             " Tizimni qolgani bitmagan, biroz kuting)");
@@ -71,7 +73,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
 
         if (!requestMessage.startsWith("+998")){
             if (customerTelegramOptional.isEmpty()){
-                sendStringMessage = "Siz hali telegram botdan foydalanish uchun ro'yxatdan o'tmagansiz, iltimos telefon raqamingizni jo'natish\n" +
+                sendStringMessage += "Siz hali telegram botdan foydalanish uchun ro'yxatdan o'tmagansiz, iltimos telefon raqamingizni jo'natish" +
                     " uchun quyidagi tugmani bosing \uD83D\uDC47\n";
                 KeyboardButton button = new KeyboardButton("\uD83D\uDCF1 Telefon raqam");
                 button.setRequestContact(true);
@@ -133,10 +135,11 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
 
     }
 
-    public SendMessage startCommand(User user){
-        SendMessage sendMessage = null;
-        String newMessage = "Assalomu alaykum " + user.getUserName() +
+    public SendMessage startCommand(User user, SendMessage sendMessage, String sendStringMessage){
+         sendStringMessage += "Assalomu alaykum " + user.getUserName() +
             ", CPM(nom qo'yiladi) to'lov tizimiga xush kelibsiz! \n";
+        sendMessage.setText(sendStringMessage);
+        sendMessage.setChatId(user.getId());
 
         return sendMessage;
     }
