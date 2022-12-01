@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.User;
 import uz.devops.intern.feign.TelegramClient;
+import uz.devops.intern.service.CustomerTelegramService;
 
 @Component
 public class ControllerTelegramGroupManager extends TelegramLongPollingBot {
@@ -17,6 +17,11 @@ public class ControllerTelegramGroupManager extends TelegramLongPollingBot {
     private static final String BOT_TOKEN = "5543292898:AAGoR3GLOCOL7Lir7sjYyCFYS7BLiUwNbHA";
     @Autowired
     private TelegramClient telegramClient;
+    private final CustomerTelegramService customerTelegramService;
+
+    public ControllerTelegramGroupManager(CustomerTelegramService customerTelegramService) {
+        this.customerTelegramService = customerTelegramService;
+    }
 
     @Override
     public String getBotUsername(){
@@ -41,10 +46,10 @@ public class ControllerTelegramGroupManager extends TelegramLongPollingBot {
         sendMessage.setChatId(userChatId);
         sendMessage.setText(newMessage);
 
-        User user = update.getMessage().getFrom();
+//        User user = update.getMessage().getFrom();
 
         try {
-//            execute(sendMessage);
+            sendMessage = customerTelegramService.botCommands(update);
             telegramClient.sendMessage(sendMessage);
         }catch (Exception e){
             log.error("Error while sending message");

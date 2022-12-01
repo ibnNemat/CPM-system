@@ -24,10 +24,8 @@ public class CustomerTelegramResource {
     private final Logger log = LoggerFactory.getLogger(CustomerTelegramResource.class);
 
     private static final String ENTITY_NAME = "customerTelegram";
-
     private final TelegramClient telegramClient;
     private final CustomerTelegramService customerTelegramService;
-
 
     public CustomerTelegramResource(
         TelegramClient telegramClient, CustomerTelegramService customerTelegramService) {
@@ -35,7 +33,7 @@ public class CustomerTelegramResource {
         this.customerTelegramService = customerTelegramService;
     }
 
-    @PostMapping
+    @PostMapping("/")
     public void sendMessage(@RequestBody Update update){
         SendMessage sendMessage = customerTelegramService.botCommands(update);
         telegramClient.sendMessage(sendMessage);

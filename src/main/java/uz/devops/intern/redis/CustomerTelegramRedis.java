@@ -7,20 +7,21 @@ import org.telegram.telegrambots.meta.api.objects.User;
 //@AllArgsConstructor
 @RedisHash(timeToLive = 60 * 60 * 24)
 public class CustomerTelegramRedis {
-    private Long Id;
+    private Long id;
     private User telegramUser;
+    public CustomerTelegramRedis(){}
 
     public CustomerTelegramRedis(Long id, User telegramUser) {
-        Id = id;
+        this.id = id;
         this.telegramUser = telegramUser;
     }
 
     public Long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Long id) {
-        Id = id;
+        this.id = id;
     }
 
     public User getTelegramUser() {

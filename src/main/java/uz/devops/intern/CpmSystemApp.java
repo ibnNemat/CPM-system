@@ -25,8 +25,8 @@ import uz.devops.intern.config.CRLFLogConverter;
 @SpringBootApplication
 @EnableConfigurationProperties({ LiquibaseProperties.class, ApplicationProperties.class })
 @EnableFeignClients
-@EnableRedisRepositories({"uz.devops.intern.*"})
-@ComponentScan({"uz.devops.intern.*"})
+//@EnableRedisRepositories({"uz.devops.intern.*"})
+//@ComponentScan({"uz.devops.intern.*"})
 public class CpmSystemApp {
     private static final Logger log = LoggerFactory.getLogger(CpmSystemApp.class);
 
