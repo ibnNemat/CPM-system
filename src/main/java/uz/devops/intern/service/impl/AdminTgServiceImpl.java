@@ -1,5 +1,6 @@
 package uz.devops.intern.service.impl;
 
+import feign.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,8 @@ public class AdminTgServiceImpl implements AdminTgService {
                 verifyAdminByLogin(update.getMessage(), customer);
             }else if(step == 3){
                 getAdminBotToken(update.getMessage(), customer);
+            }else if(step == 4){
+                // Hozircha hish nima yo'q.
             }
         }
 
@@ -149,12 +152,28 @@ public class AdminTgServiceImpl implements AdminTgService {
         String newBotToken = message.getText();
 
         String url = telegramAPI + newBotToken + webhookAPI;
+        log.info("Url: {}", url);
         RestTemplate template = new RestTemplate();
         WebhookResponseDTO response =
             template.exchange(url, HttpMethod.GET, null, WebhookResponseDTO.class).getBody();
-
         log.info("Response from telegram server: {}", response);
-
+        String result = checkWebhookResponse(response);
+        if(result.equals("Ok")){
+            // Hammasi joyida
+            String newMessage = "Tabriklaymiz, botning tokeni muvafaqiyatli saqlandi.";
+            SendMessage sendMessage = TelegramUtil.sendMessage(String.valueOf(userId), newMessage);
+            Update update = feign.sendMessage(sendMessage);
+            log.info("BOT_TOKEN successfully saved, Bot token: {} | Customer: {} | Update: {}",
+                newBotToken, customer, update);
+            customer.setStep(4);
+            customerTelegramRepository.save(customer);
+            // Botning tokenini saqlab qo'yish kere.
+        }else {
+            SendMessage sendMessage = TelegramUtil.sendMessage(String.valueOf(userId), result);
+            Update update = feign.sendMessage(sendMessage);
+            log.info("Setting webhook is failed, Response: {} | Bot token: {} | Customer: {}",
+                response, newBotToken, customer);
+        }
     }
 
     private CustomerTelegram createCustomer(User user){
@@ -169,5 +188,18 @@ public class AdminTgServiceImpl implements AdminTgService {
         customer.setIsBot(user.getIsBot());
         customer.setStep(1);
         return customer;
+    }
+
+    private String checkWebhookResponse(WebhookResponseDTO response){
+        if(response.getResult()){
+            if(response.getDescription().contains("is already set")){
+                return "Bu botdan oldi ishlatilingan.";
+            }
+        }else{
+            if(response.getDescription().contains("Unauthorized")){
+                return "Botning tokeni noto'g'ri.";
+            }
+        }
+        return "Ok";
     }
 }
