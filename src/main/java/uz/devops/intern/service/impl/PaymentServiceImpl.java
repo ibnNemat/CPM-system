@@ -96,6 +96,7 @@ public class PaymentServiceImpl implements PaymentService {
         if (servicesOptional.isEmpty() || customerPayer == null) {
             return new ResponseDTO(NOT_FOUND, ResponseMessage.NOT_FOUND, false, null);
         }
+
         requestPayment.setCustomer(customerPayer);
         ResponseDTO<Double> responseDTO = checkCustomerBalance(requestPayment);
         if (!responseDTO.getSuccess()) {
@@ -115,6 +116,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         Payment paymentInDataBase = optionalPayment.get();
         Double paymentForPeriod = paymentInDataBase.getPaymentForPeriod();
+
         if (paymentInDataBase.getPaidMoney() + requestPaidMoney >= paymentForPeriod) {
             Double owedMoney = paymentForPeriod - paymentInDataBase.getPaidMoney();
             requestPaidMoney -= owedMoney;
@@ -127,6 +129,7 @@ public class PaymentServiceImpl implements PaymentService {
             LocalDate oldFinishedPeriodDateWithPlusDate = paymentInDataBase.getFinishedPeriod().plusDays(1);
             Payment newPayment = new Payment();
             boolean bool = false;
+
             while(requestPaidMoney >= paymentForPeriod){
                 newPayment = buildNewPayment(service, paymentForPeriod, group, customerPayer, oldFinishedPeriodDateWithPlusDate);
                 requestPaidMoney -= paymentForPeriod;
