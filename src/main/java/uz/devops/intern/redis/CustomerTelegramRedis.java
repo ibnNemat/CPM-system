@@ -1,4 +1,4 @@
-package uz.devops.intern.redis_cache;
+package uz.devops.intern.redis;
 
 import org.springframework.data.redis.core.RedisHash;
 import org.telegram.telegrambots.meta.api.objects.User;

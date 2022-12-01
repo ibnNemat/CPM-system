@@ -114,8 +114,8 @@ public class CustomersServiceImpl implements CustomersService {
     }
 
     @Override
-    public Optional<CustomersDTO> findByPhoneNumber(String phoneNumber) {
-        return Optional.empty();
+    public Optional<Customers> findByPhoneNumber(String phoneNumber) {
+         return customersRepository.findByPhoneNumber(phoneNumber);
     }
 
     @Override

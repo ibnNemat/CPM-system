@@ -51,7 +51,7 @@ public interface CustomersService {
      * @return the entity.
      */
     Optional<CustomersDTO> findOne(Long id);
-    Optional<CustomersDTO> findByPhoneNumber(String phoneNumber);
+    Optional<Customers> findByPhoneNumber(String phoneNumber);
     Optional<Customers> findByUsername(String username);
     void decreaseCustomerBalance(Double paidMoney, Long customerId);
 
