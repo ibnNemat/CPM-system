@@ -1,4 +1,4 @@
-package uz.devops.intern.component;
+package uz.devops.intern.telegram.bot;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

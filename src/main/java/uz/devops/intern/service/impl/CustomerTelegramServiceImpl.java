@@ -22,7 +22,8 @@ import uz.devops.intern.redis.CustomerTelegramRedisRepository;
 import uz.devops.intern.repository.CustomerTelegramRepository;
 import uz.devops.intern.service.CustomerTelegramService;
 import uz.devops.intern.service.CustomersService;
-
+import uz.devops.intern.telegram.bot.utils.TelegramUtil;
+//import static uz.devops.intern.telegram.bot.utils.TelegramUtil;
 /**
  * Service Implementation for managing {@link CustomerTelegram}.
  */
@@ -56,13 +57,16 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         if (message.getText().startsWith("+998")){
             checkCustomerPhoneNumber(customerTelegram);
         }
+
+        return message;
     }
 
     private boolean checkCustomerPhoneNumber(User customerTelegram) {
-        Optional<Customers> custemerOptional = customersService.findOne();
-        if (){
-
-        }
+//        Optional<Customers> custemerOptional = customersService.findOne();
+//        if (){
+//
+//        }
+        return true;
     }
 
     @Override
@@ -101,7 +105,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             markup.setResizeKeyboard(true);
             markup.setKeyboard(List.of(row));
 
-            sendMessage = sendMessage(String.valueOf(user.getId()), newMessage, markup);
+            sendMessage = TelegramUtil.sendMessage(String.valueOf(user.getId()), newMessage, markup);
             return sendMessage;
         }else if (redisOptional.isEmpty()){
             CustomerTelegramRedis customerTelegramRedis = new CustomerTelegramRedis(user.getId(), user);
@@ -127,35 +131,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             "\n" +
             "Bosing: /start";
 
-        return sendMessage(String.valueOf(message.getFrom().getId()), newMessage);
+        return TelegramUtil.sendMessage(String.valueOf(message.getFrom().getId()), newMessage);
     }
 
-    /**
-     * param: String chatId
-     * param: String text
-
-     * return: SendMessage without buttons
-     */
-    public static SendMessage sendMessage(String chatId, String text){
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(text);
-
-        return sendMessage;
-    }
-
-    /**
-     * param: String chatId
-     * param: String text
-
-     * return: SendMessage with buttons
-     */
-    public static SendMessage sendMessage(String chatId, String text, ReplyKeyboardMarkup keyboardMarkup){
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(text);
-        sendMessage.setReplyMarkup(keyboardMarkup);
-
-        return sendMessage;
-    }
 }
