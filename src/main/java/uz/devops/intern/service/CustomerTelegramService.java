@@ -7,7 +7,6 @@ import org.telegram.telegrambots.meta.api.objects.User;
 /**
  * Service Interface for managing {@link uz.devops.intern.domain.CustomerTelegram}.
  */
-public interface CustomerTelegramService {
-    void saveCustomerTelegramToDatabase(User user, String requestStringMessage);
+public interface CustomersTelegramService {
     SendMessage botCommands(Update update);
 }
