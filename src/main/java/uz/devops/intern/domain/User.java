@@ -13,6 +13,8 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.userdetails.UserDetails;
 import uz.devops.intern.config.Constants;
 
@@ -80,13 +82,14 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
     private Instant resetDate = null;
 
     @JsonIgnore
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "jhi_user_authority",
         joinColumns = { @JoinColumn(name = "user_id", referencedColumnName = "id") },
         inverseJoinColumns = { @JoinColumn(name = "authority_name", referencedColumnName = "name") }
     )
     @BatchSize(size = 20)
+    @Fetch(FetchMode.SUBSELECT)
     private Set<Authority> authorities = new HashSet<>();
     public User(){}
 
