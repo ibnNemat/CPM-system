@@ -15,7 +15,7 @@ import uz.devops.intern.service.CustomerTelegramService;
  * REST controller for managing {@link uz.devops.intern.domain.CustomerTelegram}.
  */
 @RestController
-@RequestMapping("/customer-bot")
+@RequestMapping("/api")
 public class CustomerTelegramResource {
 
     @Value("${jhipster.clientApp.name}")
@@ -33,9 +33,16 @@ public class CustomerTelegramResource {
         this.customerTelegramService = customerTelegramService;
     }
 
-    @PostMapping
-    public void sendMessage(@RequestBody Update update){
-        log.info("Rest, Message: {}", update.getMessage());
+    @PostMapping("/new-message/{botId}")
+    public void sendMessage(@RequestBody Update update, @PathVariable String botId){
+        log.info("[REST] Bot id: {} | Message: {}", botId,update.getMessage());
+        System.out.println("============ Men customerman: ==================\n" +
+            "Message: " + update.getMessage());
+        System.out.println("User: " + update.getMessage().getFrom());
+        System.out.println("Message ChatID: " +update.getMessage().getChatId());
+        System.out.println("Message chat" + update.getMessage().getChat().toString());
+        System.out.println("================================================");
+
         SendMessage sendMessage = customerTelegramService.botCommands(update);
         telegramClient.sendMessage(sendMessage);
     }

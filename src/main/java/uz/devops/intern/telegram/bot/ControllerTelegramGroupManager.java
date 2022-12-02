@@ -33,6 +33,12 @@ public class ControllerTelegramGroupManager extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update){
+        System.out.println("============ Men Managerman: ==================\n" +
+            "Message: " + update.getMessage());
+        System.out.println("User: " + update.getMessage().getFrom());
+        System.out.println("Message ChatID: " +update.getMessage().getChatId());
+        System.out.println("Message chat" + update.getMessage().getChat().toString());
+        System.out.println("================================================");
         adminService.main(update);
     }
 }
