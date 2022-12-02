@@ -50,7 +50,7 @@ public class AdminTgServiceImpl implements AdminTgService {
             if(messageText.equals("/start")){
                 pressedStartCommand(update.getMessage());
             }else if(messageText.equals("/help")){
-
+                System.out.println("hello world!");
             }
         }else{
             CustomerTelegram customer = customerOptional.get();
