@@ -52,6 +52,12 @@ entity PaymentHistory{
     createdAt LocalDate
 }
 
+entity BotToken {
+    username String required
+    telegramId Long required
+    token String required
+}
+
 enum PeriodType {
     ONETIME, DAY, WEEK, MONTH, YEAR
 }
@@ -65,6 +71,7 @@ relationship ManyToOne {
     Payment{customer} to Customers
     Payment{service} to Services
     PaymentHistory{customer} to Customers
+    BotToken{createdBy} to User
 }
 
 relationship OneToMany {
