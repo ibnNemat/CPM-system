@@ -4,6 +4,21 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
 public class TelegramUtil {
+    public static saveCustomerTelegramToDatabase(User telegramUser, String phoneNumber) {
+        CustomerTelegram customerTelegram = new CustomerTelegram()
+            .isBot(telegramUser.getIsBot())
+            .telegramId(telegramUser.getId())
+            .canJoinGroups(telegramUser.getCanJoinGroups())
+            .firstname(telegramUser.getFirstName())
+            .username(telegramUser.getUserName())
+            .languageCode(telegramUser.getLanguageCode())
+            .step(1)
+            .phoneNumber(phoneNumber)
+            .isActive(true);
+
+        customerTelegramRepository.save(customerTelegram);
+    }
+
 
     /**
      * param: String chatId

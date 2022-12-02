@@ -19,9 +19,9 @@ import uz.devops.intern.domain.Customers;
 import uz.devops.intern.redis.CustomerTelegramRedis;
 import uz.devops.intern.redis.CustomerTelegramRedisRepository;
 import uz.devops.intern.repository.CustomerTelegramRepository;
-import uz.devops.intern.service.CustomerTelegramService;
 import uz.devops.intern.service.CustomersService;
-import uz.devops.intern.telegram.bot.utils.TelegramUtil;
+import uz.devops.intern.service.CustomerTelegramService;
+
 /**
  * Service Implementation for managing {@link CustomerTelegram}.
  */
@@ -117,23 +117,6 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         return customerOptional.get();
     }
 
-    @Override
-    public void saveCustomerTelegramToDatabase(User telegramUser, String phoneNumber) {
-        CustomerTelegram customerTelegram = new CustomerTelegram()
-            .isBot(telegramUser.getIsBot())
-            .telegramId(telegramUser.getId())
-            .canJoinGroups(telegramUser.getCanJoinGroups())
-            .firstname(telegramUser.getFirstName())
-            .username(telegramUser.getUserName())
-            .languageCode(telegramUser.getLanguageCode())
-            .step(1)
-            .phoneNumber(phoneNumber)
-            .isActive(true);
-
-        customerTelegramRepository.save(customerTelegram);
-
-
-    }
 
     public SendMessage startCommand(User user, SendMessage sendMessage, String sendStringMessage){
          sendStringMessage += "Assalomu alaykum " + user.getUserName() +
