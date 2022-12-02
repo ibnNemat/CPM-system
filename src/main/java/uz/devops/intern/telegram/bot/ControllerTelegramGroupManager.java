@@ -5,9 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.User;
 import uz.devops.intern.feign.TelegramClient;
 import uz.devops.intern.service.AdminTgService;
 
@@ -20,7 +18,6 @@ public class ControllerTelegramGroupManager extends TelegramLongPollingBot {
     private TelegramClient telegramClient;
     @Autowired
     private AdminTgService adminService;
-
     @Override
     public String getBotUsername(){
         return BOT_USERNAME;

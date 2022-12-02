@@ -1,6 +1,5 @@
 package uz.devops.intern.service.impl;
 
-import feign.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,9 @@ import uz.devops.intern.service.AdminTgService;
 import uz.devops.intern.service.UserService;
 import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
-import uz.devops.intern.telegram.bot.utils.TelegramUtil;
+import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
+
+import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.*;
 
 import java.util.Optional;
 
@@ -77,7 +78,7 @@ public class AdminTgServiceImpl implements AdminTgService {
 
         String newMessage = "Iltimos tilni tanlang\uD83D\uDC47";
         ReplyKeyboardMarkup markup = KeyboardUtil.language();
-        SendMessage sendMessage = TelegramUtil.sendMessage(String.valueOf(userId), newMessage, markup);
+        SendMessage sendMessage = TelegramsUtil.sendMessage(String.valueOf(userId), newMessage, markup);
         Update update = feign.sendMessage(sendMessage);
         log.info("Message send successfully! User id: {} | Message text: {} | Update: {}",
             userId, messageText, update);
@@ -93,7 +94,7 @@ public class AdminTgServiceImpl implements AdminTgService {
             // O'zbechani tanladi.
             customer.setLanguageCode("uz");
             String newMessage = "Iltimos veb saytdagi login ingizni kiriting";
-            SendMessage sendMessage = TelegramUtil.sendMessage(String.valueOf(customer.getId()), newMessage);
+            SendMessage sendMessage = sendMessage(String.valueOf(customer.getId()), newMessage);
             Update response = feign.sendMessage(sendMessage);
             log.info("Message send successfully! User id: {} | Message text: {} | Update: {}",
                 userId, messageText, response);
@@ -101,7 +102,7 @@ public class AdminTgServiceImpl implements AdminTgService {
             // Ruschani tanladi.
             customer.setLanguageCode("ru");
             String newMessage = "Iltimos veb saytdagi login ingizni kiriting(Ruscha bo'ladi)";
-            SendMessage sendMessage = TelegramUtil.sendMessage(String.valueOf(customer.getId()), newMessage);
+            SendMessage sendMessage = sendMessage(String.valueOf(customer.getId()), newMessage);
             Update response = feign.sendMessage(sendMessage);
             log.info("Message send successfully! User id: {} | Message text: {} | Update: {}",
                 userId, messageText, response);
@@ -118,7 +119,7 @@ public class AdminTgServiceImpl implements AdminTgService {
         Optional<uz.devops.intern.domain.User> userOptional = userService.getUserWithAuthoritiesByLogin(userLogin);
         if(userOptional.isEmpty()){
             newMessage = "Xato login!";
-            SendMessage sendMessage = TelegramUtil.sendMessage(String.valueOf(userId), newMessage);
+            SendMessage sendMessage = sendMessage(String.valueOf(userId), newMessage);
             Update update = feign.sendMessage(sendMessage);
         }else {
             boolean isUserManager = false;
@@ -130,16 +131,15 @@ public class AdminTgServiceImpl implements AdminTgService {
                 }
             }
             if(isUserManager){
-
                 newMessage = "Tabriklaymiz, ma'lumotlar to'g'ri keldi. Endi shaxsiy botingizning tokennini yuboring.";
-                SendMessage sendMessage = TelegramUtil.sendMessage(String.valueOf(userId), newMessage);
+                SendMessage sendMessage = sendMessage(String.valueOf(userId), newMessage);
                 Update update = feign.sendMessage(sendMessage);
                 log.info("User successfully authenticated, Login: {} | User: {} ", userLogin, customer);
                 customer.setStep(3);
                 customerTelegramRepository.save(customer);
             }else {
                 newMessage = "Afsuski siz admin emassiz!";
-                SendMessage sendMessage = TelegramUtil.sendMessage(String.valueOf(userId), newMessage);
+                SendMessage sendMessage = sendMessage(String.valueOf(userId), newMessage);
                 Update update = feign.sendMessage(sendMessage);
                 log.info("User has not \"ROLE_MANAGER\"! Login: {} | User: {}", userLogin, customer);
             }
@@ -161,7 +161,7 @@ public class AdminTgServiceImpl implements AdminTgService {
         if(result.equals("Ok")){
             // Hammasi joyida
             String newMessage = "Tabriklaymiz, botning tokeni muvafaqiyatli saqlandi.";
-            SendMessage sendMessage = TelegramUtil.sendMessage(String.valueOf(userId), newMessage);
+            SendMessage sendMessage = sendMessage(String.valueOf(userId), newMessage);
             Update update = feign.sendMessage(sendMessage);
             log.info("BOT_TOKEN successfully saved, Bot token: {} | Customer: {} | Update: {}",
                 newBotToken, customer, update);
@@ -169,7 +169,7 @@ public class AdminTgServiceImpl implements AdminTgService {
             customerTelegramRepository.save(customer);
             // Botning tokenini saqlab qo'yish kere.
         }else {
-            SendMessage sendMessage = TelegramUtil.sendMessage(String.valueOf(userId), result);
+            SendMessage sendMessage = sendMessage(String.valueOf(userId), result);
             Update update = feign.sendMessage(sendMessage);
             log.info("Setting webhook is failed, Response: {} | Bot token: {} | Customer: {}",
                 response, newBotToken, customer);
@@ -193,7 +193,7 @@ public class AdminTgServiceImpl implements AdminTgService {
     private String checkWebhookResponse(WebhookResponseDTO response){
         if(response.getResult()){
             if(response.getDescription().contains("is already set")){
-                return "Bu botdan oldi ishlatilingan.";
+                return "Bu botdan oldin ishlatilingan.";
             }
         }else{
             if(response.getDescription().contains("Unauthorized")){

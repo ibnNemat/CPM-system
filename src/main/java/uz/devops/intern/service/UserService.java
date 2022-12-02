@@ -106,7 +106,6 @@ public class UserService {
         User newUser = new User();
         String encryptedPassword = passwordEncoder.encode(password);
         newUser.setLogin(userDTO.getLogin().toLowerCase());
-        // new user gets initially a generated password
         newUser.setPassword(encryptedPassword);
         newUser.setFirstName(userDTO.getFirstName());
         newUser.setLastName(userDTO.getLastName());
@@ -123,7 +122,7 @@ public class UserService {
 
 //        authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
 
-        checkAuthority(userDTO.getAuthorities(), authorities);
+        checkAuthority(userDTO.getAuthorities(), authorities, userDTO, newUser);
 
         newUser.setAuthorities(authorities);
         User user = userRepository.save(newUser);
@@ -133,7 +132,7 @@ public class UserService {
         return newUser;
     }
 
-    private void checkAuthority(Set<String> authorityString, Set<Authority> authoritySet){
+    private void checkAuthority(Set<String> authorityString, Set<Authority> authoritySet, AdminUserDTO userDTO, User user){
         if(authorityString != null) {
             Authority authority = new Authority();
             if (authorityString.contains("ROLE_CUSTOMER")) {
@@ -142,6 +141,7 @@ public class UserService {
             } else if (authorityString.contains("ROLE_MANAGER")) {
                 authority.setName("ROLE_MANAGER");
                 authoritySet.add(authority);
+                user.setCreatedBy(userDTO.getPhoneNumber());
             }
         }
     }
