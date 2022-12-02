@@ -6,10 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-//@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+
 public class WebhookResponseDTO {
 
     private Boolean ok;
@@ -18,6 +15,14 @@ public class WebhookResponseDTO {
     private Boolean result;
     private String description;
 
+    public WebhookResponseDTO(Boolean ok, Integer errorCode, Boolean result, String description) {
+        this.ok = ok;
+        this.errorCode = errorCode;
+        this.result = result;
+        this.description = description;
+    }
+
+    public WebhookResponseDTO(){}
     public Boolean getOk() {
         return ok;
     }

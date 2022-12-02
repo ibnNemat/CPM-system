@@ -9,8 +9,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import uz.devops.intern.feign.TelegramClient;
 import uz.devops.intern.repository.CustomerTelegramRepository;
 import uz.devops.intern.service.CustomerTelegramService;
-
-
 /**
  * REST controller for managing {@link uz.devops.intern.domain.CustomerTelegram}.
  */
@@ -44,6 +42,7 @@ public class CustomerTelegramResource {
         System.out.println("================================================");
 
         SendMessage sendMessage = customerTelegramService.botCommands(update);
-        telegramClient.sendMessage(sendMessage);
+        if (sendMessage != null)
+            telegramClient.sendMessage(sendMessage);
     }
 }
