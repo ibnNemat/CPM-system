@@ -1,0 +1,27 @@
+{
+  "cpmSystemApp": {
+    "botToken": {
+      "home": {
+        "title": "Bot Tokens",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Bot Token",
+        "createOrEditLabel": "Create or edit a Bot Token",
+        "notFound": "No Bot Tokens found"
+      },
+      "created": "A new Bot Token is created with identifier {{ param }}",
+      "updated": "A Bot Token is updated with identifier {{ param }}",
+      "deleted": "A Bot Token is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Bot Token {{ id }}?"
+      },
+      "detail": {
+        "title": "Bot Token"
+      },
+      "id": "ID",
+      "username": "Username",
+      "telegramId": "Telegram Id",
+      "token": "Token",
+      "createdBy": "Created By"
+    }
+  }
+}
