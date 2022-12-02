@@ -16,12 +16,12 @@ import uz.devops.intern.service.CustomerTelegramService;
 @RequestMapping("/api")
 public class CustomerTelegramResource {
 
-    @Value("${jhipster.clientApp.name}")
-    private String applicationName;
+//    @Value("${jhipster.clientApp.name}")
+//    private String applicationName;
 
     private final Logger log = LoggerFactory.getLogger(CustomerTelegramResource.class);
 
-    private static final String ENTITY_NAME = "customerTelegram";
+//    private static final String ENTITY_NAME = "customerTelegram";
     private final TelegramClient telegramClient;
     private final CustomerTelegramService customerTelegramService;
 

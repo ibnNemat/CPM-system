@@ -13,6 +13,20 @@ public class KeyboardUtil {
         row.add(new KeyboardButton("🇺🇿 O`zbekcha"));
         row.add(new KeyboardButton("\uD83C\uDDF7\uD83C\uDDFA Русский"));
 
-        return new ReplyKeyboardMarkup(List.of(row));
+        ReplyKeyboardMarkup markup =  new ReplyKeyboardMarkup(List.of(row));
+        markup.setResizeKeyboard(true);
+        return markup;
+    }
+
+    public static ReplyKeyboardMarkup phoneNumber(){
+        KeyboardButton button = new KeyboardButton("\uD83D\uDCF2 Telefon raqamni jo'natish");
+        button.setRequestContact(true);
+
+        KeyboardRow row = new KeyboardRow();
+        row.add(button);
+
+        ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup(List.of(row));
+        markup.setResizeKeyboard(true);
+        return markup;
     }
 }
