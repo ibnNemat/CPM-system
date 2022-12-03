@@ -5,9 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import uz.devops.intern.feign.TelegramClient;
+import uz.devops.intern.feign.CustomerFeign;
 import uz.devops.intern.service.AdminTgService;
+import uz.devops.intern.service.CustomerTelegramService;
 
 @Component
 public class ControllerTelegramGroupManager extends TelegramLongPollingBot {
@@ -15,9 +17,11 @@ public class ControllerTelegramGroupManager extends TelegramLongPollingBot {
     private static final String BOT_USERNAME = "devopsInternBot";
     private static final String BOT_TOKEN = "5543292898:AAGoR3GLOCOL7Lir7sjYyCFYS7BLiUwNbHA";
     @Autowired
-    private TelegramClient telegramClient;
+    private CustomerFeign customerFeign;
     @Autowired
     private AdminTgService adminService;
+    @Autowired
+    private CustomerTelegramService customerTelegramService;
     @Override
     public String getBotUsername(){
         return BOT_USERNAME;
@@ -30,6 +34,9 @@ public class ControllerTelegramGroupManager extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update){
-        adminService.main(update);
+        SendMessage sendMessage = customerTelegramService.botCommands(update);
+        if (sendMessage != null)
+            customerFeign.sendMessage(sendMessage);
+//        adminService.main(update);
     }
 }

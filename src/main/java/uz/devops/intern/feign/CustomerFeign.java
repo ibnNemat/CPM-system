@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @FeignClient(value = "telegram-bot",
         url = "https://api.telegram.org/bot5543292898:AAGoR3GLOCOL7Lir7sjYyCFYS7BLiUwNbHA")
-public interface TelegramClient {
+public interface CustomerFeign {
     @PostMapping("/sendMessage")
     Update sendMessage(@RequestBody SendMessage sendMessage);
 }

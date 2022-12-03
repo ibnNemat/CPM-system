@@ -13,7 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import uz.devops.intern.domain.Authority;
 import uz.devops.intern.domain.CustomerTelegram;
-import uz.devops.intern.feign.TelegramClient;
+import uz.devops.intern.feign.CustomerFeign;
 import uz.devops.intern.repository.CustomerTelegramRepository;
 import uz.devops.intern.service.AdminTgService;
 import uz.devops.intern.service.UserService;
@@ -30,15 +30,13 @@ public class AdminTgServiceImpl implements AdminTgService {
 
     private static String telegramAPI = "https://api.telegram.org/api/bot";
     private static String webhookAPI = "/setWebhook?url=https://8334-83-221-180-161.ap.ngrok.io/customer-bot";
-
     private final Logger log = LoggerFactory.getLogger(AdminTgServiceImpl.class);
-
     @Autowired
     private UserService userService;
     @Autowired
     private CustomerTelegramRepository customerTelegramRepository;
     @Autowired
-    private TelegramClient feign;
+    private CustomerFeign feign;
 
     @Override
     public void main(Update update) {
@@ -68,7 +66,6 @@ public class AdminTgServiceImpl implements AdminTgService {
                 // Hozircha hish nima yo'q.
             }
         }
-
     }
 
     @Override
@@ -78,7 +75,7 @@ public class AdminTgServiceImpl implements AdminTgService {
 
         String newMessage = "Iltimos tilni tanlang\uD83D\uDC47";
         ReplyKeyboardMarkup markup = KeyboardUtil.language();
-        SendMessage sendMessage = TelegramsUtil.sendMessage(String.valueOf(userId), newMessage, markup);
+        SendMessage sendMessage = TelegramsUtil.sendMessage(userId, newMessage, markup);
         Update update = feign.sendMessage(sendMessage);
         log.info("Message send successfully! User id: {} | Message text: {} | Update: {}",
             userId, messageText, update);
@@ -90,6 +87,7 @@ public class AdminTgServiceImpl implements AdminTgService {
     public void getLanguage(Message message, CustomerTelegram customer) {
         Long userId = message.getFrom().getId();
         String messageText = message.getText();
+
         if(messageText.equals("🇺🇿 O`zbekcha")){
             // O'zbechani tanladi.
             customer.setLanguageCode("uz");
@@ -98,6 +96,7 @@ public class AdminTgServiceImpl implements AdminTgService {
             Update response = feign.sendMessage(sendMessage);
             log.info("Message send successfully! User id: {} | Message text: {} | Update: {}",
                 userId, messageText, response);
+
         }else if(messageText.equals("\uD83C\uDDF7\uD83C\uDDFA Русский")){
             // Ruschani tanladi.
             customer.setLanguageCode("ru");

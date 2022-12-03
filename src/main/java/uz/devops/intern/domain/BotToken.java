@@ -11,7 +11,6 @@ import javax.validation.constraints.*;
 @Table(name = "bot_token")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class BotToken implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     @Id

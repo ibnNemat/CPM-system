@@ -6,8 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import uz.devops.intern.feign.TelegramClient;
-import uz.devops.intern.repository.CustomerTelegramRepository;
+import uz.devops.intern.feign.CustomerFeign;
 import uz.devops.intern.service.CustomerTelegramService;
 /**
  * REST controller for managing {@link uz.devops.intern.domain.CustomerTelegram}.
@@ -22,12 +21,12 @@ public class CustomerTelegramResource {
     private final Logger log = LoggerFactory.getLogger(CustomerTelegramResource.class);
 
     private static final String ENTITY_NAME = "customerTelegram";
-    private final TelegramClient telegramClient;
+    private final CustomerFeign customerFeign;
     private final CustomerTelegramService customerTelegramService;
 
     public CustomerTelegramResource(
-        TelegramClient telegramClient, CustomerTelegramService customerTelegramService) {
-        this.telegramClient = telegramClient;
+            CustomerFeign customerFeign, CustomerTelegramService customerTelegramService) {
+        this.customerFeign = customerFeign;
         this.customerTelegramService = customerTelegramService;
     }
 
@@ -36,6 +35,6 @@ public class CustomerTelegramResource {
         log.info("Rest, Message: {}", update.getMessage());
         SendMessage sendMessage = customerTelegramService.botCommands(update);
         if (sendMessage != null)
-            telegramClient.sendMessage(sendMessage);
+            customerFeign.sendMessage(sendMessage);
     }
 }
