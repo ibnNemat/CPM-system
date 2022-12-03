@@ -2,6 +2,8 @@ package uz.devops.intern.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.*;
 
 /**
@@ -54,6 +56,15 @@ public class CustomerTelegram implements Serializable {
     @OneToOne
     @JoinColumn(unique = true)
     private Customers customer;
+
+    @ManyToMany
+    @JoinTable(
+        name = "rel_customer_telegram__telegram_group",
+        joinColumns = @JoinColumn(name = "customer_telegram_id"),
+        inverseJoinColumns = @JoinColumn(name = "telegram_group_id")
+    )
+    @JsonIgnoreProperties(value = { "customerTelegrams" }, allowSetters = true)
+    private Set<TelegramGroup> telegramGroups = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -210,6 +221,31 @@ public class CustomerTelegram implements Serializable {
 
     public CustomerTelegram customer(Customers customers) {
         this.setCustomer(customers);
+        return this;
+    }
+
+    public Set<TelegramGroup> getTelegramGroups() {
+        return this.telegramGroups;
+    }
+
+    public void setTelegramGroups(Set<TelegramGroup> telegramGroups) {
+        this.telegramGroups = telegramGroups;
+    }
+
+    public CustomerTelegram telegramGroups(Set<TelegramGroup> telegramGroups) {
+        this.setTelegramGroups(telegramGroups);
+        return this;
+    }
+
+    public CustomerTelegram addTelegramGroup(TelegramGroup telegramGroup) {
+        this.telegramGroups.add(telegramGroup);
+        telegramGroup.getCustomerTelegrams().add(this);
+        return this;
+    }
+
+    public CustomerTelegram removeTelegramGroup(TelegramGroup telegramGroup) {
+        this.telegramGroups.remove(telegramGroup);
+        telegramGroup.getCustomerTelegrams().remove(this);
         return this;
     }
 

@@ -28,7 +28,8 @@
       "canJoinGroups": "Can Join Groups",
       "languageCode": "Language Code",
       "isActive": "Is Active",
-      "customer": "Customer"
+      "customer": "Customer",
+      "telegramGroup": "Telegram Group"
     }
   }
 }

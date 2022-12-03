@@ -49,6 +49,11 @@ import { RouterModule } from '@angular/router';
         data: { pageTitle: 'cpmSystemApp.botToken.home.title' },
         loadChildren: () => import('./bot-token/bot-token.module').then(m => m.BotTokenModule),
       },
+      {
+        path: 'telegram-group',
+        data: { pageTitle: 'cpmSystemApp.telegramGroup.home.title' },
+        loadChildren: () => import('./telegram-group/telegram-group.module').then(m => m.TelegramGroupModule),
+      },
       /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
     ]),
   ],

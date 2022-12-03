@@ -21,7 +21,7 @@
                 <constraints nullable="false" />
             </column>
             <column name="phone_number" type="varchar(255)">
-                <constraints nullable="false" unique="true" uniqueConstraintName="ux_customers__phonenumber" />
+                <constraints nullable="false" />
             </column>
             <column name="balance" type="double">
                 <constraints nullable="false" />

@@ -1,7 +1,9 @@
 package uz.devops.intern.service.dto;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A DTO for the {@link uz.devops.intern.domain.CustomerTelegram} entity.
@@ -32,6 +34,8 @@ public class CustomerTelegramDTO implements Serializable {
     private Boolean isActive;
 
     private CustomersDTO customer;
+
+    private Set<TelegramGroupDTO> telegramGroups = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -129,6 +133,14 @@ public class CustomerTelegramDTO implements Serializable {
         this.customer = customer;
     }
 
+    public Set<TelegramGroupDTO> getTelegramGroups() {
+        return telegramGroups;
+    }
+
+    public void setTelegramGroups(Set<TelegramGroupDTO> telegramGroups) {
+        this.telegramGroups = telegramGroups;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -166,6 +178,7 @@ public class CustomerTelegramDTO implements Serializable {
             ", languageCode='" + getLanguageCode() + "'" +
             ", isActive='" + getIsActive() + "'" +
             ", customer=" + getCustomer() +
+            ", telegramGroups=" + getTelegramGroups() +
             "}";
     }
 }

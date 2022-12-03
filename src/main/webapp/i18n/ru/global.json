@@ -17,6 +17,7 @@
         "telegramEntity": "Telegram Entity",
         "customerTelegram": "Customer Telegram",
         "botToken": "Bot Token",
+        "telegramGroup": "Telegram Group",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
       },
       "account": {

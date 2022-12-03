@@ -1,4 +1,5 @@
 import { ICustomers } from 'app/entities/customers/customers.model';
+import { ITelegramGroup } from 'app/entities/telegram-group/telegram-group.model';
 
 export interface ICustomerTelegram {
   id: number;
@@ -13,6 +14,7 @@ export interface ICustomerTelegram {
   languageCode?: string | null;
   isActive?: boolean | null;
   customer?: Pick<ICustomers, 'id'> | null;
+  telegramGroups?: Pick<ITelegramGroup, 'id'>[] | null;
 }
 
 export type NewCustomerTelegram = Omit<ICustomerTelegram, 'id'> & { id: null };

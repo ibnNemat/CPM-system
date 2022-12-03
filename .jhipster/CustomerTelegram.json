@@ -57,6 +57,13 @@
       "ownerSide": true,
       "relationshipName": "customer",
       "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "telegramGroup",
+      "otherEntityRelationshipName": "customerTelegram",
+      "ownerSide": true,
+      "relationshipName": "telegramGroup",
+      "relationshipType": "many-to-many"
     }
   ],
   "service": "serviceImpl"

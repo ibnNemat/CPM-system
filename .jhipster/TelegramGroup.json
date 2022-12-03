@@ -1,0 +1,32 @@
+{
+  "applications": "*",
+  "changelogDate": "20221203124657",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "telegram_group",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "chatId",
+      "fieldType": "Long"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "TelegramGroup",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "customerTelegram",
+      "otherEntityRelationshipName": "telegramGroup",
+      "ownerSide": false,
+      "relationshipName": "customerTelegram",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "service": "serviceImpl"
+}

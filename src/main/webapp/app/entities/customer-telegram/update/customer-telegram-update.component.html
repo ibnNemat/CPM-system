@@ -111,6 +111,23 @@
             <option [ngValue]="customersOption" *ngFor="let customersOption of customersSharedCollection">{{ customersOption.id }}</option>
           </select>
         </div>
+
+        <div class="row mb-3">
+          <label jhiTranslate="cpmSystemApp.customerTelegram.telegramGroup" for="field_telegramGroups">Telegram Group</label>
+          <select
+            class="form-control"
+            id="field_telegramGroups"
+            data-cy="telegramGroup"
+            multiple
+            name="telegramGroups"
+            formControlName="telegramGroups"
+            [compareWith]="compareTelegramGroup"
+          >
+            <option [ngValue]="telegramGroupOption" *ngFor="let telegramGroupOption of telegramGroupsSharedCollection">
+              {{ telegramGroupOption.id }}
+            </option>
+          </select>
+        </div>
       </div>
 
       <div>

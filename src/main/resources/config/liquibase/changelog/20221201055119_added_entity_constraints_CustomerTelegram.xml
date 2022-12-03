@@ -13,5 +13,17 @@
                                  constraintName="fk_customer_telegram__customer_id"
                                  referencedColumnNames="id"
                                  referencedTableName="customers"/>
+
+        <addForeignKeyConstraint baseColumnNames="customer_telegram_id"
+                                 baseTableName="rel_customer_telegram__telegram_group"
+                                 constraintName="fk_rel_customer_telegram__telegram_group__customer_telegram_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="customer_telegram"/>
+
+        <addForeignKeyConstraint baseColumnNames="telegram_group_id"
+                                 baseTableName="rel_customer_telegram__telegram_group"
+                                 constraintName="fk_rel_customer_telegram__telegram_group__telegram_group_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="telegram_group"/>
     </changeSet>
 </databaseChangeLog>

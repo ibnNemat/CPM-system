@@ -44,6 +44,11 @@ entity CustomerTelegram {
     isActive Boolean
 }
 
+entity TelegramGroup {
+    name String
+    chatId Long
+}
+
 entity PaymentHistory{
     organizationName String
     GroupName String
@@ -65,6 +70,7 @@ enum PeriodType {
 relationship ManyToMany {
     Groups{customers} to Customers{groups}
     Services{groups} to Groups{services}
+    CustomerTelegram{telegramGroup} to TelegramGroup{customerTelegram}
 }
 
 relationship ManyToOne {

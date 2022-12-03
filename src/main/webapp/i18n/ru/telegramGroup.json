@@ -1,0 +1,26 @@
+{
+  "cpmSystemApp": {
+    "telegramGroup": {
+      "home": {
+        "title": "Telegram Groups",
+        "refreshListLabel": "Обновить список",
+        "createLabel": "Создать новый Telegram Group",
+        "createOrEditLabel": "Создать или отредактировать Telegram Group",
+        "notFound": "Telegram Groups не найдено"
+      },
+      "created": "Новый Telegram Group создан с идентификатором {{ param }}",
+      "updated": "Telegram Group обновлен с идентификатором {{ param }}",
+      "deleted": "Telegram Group удален с идентификатором {{ param }}",
+      "delete": {
+        "question": "Вы уверены что хотите удалить Telegram Group {{ id }}?"
+      },
+      "detail": {
+        "title": "Telegram Group"
+      },
+      "id": "ID",
+      "name": "Name",
+      "chatId": "Chat Id",
+      "customerTelegram": "Customer Telegram"
+    }
+  }
+}
