@@ -30,8 +30,7 @@ import java.util.Set;
 public class AdminTgServiceImpl implements AdminTgService {
 
     private static String telegramAPI = "https://api.telegram.org/bot";
-    private static String webhookAPI = "/setWebhook?url=https://eeca-89-236-218-41.in.ngrok.io/api/new-message";
-
+    private static String webhookAPI = "/setWebhook?url=https://3b56-89-236-218-41.ap.ngrok.io/api/new-message";
     private final Logger log = LoggerFactory.getLogger(AdminTgServiceImpl.class);
 
     @Autowired
@@ -71,7 +70,6 @@ public class AdminTgServiceImpl implements AdminTgService {
                 // Hozircha hish nima yo'q.
             }
         }
-
     }
 
     @Override
@@ -157,6 +155,7 @@ public class AdminTgServiceImpl implements AdminTgService {
     public void getAdminBotToken(Message message, CustomerTelegram customer) {
         Long userId = message.getFrom().getId();
         String newBotToken = message.getText();
+
         org.telegram.telegrambots.meta.api.objects.User bot = getBotData(newBotToken);
         if(bot != null) {
 

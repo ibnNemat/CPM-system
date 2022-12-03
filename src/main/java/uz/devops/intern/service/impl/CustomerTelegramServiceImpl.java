@@ -51,6 +51,9 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         User telegramUser = message.getFrom();
         SendMessage sendMessage = new SendMessage();
         String requestMessage = message.getText();
+        if (message.getText().isEmpty()){
+            requestMessage = message.getContact().getPhoneNumber();
+        }
 
         switch(requestMessage) {
             case "/start":
@@ -106,6 +109,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
                 log.info("Message send successfully! User id: {} | Message text: {}", telegramUser, sendMessage);
                 return sendMessage;
             }
+
             if (customerTelegram.getPhoneNumber() == null) {
                 customerTelegram.setPhoneNumber(requestMessage);
                 customerTelegram.setStep(2);
