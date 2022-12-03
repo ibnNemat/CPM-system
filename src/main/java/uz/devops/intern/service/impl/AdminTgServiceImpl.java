@@ -3,6 +3,7 @@ package uz.devops.intern.service.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -10,10 +11,9 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import uz.devops.intern.domain.Authority;
-import uz.devops.intern.domain.CustomerTelegram;
-import uz.devops.intern.domain.User;
+import uz.devops.intern.domain.*;
 import uz.devops.intern.feign.TelegramClient;
+import uz.devops.intern.repository.BotTokenRepository;
 import uz.devops.intern.repository.CustomerTelegramRepository;
 import uz.devops.intern.repository.UserRepository;
 import uz.devops.intern.service.AdminTgService;
@@ -21,6 +21,7 @@ import uz.devops.intern.service.UserService;
 import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
+//import org.telegram.telegrambots.meta.api.objects.User TgUser;
 
 import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.*;
 
@@ -36,7 +37,7 @@ public class AdminTgServiceImpl implements AdminTgService {
     private final Logger log = LoggerFactory.getLogger(AdminTgServiceImpl.class);
 
     @Autowired
-    private UserService userService;
+    private BotTokenRepository botTokenRepository;
     @Autowired
     private CustomerTelegramRepository customerTelegramRepository;
     @Autowired
@@ -158,26 +159,22 @@ public class AdminTgServiceImpl implements AdminTgService {
     public void getAdminBotToken(Message message, CustomerTelegram customer) {
         Long userId = message.getFrom().getId();
         String newBotToken = message.getText();
+        org.telegram.telegrambots.meta.api.objects.User bot = getBotData(newBotToken);
+        if(bot != null) {
 
-        String[] piecesOfToken = newBotToken.split(":");
-        if(piecesOfToken.length > 1) {
-
-            String url = telegramAPI + newBotToken + webhookAPI + "/" + piecesOfToken[0];
-            log.info("Url: {}", url);
-            RestTemplate template = new RestTemplate();
-            WebhookResponseDTO response =
-                template.exchange(url, HttpMethod.GET, null, WebhookResponseDTO.class).getBody();
-            log.info("Response from telegram server: {}", response);
+            WebhookResponseDTO response = setWebhookToNewBot(newBotToken, bot.getId());
             String result = checkWebhookResponse(response);
             if (result.equals("Ok")) {
                 // Hammasi joyida
                 String newMessage = "Tabriklaymiz, botning tokeni muvafaqiyatli saqlandi.";
                 SendMessage sendMessage = sendMessage(String.valueOf(userId), newMessage);
                 Update update = feign.sendMessage(sendMessage);
-                log.info("BOT_TOKEN successfully saved, Bot token: {} | Customer: {} | Update: {}",
-                    newBotToken, customer, update);
+
+                BotToken botEntity = createBotEntity(bot, null, newBotToken);
+                botTokenRepository.save(botEntity);
                 customer.setStep(4);
                 customerTelegramRepository.save(customer);
+                log.info("Bot saved successfully, Bot: {} | Customer: {}", botEntity, customer);
                 // Botning tokenini saqlab qo'yish kere.
             } else {
                 SendMessage sendMessage = sendMessage(String.valueOf(userId), result);
@@ -233,5 +230,40 @@ public class AdminTgServiceImpl implements AdminTgService {
             if(auth.getName().equals("ROLE_MANAGER"))return true;
         }
         return false;
+    }
+
+    private org.telegram.telegrambots.meta.api.objects.User getBotData(String token){
+        String url = telegramAPI + token + "/getMe";
+        RestTemplate template = new RestTemplate();
+        ResponseFromTelegram<org.telegram.telegrambots.meta.api.objects.User> response =
+            template.exchange(
+                url, HttpMethod.GET, null,
+                new ParameterizedTypeReference<ResponseFromTelegram<org.telegram.telegrambots.meta.api.objects.User>>() {}).getBody();
+        if(response != null){
+            org.telegram.telegrambots.meta.api.objects.User bot = response.getResult();
+            log.info("Data of bot successfully got, Bot token: {} | Bot: {}", token, bot);
+            return bot;
+        }
+        return null;
+    }
+
+    private BotToken createBotEntity(org.telegram.telegrambots.meta.api.objects.User bot, User owner,String token){
+        BotToken entity = new BotToken();
+        entity.setToken(token);
+        entity.setCreatedBy(owner);
+        entity.setTelegramId(bot.getId());
+        entity.setUsername(bot.getUserName());
+
+        return entity;
+    }
+
+    private WebhookResponseDTO setWebhookToNewBot(String token, Long botId){
+        String url = telegramAPI + token + webhookAPI + "/" + botId;
+        log.info("Url: {}", url);
+        RestTemplate template = new RestTemplate();
+        WebhookResponseDTO response =
+            template.exchange(url, HttpMethod.GET, null, WebhookResponseDTO.class).getBody();
+        log.info("Response from telegram server: {}", response);
+        return response;
     }
 }
