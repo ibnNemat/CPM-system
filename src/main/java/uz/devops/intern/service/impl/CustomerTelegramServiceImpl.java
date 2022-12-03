@@ -106,7 +106,6 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
                 log.info("Message send successfully! User id: {} | Message text: {}", telegramUser, sendMessage);
                 return sendMessage;
             }
-
             if (customerTelegram.getPhoneNumber() == null) {
                 customerTelegram.setPhoneNumber(requestMessage);
                 customerTelegram.setStep(2);
