@@ -12,7 +12,8 @@
     },
     {
       "fieldName": "password",
-      "fieldType": "String"
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
     },
     {
       "fieldName": "phoneNumber",

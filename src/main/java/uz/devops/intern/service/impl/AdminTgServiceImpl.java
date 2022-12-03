@@ -12,16 +12,14 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import uz.devops.intern.domain.*;
-import uz.devops.intern.feign.TelegramClient;
+import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.repository.BotTokenRepository;
 import uz.devops.intern.repository.CustomerTelegramRepository;
 import uz.devops.intern.repository.UserRepository;
 import uz.devops.intern.service.AdminTgService;
-import uz.devops.intern.service.UserService;
 import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
-//import org.telegram.telegrambots.meta.api.objects.User TgUser;
 
 import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.*;
 
@@ -43,7 +41,7 @@ public class AdminTgServiceImpl implements AdminTgService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private TelegramClient feign;
+    private AdminFeign adminFeign;
 
     @Override
     public void main(Update update) {
@@ -83,11 +81,11 @@ public class AdminTgServiceImpl implements AdminTgService {
 
         String newMessage = "Iltimos tilni tanlang\uD83D\uDC47";
         ReplyKeyboardMarkup markup = KeyboardUtil.language();
-        SendMessage sendMessage = TelegramsUtil.sendMessage(String.valueOf(userId), newMessage, markup);
-        Update update = feign.sendMessage(sendMessage);
+        SendMessage sendMessage = TelegramsUtil.sendMessage(userId, newMessage, markup);
+        Update update = adminFeign.sendMessage(sendMessage);
         log.info("Message send successfully! User id: {} | Message text: {} | Update: {}",
             userId, messageText, update);
-        CustomerTelegram customer = createCustomer(message.getFrom());
+        CustomerTelegram customer = createCustomerTelegramToSaveDatabase(message.getFrom());
         customerTelegramRepository.save(customer);
     }
 
@@ -100,8 +98,8 @@ public class AdminTgServiceImpl implements AdminTgService {
             customer.setLanguageCode("uz");
             String newMessage = "Iltimos telefon raqamingizni jo'nating\uD83D\uDC47";
             ReplyKeyboardMarkup markup = KeyboardUtil.phoneNumber();
-            SendMessage sendMessage = sendMessage(String.valueOf(userId), newMessage, markup);
-            Update response = feign.sendMessage(sendMessage);
+            SendMessage sendMessage = sendMessage(userId, newMessage, markup);
+            Update response = adminFeign.sendMessage(sendMessage);
             log.info("Message send successfully! User id: {} | Message text: {} | Update: {}",
                 userId, messageText, response);
         }else if(messageText.equals("\uD83C\uDDF7\uD83C\uDDFA Русский")){
@@ -109,8 +107,8 @@ public class AdminTgServiceImpl implements AdminTgService {
             customer.setLanguageCode("ru");
             String newMessage = "Iltimos telefon raqamingizni jo'nating\uD83D\uDC47(Ruscha)";
             ReplyKeyboardMarkup markup = KeyboardUtil.phoneNumber();
-            SendMessage sendMessage = sendMessage(String.valueOf(customer.getId()), newMessage, markup);
-            Update response = feign.sendMessage(sendMessage);
+            SendMessage sendMessage = sendMessage(customer.getId(), newMessage, markup);
+            Update response = adminFeign.sendMessage(sendMessage);
             log.info("Message send successfully! User id: {} | Message text: {} | Update: {}",
                 userId, messageText, response);
         }
@@ -128,7 +126,7 @@ public class AdminTgServiceImpl implements AdminTgService {
             if(user == null){
                 newMessage = "Telefon raqam mos kelmayapti!";
                 SendMessage sendMessage = sendMessage(String.valueOf(userId), newMessage);
-                feign.sendMessage(sendMessage);
+                adminFeign.sendMessage(sendMessage);
                 log.warn("Data of user is not found! Customer: {} | Message: {}",
                     customer, message);
 
@@ -137,7 +135,7 @@ public class AdminTgServiceImpl implements AdminTgService {
                 if (isUserManager) {
                     newMessage = "Iltimos botning tokenini tashlang.";
                     SendMessage sendMessage = sendMessage(String.valueOf(userId), newMessage);
-                    feign.sendMessage(sendMessage);
+                    adminFeign.sendMessage(sendMessage);
                     log.info("User is verified, Phone number: {} | Customer: {}",
                         user.getCreatedBy(), customer);
 
@@ -148,7 +146,7 @@ public class AdminTgServiceImpl implements AdminTgService {
                     // User manager emas.
                     newMessage = "Sizda boshqaruvchilik huquqi yo'q!";
                     SendMessage sendMessage = sendMessage(String.valueOf(userId), newMessage);
-                    feign.sendMessage(sendMessage);
+                    adminFeign.sendMessage(sendMessage);
                     log.info("User hasn't \"Manager\" role! User: {} | Customer: {}", user, customer);
                 }
             }
@@ -168,7 +166,7 @@ public class AdminTgServiceImpl implements AdminTgService {
                 // Hammasi joyida
                 String newMessage = "Tabriklaymiz, botning tokeni muvafaqiyatli saqlandi.";
                 SendMessage sendMessage = sendMessage(String.valueOf(userId), newMessage);
-                Update update = feign.sendMessage(sendMessage);
+                Update update = adminFeign.sendMessage(sendMessage);
                 User owner = getOwnerByPhoneNumber(customer.getPhoneNumber());
                 BotToken botEntity = createBotEntity(bot, owner, newBotToken);
                 botTokenRepository.save(botEntity);
@@ -178,25 +176,11 @@ public class AdminTgServiceImpl implements AdminTgService {
                 // Botning tokenini saqlab qo'yish kere.
             } else {
                 SendMessage sendMessage = sendMessage(String.valueOf(userId), result);
-                Update update = feign.sendMessage(sendMessage);
+                Update update = adminFeign.sendMessage(sendMessage);
                 log.info("Setting webhook is failed, Response: {} | Bot token: {} | Customer: {}",
                     response, newBotToken, customer);
             }
         }
-    }
-
-    private CustomerTelegram createCustomer(org.telegram.telegrambots.meta.api.objects.User user){
-        CustomerTelegram customer = new CustomerTelegram();
-        customer.setTelegramId(user.getId());
-        customer.setFirstname(user.getFirstName());
-        customer.setLastname(user.getLastName());
-        customer.setUsername(user.getUserName());
-        customer.setCanJoinGroups(user.getCanJoinGroups());
-        customer.setIsActive(true);
-        customer.setLanguageCode(user.getLanguageCode());
-        customer.setIsBot(user.getIsBot());
-        customer.setStep(1);
-        return customer;
     }
 
     private String checkWebhookResponse(WebhookResponseDTO response){
