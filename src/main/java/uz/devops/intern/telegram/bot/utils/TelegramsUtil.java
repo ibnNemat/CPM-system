@@ -19,6 +19,7 @@ public class TelegramsUtil {
             .telegramId(telegramUser.getId())
             .canJoinGroups(telegramUser.getCanJoinGroups())
             .firstname(telegramUser.getFirstName())
+            .lastname(telegramUser.getFirstName())
             .username(telegramUser.getUserName())
             .languageCode(telegramUser.getLanguageCode())
             .step(1)

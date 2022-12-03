@@ -88,7 +88,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
 
     private SendMessage registerCustomerClientAndShowCustomerMenu(String requestMessage, User telegramUser, CustomerTelegram customerTelegram) {
         SendMessage sendMessage = new SendMessage();
-//        Optional<CustomerTelegramRedis> redisOptional = customerTelegramRedisRepository.findById(telegramUser.getId());
+        Optional<CustomerTelegramRedis> redisOptional = customerTelegramRedisRepository.findById(telegramUser.getId());
 
         if (!requestMessage.startsWith("+998")){
             sendMessage = checkPhoneNumberIsNull(customerTelegram, telegramUser);
@@ -114,15 +114,15 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
                 log.info("Phone number successfully set to existing user! telegram user : {} | phoneNumber: {} ", customerTelegram, requestMessage);
 
                 sendMessage.setChatId(telegramUser.getId());
-                sendMessage.setText("Hurmatli foydalanuvchi " + telegramUser + ", tizimdan foydalanish uchun muvaffaqiyatli ro'yxatdan o'tdingiz!");
+                sendMessage.setText("Hurmatli foydalanuvchi " + telegramUser.getFirstName() + ", tizimdan foydalanish uchun muvaffaqiyatli ro'yxatdan o'tdingiz!");
 
                 customerFeign.sendMessage(sendMessage);
             }
-//            if (redisOptional.isEmpty()){
-//                CustomerTelegramRedis customerTelegramRedis = new CustomerTelegramRedis(telegramUser.getId(), telegramUser);
-//                customerTelegramRedisRepository.save(customerTelegramRedis);
-//                log.info("New telegram user successfully saved to redis! UserRedis : {}", customerTelegramRedis);
-//            }
+            if (redisOptional.isEmpty()){
+                CustomerTelegramRedis customerTelegramRedis = new CustomerTelegramRedis(telegramUser.getId(), telegramUser);
+                customerTelegramRedisRepository.save(customerTelegramRedis);
+                log.info("New telegram user successfully saved to redis! UserRedis : {}", customerTelegramRedis);
+            }
         }
 
         return sendCustomerMenu(telegramUser);
