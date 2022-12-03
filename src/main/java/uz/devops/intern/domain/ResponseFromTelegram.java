@@ -1,24 +1,24 @@
-package uz.devops.intern.telegram.bot.dto;
+package uz.devops.intern.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
-public class WebhookResponseDTO {
+public class ResponseFromTelegram<T>{
 
     private Boolean ok;
     @JsonProperty("error_code")
     private Integer errorCode;
-    private Boolean result;
     private String description;
+    private T result;
 
-    public WebhookResponseDTO(Boolean ok, Integer errorCode, Boolean result, String description) {
+    public ResponseFromTelegram(){};
+
+    public ResponseFromTelegram(Boolean ok, Integer errorCode, String description, T result) {
         this.ok = ok;
         this.errorCode = errorCode;
-        this.result = result;
         this.description = description;
+        this.result = result;
     }
 
-    public WebhookResponseDTO(){}
     public Boolean getOk() {
         return ok;
     }
@@ -35,19 +35,19 @@ public class WebhookResponseDTO {
         this.errorCode = errorCode;
     }
 
-    public Boolean getResult() {
-        return result;
-    }
-
-    public void setResult(Boolean result) {
-        this.result = result;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public T getResult() {
+        return result;
+    }
+
+    public void setResult(T result) {
+        this.result = result;
     }
 }

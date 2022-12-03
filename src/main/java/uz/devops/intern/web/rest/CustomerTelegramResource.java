@@ -6,35 +6,43 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import uz.devops.intern.feign.CustomerFeign;
+import uz.devops.intern.feign.TelegramClient;
+import uz.devops.intern.repository.CustomerTelegramRepository;
 import uz.devops.intern.service.CustomerTelegramService;
 /**
  * REST controller for managing {@link uz.devops.intern.domain.CustomerTelegram}.
  */
 @RestController
-@RequestMapping("/customer-bot")
+@RequestMapping("/api")
 public class CustomerTelegramResource {
 
-    @Value("${jhipster.clientApp.name}")
-    private String applicationName;
+//    @Value("${jhipster.clientApp.name}")
+//    private String applicationName;
 
     private final Logger log = LoggerFactory.getLogger(CustomerTelegramResource.class);
 
-    private static final String ENTITY_NAME = "customerTelegram";
-    private final CustomerFeign customerFeign;
+//    private static final String ENTITY_NAME = "customerTelegram";
+    private final TelegramClient telegramClient;
     private final CustomerTelegramService customerTelegramService;
 
     public CustomerTelegramResource(
-            CustomerFeign customerFeign, CustomerTelegramService customerTelegramService) {
-        this.customerFeign = customerFeign;
+        TelegramClient telegramClient, CustomerTelegramService customerTelegramService) {
+        this.telegramClient = telegramClient;
         this.customerTelegramService = customerTelegramService;
     }
 
-    @PostMapping
-    public void sendMessage(@RequestBody Update update){
-        log.info("Rest, Message: {}", update.getMessage());
+    @PostMapping("/new-message/{botId}")
+    public void sendMessage(@RequestBody Update update, @PathVariable String botId){
+        log.info("[REST] Bot id: {} | Message: {}", botId,update.getMessage());
+        System.out.println("============ Men customerman: ==================\n" +
+            "Message: " + update.getMessage());
+        System.out.println("User: " + update.getMessage().getFrom());
+        System.out.println("Message ChatID: " +update.getMessage().getChatId());
+        System.out.println("Message chat" + update.getMessage().getChat().toString());
+        System.out.println("================================================");
+
         SendMessage sendMessage = customerTelegramService.botCommands(update);
         if (sendMessage != null)
-            customerFeign.sendMessage(sendMessage);
+            telegramClient.sendMessage(sendMessage);
     }
 }

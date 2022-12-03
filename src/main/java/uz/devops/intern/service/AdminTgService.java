@@ -11,7 +11,7 @@ public interface AdminTgService {
 
     void getLanguage(Message message, CustomerTelegram customer);
 
-    void verifyAdminByLogin(Message message, CustomerTelegram customer);
+    void verifyAdminByPhoneNumber(Message message, CustomerTelegram customer);
 
     void getAdminBotToken(Message message, CustomerTelegram customer);
 }
