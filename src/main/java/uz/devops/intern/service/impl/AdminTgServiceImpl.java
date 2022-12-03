@@ -32,7 +32,7 @@ import java.util.Set;
 public class AdminTgServiceImpl implements AdminTgService {
 
     private static String telegramAPI = "https://api.telegram.org/bot";
-    private static String webhookAPI = "/setWebhook?url=https://6c86-213-230-78-188.eu.ngrok.io/api/new-message";
+    private static String webhookAPI = "/setWebhook?url=https://eeca-89-236-218-41.in.ngrok.io/api/new-message";
 
     private final Logger log = LoggerFactory.getLogger(AdminTgServiceImpl.class);
 
@@ -169,8 +169,8 @@ public class AdminTgServiceImpl implements AdminTgService {
                 String newMessage = "Tabriklaymiz, botning tokeni muvafaqiyatli saqlandi.";
                 SendMessage sendMessage = sendMessage(String.valueOf(userId), newMessage);
                 Update update = feign.sendMessage(sendMessage);
-
-                BotToken botEntity = createBotEntity(bot, null, newBotToken);
+                User owner = getOwnerByPhoneNumber(customer.getPhoneNumber());
+                BotToken botEntity = createBotEntity(bot, owner, newBotToken);
                 botTokenRepository.save(botEntity);
                 customer.setStep(4);
                 customerTelegramRepository.save(customer);
@@ -230,6 +230,11 @@ public class AdminTgServiceImpl implements AdminTgService {
             if(auth.getName().equals("ROLE_MANAGER"))return true;
         }
         return false;
+    }
+
+    private User getOwnerByPhoneNumber(String phoneNumber){
+        Optional<User> userOptional = userRepository.findByCreatedBy(phoneNumber);
+        return userOptional.orElse(null);
     }
 
     private org.telegram.telegrambots.meta.api.objects.User getBotData(String token){
