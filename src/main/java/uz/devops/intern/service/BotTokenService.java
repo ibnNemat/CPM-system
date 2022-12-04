@@ -2,6 +2,8 @@ package uz.devops.intern.service;
 
 import java.util.List;
 import java.util.Optional;
+
+import uz.devops.intern.domain.BotToken;
 import uz.devops.intern.service.dto.BotTokenDTO;
 
 /**
@@ -53,4 +55,6 @@ public interface BotTokenService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    Optional<BotToken> findByChatId(Long chatId);
 }

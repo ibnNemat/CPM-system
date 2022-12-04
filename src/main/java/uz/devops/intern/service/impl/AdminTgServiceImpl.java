@@ -30,9 +30,8 @@ import java.util.Set;
 public class AdminTgServiceImpl implements AdminTgService {
 
     private static String telegramAPI = "https://api.telegram.org/bot";
-    private static String webhookAPI = "/setWebhook?url=https://3b56-89-236-218-41.ap.ngrok.io/api/new-message";
+    private static String webhookAPI = "/setWebhook?url=https://23da-89-146-93-0.ap.ngrok.io/api/new-message";
     private final Logger log = LoggerFactory.getLogger(AdminTgServiceImpl.class);
-
     @Autowired
     private BotTokenRepository botTokenRepository;
     @Autowired

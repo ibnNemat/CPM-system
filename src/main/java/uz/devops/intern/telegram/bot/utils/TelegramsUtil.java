@@ -3,6 +3,7 @@ package uz.devops.intern.telegram.bot.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import uz.devops.intern.domain.CustomerTelegram;
@@ -12,6 +13,16 @@ import static uz.devops.intern.telegram.bot.utils.KeyboardUtil.sendKeyboardButto
 
 public class TelegramsUtil {
     private static final Logger log = LoggerFactory.getLogger(TelegramsUtil.class);
+
+    public static SendMessage checkTelegramGroupIfExists(User telegramUser, Chat chat){
+        if (telegramUser.getId().equals(chat.getId())){
+            String sendStringMessage = "\uD83D\uDEAB Kechirasiz, tizimdan foydalanishingiz uchun sizda telegram" +
+                " guruhi mavjud bo'lishi kerak. Avval, telegram guruhga qo'shilishingizni so'raymiz!";
+
+            return sendMessage(String.valueOf(telegramUser.getId()), sendStringMessage);
+        }
+        return null;
+    }
 
     public static CustomerTelegram createCustomerTelegramToSaveDatabase(User telegramUser) {
         return new CustomerTelegram()

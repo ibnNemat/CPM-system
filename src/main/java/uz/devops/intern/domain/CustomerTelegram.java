@@ -37,7 +37,7 @@ public class CustomerTelegram implements Serializable {
     @Column(name = "telegram_id")
     private Long telegramId;
 
-    @Column(name = "phone_number")
+    @Column(name = "phone_number", unique = true)
     private String phoneNumber;
 
     @Column(name = "step")
@@ -51,6 +51,9 @@ public class CustomerTelegram implements Serializable {
 
     @Column(name = "is_active")
     private Boolean isActive;
+
+    @Column(name = "chat_id")
+    private Long chatId;
 
     @JsonIgnoreProperties(value = { "user", "groups" }, allowSetters = true)
     @OneToOne
@@ -67,6 +70,15 @@ public class CustomerTelegram implements Serializable {
     private Set<TelegramGroup> telegramGroups = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
+
+    public Long getChatId() {
+        return chatId;
+    }
+
+    public void setChatId(Long chatId) {
+        this.chatId = chatId;
+    }
 
     public Long getId() {
         return this.id;

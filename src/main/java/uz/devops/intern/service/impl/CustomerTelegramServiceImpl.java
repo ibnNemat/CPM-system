@@ -8,22 +8,27 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import uz.devops.intern.domain.Authority;
+import uz.devops.intern.domain.BotToken;
 import uz.devops.intern.domain.CustomerTelegram;
 import uz.devops.intern.domain.Customers;
 import uz.devops.intern.feign.CustomerFeign;
 import uz.devops.intern.redis.CustomerTelegramRedis;
 import uz.devops.intern.redis.CustomerTelegramRedisRepository;
 import uz.devops.intern.repository.CustomerTelegramRepository;
+import uz.devops.intern.service.BotTokenService;
 import uz.devops.intern.service.CustomersService;
 import uz.devops.intern.service.CustomerTelegramService;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
 
+import static uz.devops.intern.telegram.bot.utils.KeyboardUtil.sendMarkup;
 import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.*;
 
 /**
@@ -37,21 +42,50 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     private final CustomerTelegramRedisRepository customerTelegramRedisRepository;
     private final CustomersService customersService;
     private final CustomerFeign customerFeign;
-
-    public CustomerTelegramServiceImpl(CustomerTelegramRepository customerTelegramRepository, CustomerTelegramRedisRepository customerTelegramRedisRepository, CustomersService customersService, CustomerFeign customerFeign) {
+    private final BotTokenService botTokenService;
+    public CustomerTelegramServiceImpl(CustomerTelegramRepository customerTelegramRepository, CustomerTelegramRedisRepository customerTelegramRedisRepository, CustomersService customersService, CustomerFeign customerFeign, BotTokenService botTokenService) {
         this.customerTelegramRepository = customerTelegramRepository;
         this.customerTelegramRedisRepository = customerTelegramRedisRepository;
         this.customersService = customersService;
         this.customerFeign = customerFeign;
+        this.botTokenService = botTokenService;
+    }
+
+    public SendMessage checkBotToken(Chat chat){
+        Optional<BotToken> optionalBotToken = botTokenService.findByChatId(chat.getId());
+        if (optionalBotToken.isEmpty()){
+            String sendStringMessage = "\uD83D\uDEAB Kechirasiz, sizdagi mavjud telegram guruhi tizimdan " +
+                "foydalanish uchun ro'yxatdan o'tmagan. Guruh rahbaringiz telegram guruhni tizimdan ro'yxatdan o'tkazishi zarur!";
+
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(chat.getId());
+            sendMessage.setText(sendStringMessage);
+
+            return sendMessage;
+        }
+        return null;
     }
 
     @Override
     public SendMessage botCommands(Update update) {
         Message message = update.getMessage();
         User telegramUser = message.getFrom();
-        SendMessage sendMessage = new SendMessage();
+        Chat chat = message.getChat();
+
+//        SendMessage sendMessage = checkTelegramGroupIfExists(telegramUser, chat);
+//        if (sendMessage != null){
+//            return sendMessage;
+//        }
+
+        SendMessage sendMessage = checkBotToken(chat);
+        if (sendMessage != null){
+            return sendMessage;
+        }
+
+        sendMessage = new SendMessage();
         String requestMessage = message.getText();
-        if (message.getText().isEmpty()){
+
+        if (message.getText() == null){
             requestMessage = message.getContact().getPhoneNumber();
         }
 
@@ -83,8 +117,8 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
 
             sendMessage = new SendMessage();
             sendMessage.setChatId(telegramUser.getId());
-            sendMessage.setText("Stepga kirmadi, nimadir nito\n" +
-                " Tizimni qolgani bitmagan, biroz kuting)");
+            sendMessage.setText("\uD83D\uDEAB Stepga kirmadi, nimadir nito\n" +
+                "Tizimni qolgani bitmagan, biroz kuting)");
             return sendMessage;
         }
     }
@@ -100,14 +134,25 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             }
         }else{
             Customers customer = checkCustomerPhoneNumber(requestMessage);
+            Authority customerAuthority = new Authority();
+            customerAuthority.setName("ROLE_CUSTOMER");
             if (customer == null){
-                String sendStringMessage = "Kechirasiz, bu raqam ma'lumotlar omboridan topilmadi\n" +
+                String sendStringMessage = "\uD83D\uDEAB Kechirasiz, bu raqam ma'lumotlar omboridan topilmadi\n" +
                     "Tizim web-sahifasi orqali ro'yxatdan o'tishingizni so'raymiz!";
 
-                sendMessage.setChatId(telegramUser.getId());
-                sendMessage.setText(sendStringMessage);
+                sendMessage = sendMessage(telegramUser.getId(), sendStringMessage, sendMarkup());
                 log.info("Message send successfully! User id: {} | Message text: {}", telegramUser, sendMessage);
                 return sendMessage;
+            }else if(customer.getUser() == null || !customer.getUser().getAuthorities().contains(customerAuthority)){
+                String sendStringMessage = "\uD83D\uDEAB Kechirasiz, bu raqamga 'Foydalanuvchi' huquqi berilmagan\n" +
+                    "Boshqa raqam kiritishingizni so'raymiz!";
+
+                sendMessage = sendMessage(telegramUser.getId(), sendStringMessage, sendMarkup());
+                log.info("Message send successfully! User id: {} | Message text: {}", telegramUser, sendMessage);
+                return sendMessage;
+            }else{
+                customerTelegram.customer(customer);
+                customerTelegramRepository.save(customerTelegram);
             }
 
             if (customerTelegram.getPhoneNumber() == null) {
@@ -117,7 +162,8 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
                 log.info("Phone number successfully set to existing user! telegram user : {} | phoneNumber: {} ", customerTelegram, requestMessage);
 
                 sendMessage.setChatId(telegramUser.getId());
-                sendMessage.setText("Hurmatli foydalanuvchi " + telegramUser.getFirstName() + ", tizimdan foydalanish uchun muvaffaqiyatli ro'yxatdan o'tdingiz!");
+                sendMessage.setText("Hurmatli foydalanuvchi " + telegramUser.getFirstName() +
+                    ", tizimdan foydalanish uchun muvaffaqiyatli ro'yxatdan o'tdingiz ✅");
 
                 customerFeign.sendMessage(sendMessage);
             }

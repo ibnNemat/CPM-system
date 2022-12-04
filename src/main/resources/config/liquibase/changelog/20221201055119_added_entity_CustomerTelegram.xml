@@ -30,9 +30,12 @@
                 <constraints nullable="true" />
             </column>
             <column name="phone_number" type="varchar(255)">
-                <constraints nullable="true" />
+                <constraints nullable="true" unique="true" uniqueConstraintName="ux_customers__phone_number2"/>
             </column>
             <column name="step" type="integer">
+                <constraints nullable="true" />
+            </column>
+            <column name="chat_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <column name="can_join_groups" type="boolean">
