@@ -33,9 +33,13 @@ public class KeyboardUtil {
     }
 
     public static SendMessage sendKeyboardButtonToMarkPhoneNumber(User telegramUser){
-        String sendStringMessage = "Siz hali telegram botdan foydalanish uchun ro'yxatdan o'tmagansiz, iltimos telefon raqamingizni jo'natish" +
+        String sendStringMessage = "❗️ Siz hali telegram botdan foydalanish uchun ro'yxatdan o'tmagansiz, iltimos telefon raqamingizni jo'natish" +
             " uchun quyidagi tugmani bosing \uD83D\uDC47\n";
 
+        return TelegramsUtil.sendMessage(telegramUser.getId(), sendStringMessage, sendMarkup());
+    }
+
+    public static ReplyKeyboardMarkup sendMarkup(){
         KeyboardButton button = new KeyboardButton("\uD83D\uDCF1 Telefon raqam");
         button.setRequestContact(true);
 
@@ -46,6 +50,6 @@ public class KeyboardUtil {
         markup.setResizeKeyboard(true);
         markup.setKeyboard(List.of(row));
 
-        return TelegramsUtil.sendMessage(telegramUser.getId(), sendStringMessage, markup);
+        return markup;
     }
 }

@@ -82,4 +82,9 @@ public class BotTokenServiceImpl implements BotTokenService {
         log.debug("Request to delete BotToken : {}", id);
         botTokenRepository.deleteById(id);
     }
+
+    @Override
+    public Optional<BotToken> findByChatId(Long chatId) {
+        return botTokenRepository.findByTelegramId(chatId);
+    }
 }

@@ -27,7 +27,12 @@
     },
     {
       "fieldName": "phoneNumber",
-      "fieldType": "String"
+      "fieldType": "String",
+      "fieldValidateRules": ["unique"]
+    },
+    {
+      "fieldName": "chatId",
+      "fieldType": "Long"
     },
     {
       "fieldName": "step",
@@ -57,6 +62,13 @@
       "ownerSide": true,
       "relationshipName": "customer",
       "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "telegramGroup",
+      "otherEntityRelationshipName": "customerTelegram",
+      "ownerSide": true,
+      "relationshipName": "telegramGroup",
+      "relationshipType": "many-to-many"
     }
   ],
   "service": "serviceImpl"

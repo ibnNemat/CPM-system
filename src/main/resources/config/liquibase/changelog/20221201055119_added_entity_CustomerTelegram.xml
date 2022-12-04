@@ -30,9 +30,12 @@
                 <constraints nullable="true" />
             </column>
             <column name="phone_number" type="varchar(255)">
-                <constraints nullable="true" />
+                <constraints nullable="true" unique="true" uniqueConstraintName="ux_customers__phone_number2"/>
             </column>
             <column name="step" type="integer">
+                <constraints nullable="true" />
+            </column>
+            <column name="chat_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <column name="can_join_groups" type="boolean">
@@ -49,6 +52,20 @@
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
+    </changeSet>
+
+    <changeSet id="20221201055119-1-relations" author="jhipster">
+
+        <createTable tableName="rel_customer_telegram__telegram_group">
+            <column name="telegram_group_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="customer_telegram_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="customer_telegram_id, telegram_group_id" tableName="rel_customer_telegram__telegram_group"/>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->

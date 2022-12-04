@@ -14,7 +14,7 @@ type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>
  */
 type CustomerTelegramFormGroupInput = ICustomerTelegram | PartialWithRequiredKeyOf<NewCustomerTelegram>;
 
-type CustomerTelegramFormDefaults = Pick<NewCustomerTelegram, 'id' | 'isBot' | 'canJoinGroups' | 'isActive'>;
+type CustomerTelegramFormDefaults = Pick<NewCustomerTelegram, 'id' | 'isBot' | 'canJoinGroups' | 'isActive' | 'telegramGroups'>;
 
 type CustomerTelegramFormGroupContent = {
   id: FormControl<ICustomerTelegram['id'] | NewCustomerTelegram['id']>;
@@ -29,6 +29,7 @@ type CustomerTelegramFormGroupContent = {
   languageCode: FormControl<ICustomerTelegram['languageCode']>;
   isActive: FormControl<ICustomerTelegram['isActive']>;
   customer: FormControl<ICustomerTelegram['customer']>;
+  telegramGroups: FormControl<ICustomerTelegram['telegramGroups']>;
 };
 
 export type CustomerTelegramFormGroup = FormGroup<CustomerTelegramFormGroupContent>;
@@ -59,6 +60,7 @@ export class CustomerTelegramFormService {
       languageCode: new FormControl(customerTelegramRawValue.languageCode),
       isActive: new FormControl(customerTelegramRawValue.isActive),
       customer: new FormControl(customerTelegramRawValue.customer),
+      telegramGroups: new FormControl(customerTelegramRawValue.telegramGroups ?? []),
     });
   }
 
@@ -82,6 +84,7 @@ export class CustomerTelegramFormService {
       isBot: false,
       canJoinGroups: false,
       isActive: false,
+      telegramGroups: [],
     };
   }
 }

@@ -11,6 +11,8 @@ import { CustomerTelegramService } from '../service/customer-telegram.service';
 import { ICustomerTelegram } from '../customer-telegram.model';
 import { ICustomers } from 'app/entities/customers/customers.model';
 import { CustomersService } from 'app/entities/customers/service/customers.service';
+import { ITelegramGroup } from 'app/entities/telegram-group/telegram-group.model';
+import { TelegramGroupService } from 'app/entities/telegram-group/service/telegram-group.service';
 
 import { CustomerTelegramUpdateComponent } from './customer-telegram-update.component';
 
@@ -21,6 +23,7 @@ describe('CustomerTelegram Management Update Component', () => {
   let customerTelegramFormService: CustomerTelegramFormService;
   let customerTelegramService: CustomerTelegramService;
   let customersService: CustomersService;
+  let telegramGroupService: TelegramGroupService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -44,6 +47,7 @@ describe('CustomerTelegram Management Update Component', () => {
     customerTelegramFormService = TestBed.inject(CustomerTelegramFormService);
     customerTelegramService = TestBed.inject(CustomerTelegramService);
     customersService = TestBed.inject(CustomersService);
+    telegramGroupService = TestBed.inject(TelegramGroupService);
 
     comp = fixture.componentInstance;
   });
@@ -71,15 +75,40 @@ describe('CustomerTelegram Management Update Component', () => {
       expect(comp.customersSharedCollection).toEqual(expectedCollection);
     });
 
+    it('Should call TelegramGroup query and add missing value', () => {
+      const customerTelegram: ICustomerTelegram = { id: 456 };
+      const telegramGroups: ITelegramGroup[] = [{ id: 42233 }];
+      customerTelegram.telegramGroups = telegramGroups;
+
+      const telegramGroupCollection: ITelegramGroup[] = [{ id: 23805 }];
+      jest.spyOn(telegramGroupService, 'query').mockReturnValue(of(new HttpResponse({ body: telegramGroupCollection })));
+      const additionalTelegramGroups = [...telegramGroups];
+      const expectedCollection: ITelegramGroup[] = [...additionalTelegramGroups, ...telegramGroupCollection];
+      jest.spyOn(telegramGroupService, 'addTelegramGroupToCollectionIfMissing').mockReturnValue(expectedCollection);
+
+      activatedRoute.data = of({ customerTelegram });
+      comp.ngOnInit();
+
+      expect(telegramGroupService.query).toHaveBeenCalled();
+      expect(telegramGroupService.addTelegramGroupToCollectionIfMissing).toHaveBeenCalledWith(
+        telegramGroupCollection,
+        ...additionalTelegramGroups.map(expect.objectContaining)
+      );
+      expect(comp.telegramGroupsSharedCollection).toEqual(expectedCollection);
+    });
+
     it('Should update editForm', () => {
       const customerTelegram: ICustomerTelegram = { id: 456 };
       const customer: ICustomers = { id: 74116 };
       customerTelegram.customer = customer;
+      const telegramGroup: ITelegramGroup = { id: 80820 };
+      customerTelegram.telegramGroups = [telegramGroup];
 
       activatedRoute.data = of({ customerTelegram });
       comp.ngOnInit();
 
       expect(comp.customersSharedCollection).toContain(customer);
+      expect(comp.telegramGroupsSharedCollection).toContain(telegramGroup);
       expect(comp.customerTelegram).toEqual(customerTelegram);
     });
   });
@@ -160,6 +189,16 @@ describe('CustomerTelegram Management Update Component', () => {
         jest.spyOn(customersService, 'compareCustomers');
         comp.compareCustomers(entity, entity2);
         expect(customersService.compareCustomers).toHaveBeenCalledWith(entity, entity2);
+      });
+    });
+
+    describe('compareTelegramGroup', () => {
+      it('Should forward to telegramGroupService', () => {
+        const entity = { id: 123 };
+        const entity2 = { id: 456 };
+        jest.spyOn(telegramGroupService, 'compareTelegramGroup');
+        comp.compareTelegramGroup(entity, entity2);
+        expect(telegramGroupService.compareTelegramGroup).toHaveBeenCalledWith(entity, entity2);
       });
     });
   });

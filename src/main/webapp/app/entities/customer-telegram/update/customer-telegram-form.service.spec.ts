@@ -31,6 +31,7 @@ describe('CustomerTelegram Form Service', () => {
             languageCode: expect.any(Object),
             isActive: expect.any(Object),
             customer: expect.any(Object),
+            telegramGroups: expect.any(Object),
           })
         );
       });
@@ -52,6 +53,7 @@ describe('CustomerTelegram Form Service', () => {
             languageCode: expect.any(Object),
             isActive: expect.any(Object),
             customer: expect.any(Object),
+            telegramGroups: expect.any(Object),
           })
         );
       });

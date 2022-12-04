@@ -9,6 +9,8 @@ import { ICustomerTelegram } from '../customer-telegram.model';
 import { CustomerTelegramService } from '../service/customer-telegram.service';
 import { ICustomers } from 'app/entities/customers/customers.model';
 import { CustomersService } from 'app/entities/customers/service/customers.service';
+import { ITelegramGroup } from 'app/entities/telegram-group/telegram-group.model';
+import { TelegramGroupService } from 'app/entities/telegram-group/service/telegram-group.service';
 
 @Component({
   selector: 'jhi-customer-telegram-update',
@@ -19,6 +21,7 @@ export class CustomerTelegramUpdateComponent implements OnInit {
   customerTelegram: ICustomerTelegram | null = null;
 
   customersSharedCollection: ICustomers[] = [];
+  telegramGroupsSharedCollection: ITelegramGroup[] = [];
 
   editForm: CustomerTelegramFormGroup = this.customerTelegramFormService.createCustomerTelegramFormGroup();
 
@@ -26,10 +29,14 @@ export class CustomerTelegramUpdateComponent implements OnInit {
     protected customerTelegramService: CustomerTelegramService,
     protected customerTelegramFormService: CustomerTelegramFormService,
     protected customersService: CustomersService,
+    protected telegramGroupService: TelegramGroupService,
     protected activatedRoute: ActivatedRoute
   ) {}
 
   compareCustomers = (o1: ICustomers | null, o2: ICustomers | null): boolean => this.customersService.compareCustomers(o1, o2);
+
+  compareTelegramGroup = (o1: ITelegramGroup | null, o2: ITelegramGroup | null): boolean =>
+    this.telegramGroupService.compareTelegramGroup(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ customerTelegram }) => {
@@ -83,6 +90,10 @@ export class CustomerTelegramUpdateComponent implements OnInit {
       this.customersSharedCollection,
       customerTelegram.customer
     );
+    this.telegramGroupsSharedCollection = this.telegramGroupService.addTelegramGroupToCollectionIfMissing<ITelegramGroup>(
+      this.telegramGroupsSharedCollection,
+      ...(customerTelegram.telegramGroups ?? [])
+    );
   }
 
   protected loadRelationshipsOptions(): void {
@@ -95,5 +106,18 @@ export class CustomerTelegramUpdateComponent implements OnInit {
         )
       )
       .subscribe((customers: ICustomers[]) => (this.customersSharedCollection = customers));
+
+    this.telegramGroupService
+      .query()
+      .pipe(map((res: HttpResponse<ITelegramGroup[]>) => res.body ?? []))
+      .pipe(
+        map((telegramGroups: ITelegramGroup[]) =>
+          this.telegramGroupService.addTelegramGroupToCollectionIfMissing<ITelegramGroup>(
+            telegramGroups,
+            ...(this.customerTelegram?.telegramGroups ?? [])
+          )
+        )
+      )
+      .subscribe((telegramGroups: ITelegramGroup[]) => (this.telegramGroupsSharedCollection = telegramGroups));
   }
 }

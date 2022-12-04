@@ -62,6 +62,13 @@
             <a [routerLink]="['/customers', customerTelegram.customer.id, 'view']">{{ customerTelegram.customer.id }}</a>
           </div>
         </dd>
+        <dt><span jhiTranslate="cpmSystemApp.customerTelegram.telegramGroup">Telegram Group</span></dt>
+        <dd>
+          <span *ngFor="let telegramGroup of customerTelegram.telegramGroups; let last = last">
+            <a [routerLink]="['/telegram-group', telegramGroup.id, 'view']">{{ telegramGroup.id }}</a
+            >{{ last ? '' : ', ' }}
+          </span>
+        </dd>
       </dl>
 
       <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
