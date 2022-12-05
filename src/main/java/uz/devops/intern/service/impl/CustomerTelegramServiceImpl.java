@@ -149,16 +149,17 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         if (authenticatedCustomer == null) return sendCustomerDataNotFoundMessage(telegramUser);
         Optional<CustomerTelegram> optionalCustomerTelegram = customerTelegramRepository.findByTelegramId(telegramUser.getId());
 
-        return switch (data){
-            case inlineButtonPayForService -> payRequestForService(telegramUser,);
-        };
+
+//        return switch (data){
+//            case inlineButtonPayForService -> payRequestForService(telegramUser, );
+//        };
 
         return null;
     }
 
-    private SendMessage payRequestForService(User telegramUser, CustomerTelegram customerTelegram){
-
-    }
+//    private SendMessage payRequestForService(User telegramUser, CustomerTelegram customerTelegram){
+//
+//    }
 
     public SendMessage mainCommand(String buttonMessage, User telegramUser, CustomerTelegram customerTelegram){
         SendMessage sendMessage = new SendMessage();
