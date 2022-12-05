@@ -19,4 +19,12 @@ public interface AdminTgService {
     void checkIsBotInGroup(Message message, String botId);
 
     void checkIsBotAdmin(ChatMemberUpdated member);
+
+    boolean menu(Message message, CustomerTelegram customer);
+
+    void addOrganization(Message message, CustomerTelegram manager);
+
+    void addGroup(Message message, CustomerTelegram manager);
+
+    void addServices(Message message, CustomerTelegram manager);
 }

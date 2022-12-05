@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import uz.devops.intern.domain.CustomerTelegram;
 
 import static uz.devops.intern.telegram.bot.utils.KeyboardUtil.sendKeyboardButtonToMarkPhoneNumber;
@@ -80,9 +82,31 @@ public class TelegramsUtil {
         return sendMessage;
     }
 
-    private static SendMessage wrongChoice(){
-        // Xato jovob qaytarish
-        return null;
+    public static SendMessage sendMessage(Long chatId, String text, InlineKeyboardMarkup inlineMarkup){
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(text);
+        sendMessage.setReplyMarkup(inlineMarkup);
+
+        return sendMessage;
+    }
+
+    public static SendMessage sendMessage(Long chatId, String text, ReplyKeyboardRemove removeMarkup){
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(text);
+        sendMessage.setReplyMarkup(removeMarkup);
+
+        return sendMessage;
+    }
+
+
+    public static SendMessage wrongChoice(Long chatId){
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setText("Noto'g'ri qiymat");
+        sendMessage.setChatId(chatId);
+
+        return sendMessage;
     }
 
 }

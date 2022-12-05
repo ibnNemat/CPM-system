@@ -5,6 +5,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import uz.devops.intern.domain.CustomerTelegram;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -24,4 +25,7 @@ public interface CustomerTelegramRepository extends JpaRepository<CustomerTelegr
         "    (SELECT created_by_id FROM bot_token WHERE telegram_id = :botId))\n" +
         "    r ON ct.phone_number = r.created_by", nativeQuery = true)
     Optional<CustomerTelegram> findByBot(@Param("botId") Long botId);
+
+    @Query("SELECT ct FROM CustomerTelegram ct WHERE ct.chatId = :chatId")
+    List<CustomerTelegram> getCountCustomersByChatId(@Param("chatId") Long chatId);
 }
