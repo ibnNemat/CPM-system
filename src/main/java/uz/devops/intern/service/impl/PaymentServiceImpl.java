@@ -251,6 +251,12 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    public List<Payment> getAllCustomerPaymentsPayedIsFalse(Customers customer) {
+        log.debug("Request to get all customer Payments which payment is false");
+        return paymentRepository.findAllByCustomerAndIsPayedFalse(customer);
+    }
+
+    @Override
     public ResponseDTO<List<PaymentDTO>> getAllCustomerPayments() {
         log.debug("Request to get all customer Payments");
         Customers customer = authenticatedUserUtil.getAuthenticatedUser();
@@ -265,6 +271,8 @@ public class PaymentServiceImpl implements PaymentService {
             .toList();
         return new ResponseDTO<>(OK, ResponseMessage.OK, true, paymentDTOList);
     }
+
+
 
     @Override
     public List<PaymentDTO> getAllPaymentsCreatedByGroupManager(){

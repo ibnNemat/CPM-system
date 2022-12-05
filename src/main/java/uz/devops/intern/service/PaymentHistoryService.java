@@ -3,13 +3,16 @@ package uz.devops.intern.service;
 import java.util.List;
 import java.util.Optional;
 
+import uz.devops.intern.domain.Customers;
 import uz.devops.intern.domain.PaymentHistory;
+import uz.devops.intern.service.dto.PaymentDTO;
 import uz.devops.intern.service.dto.PaymentHistoryDTO;
 
 /**
  * Service Interface for managing {@link uz.devops.intern.domain.PaymentHistory}.
  */
 public interface PaymentHistoryService {
+    List<PaymentHistory> getTelegramCustomerPaymentHistories(Customers customer);
     /**
      * Save a paymentHistory.
      *

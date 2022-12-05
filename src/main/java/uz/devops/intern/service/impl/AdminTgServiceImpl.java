@@ -122,7 +122,7 @@ public class AdminTgServiceImpl implements AdminTgService {
             User user = checkPhoneNumber(message);
             if(user == null){
                 newMessage = "Telefon raqam mos kelmayapti!";
-                SendMessage sendMessage = sendMessage(String.valueOf(userId), newMessage);
+                SendMessage sendMessage = sendMessage(userId, newMessage);
                 adminFeign.sendMessage(sendMessage);
                 log.warn("Data of user is not found! Customer: {} | Message: {}",
                     customer, message);
@@ -131,7 +131,7 @@ public class AdminTgServiceImpl implements AdminTgService {
                 boolean isUserManager = checkUserRole(user);
                 if (isUserManager) {
                     newMessage = "Iltimos botning tokenini tashlang.";
-                    SendMessage sendMessage = sendMessage(String.valueOf(userId), newMessage);
+                    SendMessage sendMessage = sendMessage(userId, newMessage);
                     adminFeign.sendMessage(sendMessage);
                     log.info("User is verified, Phone number: {} | Customer: {}",
                         user.getCreatedBy(), customer);
@@ -142,7 +142,7 @@ public class AdminTgServiceImpl implements AdminTgService {
                 } else {
                     // User manager emas.
                     newMessage = "Sizda boshqaruvchilik huquqi yo'q!";
-                    SendMessage sendMessage = sendMessage(String.valueOf(userId), newMessage);
+                    SendMessage sendMessage = sendMessage(userId, newMessage);
                     adminFeign.sendMessage(sendMessage);
                     log.info("User hasn't \"Manager\" role! User: {} | Customer: {}", user, customer);
                 }
@@ -163,7 +163,7 @@ public class AdminTgServiceImpl implements AdminTgService {
             if (result.equals("Ok")) {
                 // Hammasi joyida
                 String newMessage = "Tabriklaymiz, botning tokeni muvafaqiyatli saqlandi.";
-                SendMessage sendMessage = sendMessage(String.valueOf(userId), newMessage);
+                SendMessage sendMessage = sendMessage(userId, newMessage);
                 Update update = adminFeign.sendMessage(sendMessage);
                 User owner = getOwnerByPhoneNumber(customer.getPhoneNumber());
                 BotToken botEntity = createBotEntity(bot, owner, newBotToken);
@@ -173,7 +173,7 @@ public class AdminTgServiceImpl implements AdminTgService {
                 log.info("Bot saved successfully, Bot: {} | Customer: {}", botEntity, customer);
                 // Botning tokenini saqlab qo'yish kere.
             } else {
-                SendMessage sendMessage = sendMessage(String.valueOf(userId), result);
+                SendMessage sendMessage = sendMessage(userId, result);
                 Update update = adminFeign.sendMessage(sendMessage);
                 log.info("Setting webhook is failed, Response: {} | Bot token: {} | Customer: {}",
                     response, newBotToken, customer);

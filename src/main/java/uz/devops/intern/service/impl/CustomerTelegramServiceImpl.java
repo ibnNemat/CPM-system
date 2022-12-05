@@ -1,31 +1,27 @@
 package uz.devops.intern.service.impl;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-import uz.devops.intern.domain.Authority;
-import uz.devops.intern.domain.BotToken;
-import uz.devops.intern.domain.CustomerTelegram;
-import uz.devops.intern.domain.Customers;
+import uz.devops.intern.domain.*;
 import uz.devops.intern.feign.CustomerFeign;
 import uz.devops.intern.redis.CustomerTelegramRedis;
 import uz.devops.intern.redis.CustomerTelegramRedisRepository;
 import uz.devops.intern.repository.CustomerTelegramRepository;
-import uz.devops.intern.service.BotTokenService;
-import uz.devops.intern.service.CustomersService;
-import uz.devops.intern.service.CustomerTelegramService;
+import uz.devops.intern.service.*;
+import uz.devops.intern.service.dto.PaymentDTO;
+import uz.devops.intern.service.utils.DateUtils;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
 
 import static uz.devops.intern.telegram.bot.utils.KeyboardUtil.sendMarkup;
@@ -37,18 +33,31 @@ import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.*;
 @Service
 @Transactional
 public class CustomerTelegramServiceImpl implements CustomerTelegramService {
+    private static final String groupButtonMessage = "\uD83D\uDCAC Guruhlarim";
+    private static final String paymentHistoryButtonMessage = "\uD83D\uDCC3 To'lovlar tarixi";
+    private static final String paymentButtonMessage = "\uD83D\uDCB0 Qarzdorligim";
+    private static final String payButtonMessage = "\uD83D\uDCB8 To'lov qilish";
+    private static final String changeButtonMessage = "✏️ Profilni o'zgartirish";
+    private static final String backButtonMessage = "⬅️ Ortga";
+    private static final String inlineButtonPayForService = "💸 To'lov qilish";
+    private static Long chatIdCreatedByManager;
     private final Logger log = LoggerFactory.getLogger(CustomerTelegramServiceImpl.class);
     private final CustomerTelegramRepository customerTelegramRepository;
     private final CustomerTelegramRedisRepository customerTelegramRedisRepository;
+    private static Customers authenticatedCustomer;
     private final CustomersService customersService;
     private final CustomerFeign customerFeign;
     private final BotTokenService botTokenService;
-    public CustomerTelegramServiceImpl(CustomerTelegramRepository customerTelegramRepository, CustomerTelegramRedisRepository customerTelegramRedisRepository, CustomersService customersService, CustomerFeign customerFeign, BotTokenService botTokenService) {
+    private final PaymentService paymentService;
+    private final PaymentHistoryService paymentHistoryService;
+    public CustomerTelegramServiceImpl(CustomerTelegramRepository customerTelegramRepository, CustomerTelegramRedisRepository customerTelegramRedisRepository, CustomersService customersService, CustomerFeign customerFeign, BotTokenService botTokenService, PaymentService paymentService, PaymentHistoryService paymentHistoryService) {
         this.customerTelegramRepository = customerTelegramRepository;
         this.customerTelegramRedisRepository = customerTelegramRedisRepository;
         this.customersService = customersService;
         this.customerFeign = customerFeign;
         this.botTokenService = botTokenService;
+        this.paymentService = paymentService;
+        this.paymentHistoryService = paymentHistoryService;
     }
 
     public SendMessage checkBotToken(Chat chat){
@@ -68,91 +77,132 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
 
     @Override
     public SendMessage botCommands(Update update) {
-        Message message = update.getMessage();
-        User telegramUser = message.getFrom();
-        Chat chat = message.getChat();
+        if (!update.hasMessage()){
+            if (!update.hasCallbackQuery()){
+                return null;
+            }
 
-//        SendMessage sendMessage = checkTelegramGroupIfExists(telegramUser, chat);
-//        if (sendMessage != null){
-//            return sendMessage;
-//        }
-
-        SendMessage sendMessage = checkBotToken(chat);
-        if (sendMessage != null){
-            return sendMessage;
-        }
-
-        sendMessage = new SendMessage();
-        String requestMessage = message.getText();
-
-        if (message.getText() == null){
-            requestMessage = message.getContact().getPhoneNumber();
-        }
-
-        switch(requestMessage) {
-            case "/start":
-                startCommand(telegramUser, sendMessage); break;
-            case "/help":
-                return helpCommand(message);
-        }
-
-        Optional<CustomerTelegram> customerTelegramOptional = customerTelegramRepository.findByTelegramId(telegramUser.getId());
-        if (customerTelegramOptional.isEmpty()){
-            CustomerTelegram customerTelegram = createCustomerTelegramToSaveDatabase(telegramUser);
-            customerTelegramRepository.save(customerTelegram);
-
-            String responseString = "Quyidagi tillardan birini tanlang \uD83D\uDC47";
-            ReplyKeyboardMarkup replyKeyboardMarkup = KeyboardUtil.language();
-            log.info("Message send successfully! User id: {} | Message text: {} | Update: {}",
-                telegramUser.getId(), responseString, update);
-            return sendMessage(telegramUser.getId(), responseString, replyKeyboardMarkup);
+            SendMessage sendMessage = whenPressingInlineButton(update.getCallbackQuery());
+            if (sendMessage != null) return sendMessage;
         }else {
-            CustomerTelegram customerTelegram = customerTelegramOptional.get();
-            Integer step = customerTelegram.getStep();
+            Message message = update.getMessage();
+            User telegramUser = message.getFrom();
+            Chat chat = message.getChat();
 
-            switch (step){
-                case 1:
-                    return registerCustomerClientAndShowCustomerMenu(requestMessage, telegramUser, customerTelegram);
+            SendMessage sendMessage = checkBotToken(chat);
+            if (sendMessage != null) {
+                return sendMessage;
             }
 
             sendMessage = new SendMessage();
-            sendMessage.setChatId(telegramUser.getId());
-            sendMessage.setText("\uD83D\uDEAB Stepga kirmadi, nimadir nito\n" +
-                "Tizimni qolgani bitmagan, biroz kuting)");
-            return sendMessage;
+            String requestMessage = message.getText();
+
+            if (message.getText() == null) {
+                requestMessage = message.getContact().getPhoneNumber();
+            }
+
+            switch (requestMessage) {
+                case "/start":
+                    return sendMessage(telegramUser.getId(), "\uD83D\uDEAB Botga guruhga tashlangan link orqali kiring!");
+                case "/help":
+                    return helpCommand(message);
+            }
+
+            if (requestMessage.startsWith("/start ")) {
+                chatIdCreatedByManager = Long.parseLong(requestMessage.substring(7));
+                startCommand(telegramUser, sendMessage);
+            }
+
+            Optional<CustomerTelegram> customerTelegramOptional = customerTelegramRepository.findByTelegramId(telegramUser.getId());
+            if (customerTelegramOptional.isEmpty()) {
+                CustomerTelegram customerTelegram = createCustomerTelegramToSaveDatabase(telegramUser);
+                if (chatIdCreatedByManager != null) customerTelegram.setChatId(chatIdCreatedByManager);
+                customerTelegramRepository.save(customerTelegram);
+
+                String responseString = "Quyidagi tillardan birini tanlang \uD83D\uDC47";
+                ReplyKeyboardMarkup replyKeyboardMarkup = KeyboardUtil.language();
+                log.info("Message send successfully! User id: {} | Message text: {} | Update: {}",
+                    telegramUser.getId(), responseString, update);
+                return sendMessage(telegramUser.getId(), responseString, replyKeyboardMarkup);
+            } else {
+                CustomerTelegram customerTelegram = customerTelegramOptional.get();
+                Integer step = customerTelegram.getStep();
+
+                switch (step) {
+                    case 1:
+                        return registerCustomerClientAndShowCustomerMenu(requestMessage, telegramUser, customerTelegram);
+                    case 2:
+                        sendMessage = mainCommand(requestMessage, telegramUser, customerTelegram);
+                        if (sendMessage != null) return sendMessage;
+                }
+            }
         }
+
+        return null;
+    }
+
+    private SendMessage whenPressingInlineButton(CallbackQuery callbackQuery) {
+        String data = callbackQuery.getData();
+        User telegramUser = callbackQuery.getFrom();
+        SendMessage sendMessage = new SendMessage();
+
+        if (authenticatedCustomer == null) return sendCustomerDataNotFoundMessage(telegramUser);
+        Optional<CustomerTelegram> optionalCustomerTelegram = customerTelegramRepository.findByTelegramId(telegramUser.getId());
+
+        return switch (data){
+            case inlineButtonPayForService -> payRequestForService(telegramUser,);
+        };
+
+        return null;
+    }
+
+    private SendMessage payRequestForService(User telegramUser, CustomerTelegram customerTelegram){
+
+    }
+
+    public SendMessage mainCommand(String buttonMessage, User telegramUser, CustomerTelegram customerTelegram){
+        SendMessage sendMessage = new SendMessage();
+
+        return switch (buttonMessage) {
+            case groupButtonMessage -> sendCustomerGroups(telegramUser, customerTelegram);
+            case paymentButtonMessage, payButtonMessage -> sendCustomerPayments(telegramUser, customerTelegram);
+            case paymentHistoryButtonMessage -> sendCustomerPaymentsHistory(telegramUser, customerTelegram);
+            default -> sendMessage;
+        };
     }
 
     private SendMessage registerCustomerClientAndShowCustomerMenu(String requestMessage, User telegramUser, CustomerTelegram customerTelegram) {
         SendMessage sendMessage = new SendMessage();
         Optional<CustomerTelegramRedis> redisOptional = customerTelegramRedisRepository.findById(telegramUser.getId());
 
-        if (!requestMessage.startsWith("+998")){
+        if (!requestMessage.startsWith("+998")) {
             sendMessage = checkPhoneNumberIsNull(customerTelegram, telegramUser);
-            if (sendMessage != null){
+            if (sendMessage != null) {
                 return sendMessage;
             }
-        }else{
+        } else {
             Customers customer = checkCustomerPhoneNumber(requestMessage);
             Authority customerAuthority = new Authority();
             customerAuthority.setName("ROLE_CUSTOMER");
-            if (customer == null){
+            if (customer == null) {
                 String sendStringMessage = "\uD83D\uDEAB Kechirasiz, bu raqam ma'lumotlar omboridan topilmadi\n" +
                     "Tizim web-sahifasi orqali ro'yxatdan o'tishingizni so'raymiz!";
 
                 sendMessage = sendMessage(telegramUser.getId(), sendStringMessage, sendMarkup());
                 log.info("Message send successfully! User id: {} | Message text: {}", telegramUser, sendMessage);
                 return sendMessage;
-            }else if(customer.getUser() == null || !customer.getUser().getAuthorities().contains(customerAuthority)){
+            } else if (customer.getUser() == null || !customer.getUser().getAuthorities().contains(customerAuthority)) {
                 String sendStringMessage = "\uD83D\uDEAB Kechirasiz, bu raqamga 'Foydalanuvchi' huquqi berilmagan\n" +
                     "Boshqa raqam kiritishingizni so'raymiz!";
 
                 sendMessage = sendMessage(telegramUser.getId(), sendStringMessage, sendMarkup());
                 log.info("Message send successfully! User id: {} | Message text: {}", telegramUser, sendMessage);
                 return sendMessage;
-            }else{
+            } else {
                 customerTelegram.customer(customer);
                 customerTelegramRepository.save(customerTelegram);
+
+                authenticatedCustomer = customer;
             }
 
             if (customerTelegram.getPhoneNumber() == null) {
@@ -167,7 +217,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
 
                 customerFeign.sendMessage(sendMessage);
             }
-            if (redisOptional.isEmpty()){
+            if (redisOptional.isEmpty()) {
                 CustomerTelegramRedis customerTelegramRedis = new CustomerTelegramRedis(telegramUser.getId(), telegramUser);
                 customerTelegramRedisRepository.save(customerTelegramRedis);
                 log.info("New telegram user successfully saved to redis! UserRedis : {}", customerTelegramRedis);
@@ -179,42 +229,114 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
 
     // Customer can be entered to this menu after registration
     public SendMessage sendCustomerMenu(User userTelegram){
-        KeyboardButton groupButton = new KeyboardButton("\uD83D\uDCAC Guruhlarim");
-        groupButton.setRequestContact(true);
-
-        KeyboardButton historyPaymentButton = new KeyboardButton("\uD83D\uDCC3 To'lovlar tarixi");
-        historyPaymentButton.setRequestContact(true);
-
-        KeyboardButton paymentButton = new KeyboardButton("\uD83D\uDCB0 Qarzdorligim");
-        paymentButton.setRequestContact(true);
-
-        KeyboardButton payButton = new KeyboardButton("\uD83D\uDCB8 To'lov qilish");
-        payButton.setRequestContact(true);
-
-        KeyboardButton changeCustomerButton = new KeyboardButton("✏️ Profilni o'zgartirish");
-        changeCustomerButton.setRequestContact(true);
-
-        KeyboardButton backButton = new KeyboardButton("⬅️ Ortga");
-        backButton.setRequestContact(true);
-
         KeyboardRow row1 = new KeyboardRow();
-        row1.add(groupButton);
-        row1.add(historyPaymentButton);
+        row1.add(new KeyboardButton(groupButtonMessage));
+        row1.add(new KeyboardButton(paymentHistoryButtonMessage));
 
         KeyboardRow row2 = new KeyboardRow();
-        row2.add(paymentButton);
-        row2.add(payButton);
+        row2.add(new KeyboardButton(paymentButtonMessage));
+        row2.add(new KeyboardButton(payButtonMessage));
 
         KeyboardRow row3 = new KeyboardRow();
-        row3.add(changeCustomerButton);
-        row3.add(backButton);
-
+        row3.add(new KeyboardButton(changeButtonMessage));
+        row3.add(new KeyboardButton(backButtonMessage));
 
         ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup();
         markup.setResizeKeyboard(true);
         markup.setKeyboard(List.of(row1, row2, row3));
 
         return sendMessage(userTelegram.getId(), "Menu", markup);
+    }
+
+    private SendMessage sendCustomerDataNotFoundMessage(User telegramUser){
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(telegramUser.getId());
+        sendMessage.setText("❗️Kechirasiz, ma'lumotlar omboridan sizning ma'lumotlaringiz topilmadi!");
+        return sendMessage;
+    }
+
+    public SendMessage sendCustomerPayments(User telegramUser, CustomerTelegram customerTelegram){
+        Customers customer = customerTelegram.getCustomer();
+        if (customer == null || customer.getGroups() == null)
+            return sendCustomerDataNotFoundMessage(telegramUser);
+
+        List<Payment> paymentList = paymentService.getAllCustomerPaymentsPayedIsFalse(customer);
+        if (paymentList.size() == 0)
+            return sendCustomerDataNotFoundMessage(telegramUser);
+
+        StringBuilder buildCustomerPayments = new StringBuilder();
+        for (Payment payment: paymentList){
+            buildCustomerPayments.append(String.format("<b>Qarzdorlik raqami: </b> %d\n", payment.getId()));
+            buildCustomerPayments.append(String.format("<b>Xizmat turi: </b> %s\n", payment.getService().getName()));
+            buildCustomerPayments.append(String.format("<b>Qaysi tashkilot uchun: </b> %s\n", payment.getGroup().getOrganization().getName()));
+            buildCustomerPayments.append(String.format("<b>Qaysi guruh uchun: </b> %s\n", payment.getGroup().getName()));
+            buildCustomerPayments.append(String.format("<b>Xizmat narxi: </b>%.2f sum\n", payment.getPaymentForPeriod()));
+            buildCustomerPayments.append(String.format("<b>To'langan summa: </b>%.2f sum\n", payment.getPaidMoney()));
+            buildCustomerPayments.append(String.format("""
+                    <b>To'lov muddati:
+                    Boshlanish vaqti: </b> %s\t<b>Tugash vaqti: </b> %s
+                    """,
+                DateUtils.parseToStringFromLocalDate(payment.getStartedPeriod()), DateUtils.parseToStringFromLocalDate(payment.getFinishedPeriod())));
+
+            InlineKeyboardButton payButton = new InlineKeyboardButton(inlineButtonPayForService);
+            payButton.setCallbackData(inlineButtonPayForService);
+
+            InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
+            markup.setKeyboard(List.of(List.of(payButton)));
+            SendMessage sendMessage = sendMessage(telegramUser.getId(), buildCustomerPayments.toString(), markup);
+
+            customerFeign.sendMessage(sendMessage);
+            buildCustomerPayments = new StringBuilder();
+        }
+        return null;
+    }
+
+    public SendMessage sendCustomerGroups(User telegramUser, CustomerTelegram customerTelegram){
+        SendMessage sendMessage;
+        Customers customer = customerTelegram.getCustomer();
+        if (customer == null || customer.getGroups() == null)
+            return sendCustomerDataNotFoundMessage(telegramUser);
+
+        StringBuilder buildCustomerGroups = new StringBuilder();
+
+        for (Groups group : customer.getGroups()) {
+            buildCustomerGroups.append(String.format("<b>Guruh nomi: </b> %s\n", group.getName()));
+            buildCustomerGroups.append(String.format("<b>Tashkilot nomi:</b> %s\n\n", group.getOrganization().getName()));
+            buildCustomerGroups.append("          <b>Guruhdagi bolalar</b>\n\n");
+
+            for (Customers groupCustomer : group.getCustomers()) {
+                buildCustomerGroups.append(String.format("<b>Ismi: </b> %s\n", groupCustomer.getUsername()));
+                buildCustomerGroups.append(String.format("<b>Tel raqami: </b> %s\n\n", groupCustomer.getPhoneNumber()));
+            }
+            sendMessage = sendMessage(telegramUser.getId(), buildCustomerGroups.toString());
+            sendMessage.enableHtml(true);
+            customerFeign.sendMessage(sendMessage);
+            buildCustomerGroups = new StringBuilder();
+        }
+        return null;
+    }
+
+    public SendMessage sendCustomerPaymentsHistory(User telegramUser, CustomerTelegram customerTelegram){
+        Customers customer = customerTelegram.getCustomer();
+        if (customer == null || customer.getGroups() == null) return sendCustomerDataNotFoundMessage(telegramUser);
+
+        List<PaymentHistory> paymentHistoryList = paymentHistoryService.getTelegramCustomerPaymentHistories(customer);
+        if (paymentHistoryList.size() == 0) return sendCustomerDataNotFoundMessage(telegramUser);
+        StringBuilder buildCustomerPaymentHistories = new StringBuilder();
+
+        for (PaymentHistory paymentHistory: paymentHistoryList){
+            buildCustomerPaymentHistories.append(String.format("<b>To'lov raqami: </b> %d\n", paymentHistory.getId()));
+            buildCustomerPaymentHistories.append(String.format("<b>Tashkilot nomi: </b> %s\n", paymentHistory.getOrganizationName()));
+            buildCustomerPaymentHistories.append(String.format("<b>Guruh nomi: </b> %s\n", paymentHistory.getGroupName()));
+            buildCustomerPaymentHistories.append(String.format("<b>Xizmat turi: </b> %s\n", paymentHistory.getServiceName()));
+            buildCustomerPaymentHistories.append(String.format("<b>To'lov miqdori: </b> %.2f sum\n", paymentHistory.getSum()));
+            buildCustomerPaymentHistories.append(String.format("<b>To'langan sana: </b> %s", DateUtils.parseToStringFromLocalDate(paymentHistory.getCreatedAt())));
+
+            SendMessage sendMessage = sendMessage(telegramUser.getId(), buildCustomerPaymentHistories.toString());
+            customerFeign.sendMessage(sendMessage);
+            buildCustomerPaymentHistories = new StringBuilder();
+        }
+        return null;
     }
 
     private Customers checkCustomerPhoneNumber(String phoneNumber) {
@@ -250,6 +372,6 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             "\n" +
             "Bosing: /start";
 
-        return sendMessage(String.valueOf(message.getFrom().getId()), newMessage);
+        return sendMessage(message.getFrom().getId(), newMessage);
     }
 }

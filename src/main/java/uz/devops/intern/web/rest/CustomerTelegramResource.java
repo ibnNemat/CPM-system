@@ -28,7 +28,7 @@ public class CustomerTelegramResource {
     @PostMapping("/new-message/{botId}")
     public void sendMessage(@RequestBody Update update, @PathVariable String botId){
         log.info("[REST] Bot id: {} | Message: {}", botId,update.getMessage());
-        
+
         SendMessage sendMessage = customerTelegramService.botCommands(update);
         if (sendMessage != null)
             customerFeign.sendMessage(sendMessage);

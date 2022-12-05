@@ -4,11 +4,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uz.devops.intern.domain.Customers;
+import uz.devops.intern.domain.Payment;
 import uz.devops.intern.domain.PaymentHistory;
 import uz.devops.intern.repository.PaymentHistoryRepository;
 import uz.devops.intern.service.PaymentHistoryService;
+import uz.devops.intern.service.dto.PaymentDTO;
 import uz.devops.intern.service.dto.PaymentHistoryDTO;
 import uz.devops.intern.service.mapper.PaymentHistoryMapper;
+import uz.devops.intern.service.mapper.PaymentsMapper;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -21,7 +25,6 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class PaymentHistoryServiceImpl implements PaymentHistoryService {
-
     private final Logger log = LoggerFactory.getLogger(PaymentHistoryServiceImpl.class);
 
     private final PaymentHistoryRepository paymentHistoryRepository;
@@ -61,5 +64,12 @@ public class PaymentHistoryServiceImpl implements PaymentHistoryService {
     public void delete(Long id) {
         log.debug("Request to delete PaymentHistory : {}", id);
         paymentHistoryRepository.deleteById(id);
+    }
+
+    @Override
+    public List<PaymentHistory> getTelegramCustomerPaymentHistories(Customers customer) {
+        log.debug("Request to get all customer Payments history");
+
+        return paymentHistoryRepository.findAllByCustomer(customer);
     }
 }

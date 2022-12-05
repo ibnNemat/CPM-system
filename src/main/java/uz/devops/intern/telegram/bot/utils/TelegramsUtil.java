@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import uz.devops.intern.domain.CustomerTelegram;
 
 import static uz.devops.intern.telegram.bot.utils.KeyboardUtil.sendKeyboardButtonToMarkPhoneNumber;
@@ -19,7 +21,7 @@ public class TelegramsUtil {
             String sendStringMessage = "\uD83D\uDEAB Kechirasiz, tizimdan foydalanishingiz uchun sizda telegram" +
                 " guruhi mavjud bo'lishi kerak. Avval, telegram guruhga qo'shilishingizni so'raymiz!";
 
-            return sendMessage(String.valueOf(telegramUser.getId()), sendStringMessage);
+            return sendMessage(telegramUser.getId(), sendStringMessage);
         }
         return null;
     }
@@ -50,23 +52,23 @@ public class TelegramsUtil {
         return null;
     }
 
-
     /**
-     * param: String chatId
+     * param: Long chatId
      * param: String text
 
      * return: SendMessage without buttons
      */
-    public static SendMessage sendMessage(String chatId, String text){
+    public static SendMessage sendMessage(Long chatId, String text){
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         sendMessage.setText(text);
+        sendMessage.enableHtml(true);
 
         return sendMessage;
     }
 
     /**
-     * param: String chatId
+     * param: Long chatId
      * param: String text
 
      * return: SendMessage with buttons
@@ -76,7 +78,40 @@ public class TelegramsUtil {
         sendMessage.setChatId(chatId);
         sendMessage.setText(text);
         sendMessage.setReplyMarkup(keyboardMarkup);
+        sendMessage.enableHtml(true);
 
+        return sendMessage;
+    }
+
+    public static SendMessage sendMessage(Long chatId, String text, InlineKeyboardMarkup keyboardMarkup){
+        /**
+         * param: Long chatId
+         * param: String text
+         * param: InlineKeyboardMarkup
+         *
+         * return SendMessage with buttons
+         */
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(text);
+        sendMessage.setReplyMarkup(keyboardMarkup);
+        sendMessage.enableHtml(true);
+        return sendMessage;
+    }
+
+    public static SendMessage sendMessage(Long chatId, String text, ReplyKeyboardRemove replyKeyboardRemove){
+        /**
+         * param: Long chatId
+         * param: String text
+         * param: ReplyKeyboardRemove
+         *
+         * return SendMessage with buttons
+         */
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(text);
+        sendMessage.setReplyMarkup(replyKeyboardRemove);
+        sendMessage.enableHtml(true);
         return sendMessage;
     }
 }
