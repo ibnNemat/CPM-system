@@ -153,9 +153,10 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             return sendCustomerDataNotFoundMessage(telegramUser);
 
         CustomerTelegram customerTelegram = optionalCustomerTelegram.get();
-        return switch (inlineButtonText){
-            case inlineButtonPayForService -> payRequestForService(telegramUser, customerTelegram, data);
-        };
+//        return switch (inlineButtonText){
+//            case inlineButtonPayForService -> payRequestForService(telegramUser, customerTelegram, data);
+//        };
+        return null;
     }
 
     private SendMessage payRequestForService(User telegramUser, CustomerTelegram customerTelegram, String paymentData){

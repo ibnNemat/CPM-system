@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 
 class TelegramEntityMapperTest {
 
-    private TelegramEntityMapper telegramEntityMapper;
-
-    @BeforeEach
-    public void setUp() {
-        telegramEntityMapper = new TelegramEntityMapperImpl();
-    }
+//    private TelegramEntityMapper telegramEntityMapper;
+//
+//    @BeforeEach
+//    public void setUp() {
+//        telegramEntityMapper = new TelegramEntityMapperImpl();
+//    }
 }

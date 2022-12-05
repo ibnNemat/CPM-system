@@ -203,7 +203,7 @@ public class AdminTgServiceImpl implements AdminTgService {
                 log.info("Bot saved successfully, Bot: {} | Customer: {}", botEntity, customer);
                 newMessage = "Iltimos botni guruhga qo'shing";
                 sendMessage =
-                    TelegramsUtil.sendMessage(String.valueOf(message.getFrom().getId()), newMessage);
+                    TelegramsUtil.sendMessage(message.getFrom().getId(), newMessage);
                 adminFeign.sendMessage(sendMessage);
                 // Botning tokenini saqlab qo'yish kere.
             } else {
@@ -238,7 +238,7 @@ public class AdminTgServiceImpl implements AdminTgService {
 
         }else {
             String newMessage = "Iltimos hozirgi botni qo'shing";
-            SendMessage sendMessage = TelegramsUtil.sendMessage(userId, newMessage);
+            SendMessage sendMessage = TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage);
             adminFeign.sendMessage(sendMessage);
             log.warn("Something goes wrong, Bot id: {} | Group id: {}", botId, message.getChat().getId());
         }
@@ -269,7 +269,7 @@ public class AdminTgServiceImpl implements AdminTgService {
             String newMessage = null;
             if(text.equals("Organisatsiya qo'shish")){
                 newMessage = "Iltimos tashkilot nomini kiriting";
-                SendMessage sendMessage = sendMessage(String.valueOf(customer.getTelegramId()), newMessage);
+                SendMessage sendMessage = sendMessage(customer.getTelegramId(), newMessage);
                 Update update = adminFeign.sendMessage(sendMessage);
                 log.info("Admin is creating new organization, Manager id: {} | Message text: {} | Update: {}",
                     customer.getTelegramId(), message.getText(), update);
@@ -291,7 +291,7 @@ public class AdminTgServiceImpl implements AdminTgService {
                     return true;
                 }else {
                     newMessage = "Telegram gruppalar yo'q";
-                    SendMessage sendMessage = TelegramsUtil.sendMessage(String.valueOf(customer.getTelegramId()), newMessage);
+                    SendMessage sendMessage = TelegramsUtil.sendMessage(customer.getTelegramId(), newMessage);
                     adminFeign.sendMessage(sendMessage);
                     log.warn("Has no telegram group, Manager id: {} | Telegram group count: {}",
                         customer.getTelegramId(), telegramGroups.size());
@@ -442,7 +442,7 @@ public class AdminTgServiceImpl implements AdminTgService {
         String link = "https://t.me/" + bot.getUserName() + "?start=" + groupId;
         String newMessage = "Shu havola orqali botga start bering\uD83D\uDC49 " + link;
 
-        SendMessage sendMessage = TelegramsUtil.sendMessage(String.valueOf(groupId), newMessage);
+        SendMessage sendMessage = TelegramsUtil.sendMessage(groupId, newMessage);
         BotToken botToken = botTokenRepository.findByTelegramId(bot.getId()).get();
         Update update = sendRequestWithFeign(botToken.getToken(), sendMessage);
         log.info("Link is send successfully, Bot id: {} | Groupd id: {} | Link: {}",
