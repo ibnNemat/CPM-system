@@ -169,7 +169,8 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
 
         PaymentDTO paymentDTO = paymentOptional.get();
 
-        ResponseDTO responsePayment = paymentService.payForService();
+//        ResponseDTO responsePayment = paymentService.payForService();
+        return null;
     }
 
     public SendMessage mainCommand(String buttonMessage, User telegramUser, CustomerTelegram customerTelegram){
