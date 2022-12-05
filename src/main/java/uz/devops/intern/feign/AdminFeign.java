@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @FeignClient(value = "admin-feign",
-    url = "https://api.telegram.org/bot5543292898:AAGoR3GLOCOL7Lir7sjYyCFYS7BLiUwNbHA")
+    url = "https://api.telegram.org/bot5225793240:AAEDojpbQM780zRMWIvmJXCIGeEBXWoY6RM")
 public interface AdminFeign {
     @PostMapping("/sendMessage")
     Update sendMessage(@RequestBody SendMessage sendMessage);

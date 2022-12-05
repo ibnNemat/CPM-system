@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import uz.devops.intern.feign.CustomerFeign;
+import uz.devops.intern.service.AdminTgService;
 import uz.devops.intern.service.CustomerTelegramService;
 /**
  * REST controller for managing {@link uz.devops.intern.domain.CustomerTelegram}.
@@ -19,18 +20,38 @@ public class CustomerTelegramResource {
     private final CustomerFeign customerFeign;
     private final CustomerTelegramService customerTelegramService;
 
+    private final AdminTgService adminService;
+
     public CustomerTelegramResource(
-        CustomerFeign customerFeign, CustomerTelegramService customerTelegramService) {
+        CustomerFeign customerFeign, CustomerTelegramService customerTelegramService, AdminTgService adminService) {
         this.customerFeign = customerFeign;
         this.customerTelegramService = customerTelegramService;
+        this.adminService = adminService;
     }
 
     @PostMapping("/new-message/{botId}")
     public void sendMessage(@RequestBody Update update, @PathVariable String botId){
         log.info("[REST] Bot id: {} | Message: {}", botId,update.getMessage());
 
-        SendMessage sendMessage = customerTelegramService.botCommands(update);
-        if (sendMessage != null)
-            customerFeign.sendMessage(sendMessage);
+        if(update.hasMessage() &&
+            update.getMessage().getText() != null &&
+            update.getMessage().getFrom().getId().equals(update.getMessage().getChatId())
+        ) {
+            SendMessage sendMessage = customerTelegramService.botCommands(update);
+            if (sendMessage != null)
+                customerFeign.sendMessage(sendMessage);
+        }
+
+        if(update.getMessage() != null) {
+            if (update.getMessage().getNewChatMembers().size() > 0) {
+                // Shu joyda botni gruppaga add qiganini bilsa bo'ladi
+                adminService.checkIsBotInGroup(update.getMessage(), botId);
+            }
+        }
+//        else if(update.getMyChatMember() != null &&
+//                update.getMyChatMember().getNewChatMember().getUser().getIsBot()){
+//                adminService.checkIsBotAdmin(update.getMyChatMember());
+//
+//        }
     }
 }

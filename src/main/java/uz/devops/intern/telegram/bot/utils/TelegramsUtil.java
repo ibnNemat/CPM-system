@@ -114,4 +114,32 @@ public class TelegramsUtil {
         sendMessage.enableHtml(true);
         return sendMessage;
     }
+
+    public static SendMessage sendMessage(Long chatId, String text, InlineKeyboardMarkup inlineMarkup){
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(text);
+        sendMessage.setReplyMarkup(inlineMarkup);
+
+        return sendMessage;
+    }
+
+    public static SendMessage sendMessage(Long chatId, String text, ReplyKeyboardRemove removeMarkup){
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(text);
+        sendMessage.setReplyMarkup(removeMarkup);
+
+        return sendMessage;
+    }
+
+
+    public static SendMessage wrongChoice(Long chatId){
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setText("Noto'g'ri qiymat");
+        sendMessage.setChatId(chatId);
+
+        return sendMessage;
+    }
+
 }
