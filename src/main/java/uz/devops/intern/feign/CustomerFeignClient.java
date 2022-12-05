@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-@FeignClient(value = "customer-feign",
-        url = "https://api.telegram.org/bot5344114476:AAHjU99o-rTS_0OU-tDUk6zdUXmWj7pyc10")
-public interface CustomerFeign {
+import java.net.URI;
+
+@FeignClient(name = "customer-feign-client", url = "https://api.telegram.org/bot")
+public interface CustomerFeignClient {
+
     @PostMapping("/sendMessage")
-    Update sendMessage(@RequestBody SendMessage sendMessage);
+    Update sendMessage(URI uri, @RequestBody SendMessage sendMessage);
 }

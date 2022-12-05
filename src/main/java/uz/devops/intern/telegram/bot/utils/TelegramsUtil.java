@@ -79,4 +79,10 @@ public class TelegramsUtil {
 
         return sendMessage;
     }
+
+    private static SendMessage wrongChoice(){
+        // Xato jovob qaytarish
+        return null;
+    }
+
 }

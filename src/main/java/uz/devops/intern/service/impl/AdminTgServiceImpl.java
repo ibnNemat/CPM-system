@@ -1,18 +1,25 @@
 package uz.devops.intern.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.ChatMemberUpdated;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import uz.devops.intern.domain.*;
 import uz.devops.intern.feign.AdminFeign;
+import uz.devops.intern.feign.CustomerFeignClient;
 import uz.devops.intern.repository.BotTokenRepository;
 import uz.devops.intern.repository.CustomerTelegramRepository;
 import uz.devops.intern.repository.UserRepository;
@@ -21,8 +28,12 @@ import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
+
 import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.*;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -30,7 +41,7 @@ import java.util.Set;
 public class AdminTgServiceImpl implements AdminTgService {
 
     private static String telegramAPI = "https://api.telegram.org/bot";
-    private static String webhookAPI = "/setWebhook?url=https://23da-89-146-93-0.ap.ngrok.io/api/new-message";
+    private static String webhookAPI = "/setWebhook?url=https://b243-83-221-180-161.in.ngrok.io/api/new-message";
     private final Logger log = LoggerFactory.getLogger(AdminTgServiceImpl.class);
     @Autowired
     private BotTokenRepository botTokenRepository;
@@ -40,6 +51,8 @@ public class AdminTgServiceImpl implements AdminTgService {
     private UserRepository userRepository;
     @Autowired
     private AdminFeign adminFeign;
+    @Autowired
+    private CustomerFeignClient customerFeign;
 
     @Override
     public void main(Update update) {
@@ -67,6 +80,10 @@ public class AdminTgServiceImpl implements AdminTgService {
                 getAdminBotToken(update.getMessage(), customer);
             }else if(step == 4){
                 // Hozircha hish nima yo'q.
+                String newMessage = "Iltimos botni guruhga qo'shing";
+                SendMessage sendMessage =
+                    TelegramsUtil.sendMessage(String.valueOf(update.getMessage().getFrom().getId()), newMessage);
+                adminFeign.sendMessage(sendMessage);
             }
         }
     }
@@ -104,10 +121,12 @@ public class AdminTgServiceImpl implements AdminTgService {
             customer.setLanguageCode("ru");
             String newMessage = "Iltimos telefon raqamingizni jo'nating\uD83D\uDC47(Ruscha)";
             ReplyKeyboardMarkup markup = KeyboardUtil.phoneNumber();
-            SendMessage sendMessage = sendMessage(customer.getId(), newMessage, markup);
+            SendMessage sendMessage = sendMessage(customer.getTelegramId(), newMessage, markup);
             Update response = adminFeign.sendMessage(sendMessage);
             log.info("Message send successfully! User id: {} | Message text: {} | Update: {}",
                 userId, messageText, response);
+        }else {
+
         }
         customer.setStep(2);
         customerTelegramRepository.save(customer);
@@ -178,6 +197,49 @@ public class AdminTgServiceImpl implements AdminTgService {
                 log.info("Setting webhook is failed, Response: {} | Bot token: {} | Customer: {}",
                     response, newBotToken, customer);
             }
+        }
+    }
+
+    @Override
+    public void checkIsBotInGroup(Message message, String botId) {
+        List<org.telegram.telegrambots.meta.api.objects.User> telegramUsers = message.getNewChatMembers();
+        boolean isBot = false;
+        org.telegram.telegrambots.meta.api.objects.User bot = null;
+        for(org.telegram.telegrambots.meta.api.objects.User user: telegramUsers){
+            if(user.getIsBot() && String.valueOf(user.getId()).equals(botId)){
+                bot = user;
+                isBot = true;
+            }
+        }
+
+        CustomerTelegram manager = customerTelegramRepository.findByBot(Long.parseLong(botId)).get();
+        String userId = String.valueOf(manager.getTelegramId());
+        if(isBot){
+            sayThanksToManager(bot);
+            sendInviteLink(bot, message.getChat().getId());
+        }else {
+            String newMessage = "Iltimos hozirgi botni qo'shing";
+            SendMessage sendMessage = TelegramsUtil.sendMessage(userId, newMessage);
+            adminFeign.sendMessage(sendMessage);
+            log.warn("Something goes wrong, Bot id: {} | Group id: {}", botId, message.getChat().getId());
+        }
+    }
+
+    @Override
+    public void checkIsBotAdmin(ChatMemberUpdated member){
+        boolean isBot = member.getNewChatMember().getUser().getIsBot();
+        if(isBot){
+            String status = member.getNewChatMember().getStatus().toUpperCase();
+            if(status.equals("ADMINISTRATOR")){
+                org.telegram.telegrambots.meta.api.objects.User bot = member.getNewChatMember().getUser();
+                sayThanksToManager(bot);
+                sendInviteLink(bot, member.getChat().getId());
+            }else {
+                log.warn("Bot is not administrator, Bot status: {}", member.getNewChatMember().getStatus());
+            }
+        }else{
+            log.warn("Something goes wrong, New member username and id: {} {} | Group id: {}",
+                member.getFrom().getUserName(), member.getFrom().getId(), member.getChat().getId());
         }
     }
 
@@ -252,5 +314,71 @@ public class AdminTgServiceImpl implements AdminTgService {
             template.exchange(url, HttpMethod.GET, null, WebhookResponseDTO.class).getBody();
         log.info("Response from telegram server: {}", response);
         return response;
+    }
+
+    private void sayThanksToManager(org.telegram.telegrambots.meta.api.objects.User bot){
+        CustomerTelegram manager = customerTelegramRepository.findByBot(bot.getId()).get();
+        String newMessage = "Raxmat☺";
+        String userId = String.valueOf(manager.getTelegramId());
+
+        SendMessage sendMessage = TelegramsUtil.sendMessage(userId, newMessage);
+        Update update = adminFeign.sendMessage(sendMessage);
+        log.info("Thanks is send to manager, Bot id: {} | Manager id: {} | Update: {}",
+            bot.getId(), manager.getTelegramId(), update);
+    }
+
+    private void sendInviteLink(org.telegram.telegrambots.meta.api.objects.User bot, Long groupId){
+        String link = "https://t.me/" + bot.getUserName() + "?start=" + groupId;
+        String newMessage = "Shu havola orqali botga start bering\uD83D\uDC49 " + link;
+
+        SendMessage sendMessage = TelegramsUtil.sendMessage(String.valueOf(groupId), newMessage);
+        BotToken botToken = botTokenRepository.findByTelegramId(bot.getId()).get();
+        Update update = sendRequestWithFeign(botToken.getToken(), sendMessage);
+        log.info("Link is send successfully, Bot id: {} | Groupd id: {} | Link: {}",
+            bot.getId(), groupId, link);
+    }
+
+    private String createLink(String token, Long botId){
+        String url = "https://api.telegram.org/bot" + token + "/sendMessage";
+        log.info("Url is create to send message, Bot id: {} | Bot token: {} | URL: {}",
+            botId, token, url);
+        return url;
+    }
+
+    private String createLink(String token, String chatId, String messageId){
+        String url = String.format("%s/pinChatMessage?chat_id=%s&message_id=%s",
+            telegramAPI + token, chatId, messageId);
+
+        log.info("Url is create to pin message, Token: {} | Chat id: {} | Message: {} | URL: {}",
+            token, chatId, messageId, url);
+        return url;
+    }
+
+    private Update sendRequestWithRestTemplate(String url, HttpMethod method, HttpEntity<?> entity){
+        RestTemplate template = new RestTemplate();
+        String response = template.exchange(url, method, entity, String.class).getBody();
+        log.info("Request is send, Response: {}", response);
+        JsonMapper jsonMapper = new JsonMapper();
+        try {
+            return jsonMapper.readValue(response, Update.class);
+
+        } catch (JsonProcessingException e) {
+            return null;
+        }
+    }
+
+    private Update sendRequestWithFeign(String token, SendMessage sendMessage){
+        try {
+            URI uri = new URI(telegramAPI + token);
+            Update update = customerFeign.sendMessage(uri, sendMessage);
+            log.info("{}", update);
+            return update;
+        } catch (URISyntaxException e) {
+            log.error("{} | {}", e.getMessage(), e.getCause());
+            throw new RuntimeException(e);
+
+        }finally {
+            return null;
+        }
     }
 }

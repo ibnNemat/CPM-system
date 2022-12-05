@@ -1,13 +1,22 @@
 package uz.devops.intern.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+@JsonPropertyOrder({
+    "ok", "error_code", "description", "result"
+})
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ResponseFromTelegram<T>{
 
+    @JsonProperty("ok")
     private Boolean ok;
     @JsonProperty("error_code")
     private Integer errorCode;
+    @JsonProperty("description")
     private String description;
+    @JsonProperty("result")
     private T result;
 
     public ResponseFromTelegram(){};
