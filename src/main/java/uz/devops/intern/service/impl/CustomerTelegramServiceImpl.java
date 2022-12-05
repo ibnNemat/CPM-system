@@ -21,6 +21,7 @@ import uz.devops.intern.redis.CustomerTelegramRedisRepository;
 import uz.devops.intern.repository.CustomerTelegramRepository;
 import uz.devops.intern.service.*;
 import uz.devops.intern.service.dto.PaymentDTO;
+import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.utils.DateUtils;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
 
@@ -142,24 +143,34 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     }
 
     private SendMessage whenPressingInlineButton(CallbackQuery callbackQuery) {
+        String inlineButtonText = callbackQuery.getMessage().getText();
         String data = callbackQuery.getData();
         User telegramUser = callbackQuery.getFrom();
         SendMessage sendMessage = new SendMessage();
 
-        if (authenticatedCustomer == null) return sendCustomerDataNotFoundMessage(telegramUser);
         Optional<CustomerTelegram> optionalCustomerTelegram = customerTelegramRepository.findByTelegramId(telegramUser.getId());
+        if (authenticatedCustomer == null || optionalCustomerTelegram.isEmpty())
+            return sendCustomerDataNotFoundMessage(telegramUser);
 
-
-//        return switch (data){
-//            case inlineButtonPayForService -> payRequestForService(telegramUser, );
-//        };
-
-        return null;
+        CustomerTelegram customerTelegram = optionalCustomerTelegram.get();
+        return switch (inlineButtonText){
+            case inlineButtonPayForService -> payRequestForService(telegramUser, customerTelegram, data);
+        };
     }
 
-//    private SendMessage payRequestForService(User telegramUser, CustomerTelegram customerTelegram){
-//
-//    }
+    private SendMessage payRequestForService(User telegramUser, CustomerTelegram customerTelegram, String paymentData){
+        String stringId = paymentData.substring(9);
+        Long id = Long.parseLong(stringId);
+
+        Optional<PaymentDTO> paymentOptional = paymentService.findOne(id);
+        if (paymentOptional.isEmpty())
+            return sendMessage(telegramUser.getId(), "\uD83D\uDEAB Kechirasiz bu qarzdorlik turi ma'lumotlar omboridan topilmadi. " +
+                "Noqulaylik uchun uzr so'raymiz");
+
+        PaymentDTO paymentDTO = paymentOptional.get();
+
+        ResponseDTO responsePayment = paymentService.payForService();
+    }
 
     public SendMessage mainCommand(String buttonMessage, User telegramUser, CustomerTelegram customerTelegram){
         SendMessage sendMessage = new SendMessage();
@@ -280,7 +291,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
                 DateUtils.parseToStringFromLocalDate(payment.getStartedPeriod()), DateUtils.parseToStringFromLocalDate(payment.getFinishedPeriod())));
 
             InlineKeyboardButton payButton = new InlineKeyboardButton(inlineButtonPayForService);
-            payButton.setCallbackData(inlineButtonPayForService);
+            payButton.setCallbackData("payment: " + payment.getId());
 
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
             markup.setKeyboard(List.of(List.of(payButton)));
