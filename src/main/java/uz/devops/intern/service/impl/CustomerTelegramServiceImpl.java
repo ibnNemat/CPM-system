@@ -168,7 +168,10 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     }
 
     private SendMessage whenPressingInlineButton(CallbackQuery callbackQuery) {
+        InlineKeyboardMarkup markup = callbackQuery.getMessage().getReplyMarkup();
 
+        List<List<InlineKeyboardButton>> buttonList = markup.getKeyboard();
+        System.out.println(buttonList);
 
         String stringMessage = """
                 To'lamoqchi bo'lgan summangizni kiriting
@@ -184,8 +187,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     }
 
     private SendMessage payRequestForService(User telegramUser, CustomerTelegram customerTelegram, String paymentData){
-//        InlineKeyboardMarkup markup = update.getCallbackQuery().getMessage().getReplyMarkup();
-//        List<InlineKeyboardButton> buttonList = markup.getKeyboard().get(0);
+
 
 
         //        Optional<CustomerTelegram> optionalCustomerTelegram = customerTelegramRepository.findByTelegramId(telegramUser.getId());

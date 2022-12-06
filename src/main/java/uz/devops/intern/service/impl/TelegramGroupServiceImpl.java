@@ -86,7 +86,6 @@ public class TelegramGroupServiceImpl implements TelegramGroupService {
     @Override
     public Optional<TelegramGroup> findByChatId(Long chatId) {
         log.debug("Request to get TelegramGroup by chatId: {}", chatId);
-
         return telegramGroupRepository.findByChatId(chatId);
     }
 }
