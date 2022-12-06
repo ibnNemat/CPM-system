@@ -82,4 +82,11 @@ public class TelegramGroupServiceImpl implements TelegramGroupService {
         log.debug("Request to delete TelegramGroup : {}", id);
         telegramGroupRepository.deleteById(id);
     }
+
+    @Override
+    public Optional<TelegramGroup> findByChatId(Long chatId) {
+        log.debug("Request to get TelegramGroup by chatId: {}", chatId);
+
+        return telegramGroupRepository.findByChatId(chatId);
+    }
 }

@@ -33,5 +33,5 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     List<Payment> findAllByCustomer(Customers customer);
 
-    List<Payment> findAllByCustomerAndIsPayedFalse(Customers customer);
+    List<Payment> findAllByCustomerAndIsPayedFalseOrderByStartedPeriod(Customers customer);
 }
