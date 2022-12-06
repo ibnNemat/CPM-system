@@ -95,7 +95,6 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             Message message = update.getMessage();
             User telegramUser = message.getFrom();
 
-            SendMessage sendMessage;
             String requestMessage = message.getText();
 
             if (message.getText() == null) {
@@ -110,14 +109,15 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             }
             boolean isEnteredStartCommand = false;
             if (requestMessage.startsWith("/start ")) {
+
                 try {
                     chatIdCreatedByManager = Long.parseLong(requestMessage.substring(7));
-                    sendMessage = checkBotToken(telegramUser, chatIdCreatedByManager);
+                    SendMessage sendMessage = checkBotToken(telegramUser, chatIdCreatedByManager);
                     if (sendMessage != null) {
                         return sendMessage;
                     }
 
-                    startCommand(telegramUser, sendMessage);
+                    startCommand(telegramUser);
                     isEnteredStartCommand = true;
                 }catch (NumberFormatException numberFormatException){
                     log.error("Error parsing chatId to Long when bot started");
@@ -157,7 +157,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
                     case 1:
                         return registerCustomerClientAndShowCustomerMenu(requestMessage, telegramUser, customerTelegram);
                     case 2:
-                        sendMessage = mainCommand(requestMessage, telegramUser, customerTelegram);
+                        SendMessage sendMessage = mainCommand(requestMessage, telegramUser, customerTelegram);
                         if (sendMessage != null) return sendMessage;
 //                    case 3:
                 }
@@ -415,7 +415,8 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         return customerOptional.get();
     }
 
-    public void startCommand(User user, SendMessage sendMessage){
+    public void startCommand(User user){
+        SendMessage sendMessage = new SendMessage();
         String sendStringMessage = "Assalomu alaykum " + user.getUserName() +
             ", CPM(nom qo'yiladi) to'lov tizimiga xush kelibsiz! \n";
         sendMessage.setText(sendStringMessage);
