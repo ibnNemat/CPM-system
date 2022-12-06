@@ -20,11 +20,12 @@ import uz.devops.intern.redis.CustomerTelegramRedis;
 import uz.devops.intern.redis.CustomerTelegramRedisRepository;
 import uz.devops.intern.repository.CustomerTelegramRepository;
 import uz.devops.intern.service.*;
-import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.PaymentDTO;
-import uz.devops.intern.service.mapper.CustomerTelegramMapper;
 import uz.devops.intern.service.utils.DateUtils;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
+
+
+import javax.persistence.EntityManager;
 
 import static uz.devops.intern.telegram.bot.utils.KeyboardUtil.sendMarkup;
 import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.*;
@@ -35,6 +36,9 @@ import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.*;
 @Service
 @Transactional
 public class CustomerTelegramServiceImpl implements CustomerTelegramService {
+    @Autowired
+    private EntityManager entityManager;
+
     private static final String groupButtonMessage = "\uD83D\uDCAC Guruhlarim";
     private static final String paymentHistoryButtonMessage = "\uD83D\uDCC3 To'lovlar tarixi";
     private static final String paymentButtonMessage = "\uD83D\uDCB0 Qarzdorligim";
@@ -49,29 +53,27 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     private static Customers authenticatedCustomer;
     private final CustomersService customersService;
     private final CustomerFeign customerFeign;
-    private final BotTokenService botTokenService;
     private final PaymentService paymentService;
+    private final TelegramGroupService telegramGroupService;
     private final PaymentHistoryService paymentHistoryService;
-    private final CustomerTelegramMapper customerTelegramMapper;
-    public CustomerTelegramServiceImpl(CustomerTelegramRepository customerTelegramRepository, CustomerTelegramRedisRepository customerTelegramRedisRepository, CustomersService customersService, CustomerFeign customerFeign, BotTokenService botTokenService, PaymentService paymentService, PaymentHistoryService paymentHistoryService, CustomerTelegramMapper customerTelegramMapper) {
+    public CustomerTelegramServiceImpl(CustomerTelegramRepository customerTelegramRepository, CustomerTelegramRedisRepository customerTelegramRedisRepository, CustomersService customersService, CustomerFeign customerFeign, PaymentService paymentService, TelegramGroupService telegramGroupService, PaymentHistoryService paymentHistoryService) {
         this.customerTelegramRepository = customerTelegramRepository;
         this.customerTelegramRedisRepository = customerTelegramRedisRepository;
         this.customersService = customersService;
         this.customerFeign = customerFeign;
-        this.botTokenService = botTokenService;
         this.paymentService = paymentService;
+        this.telegramGroupService = telegramGroupService;
         this.paymentHistoryService = paymentHistoryService;
-        this.customerTelegramMapper = customerTelegramMapper;
     }
 
-    public SendMessage checkBotToken(Chat chat){
-        Optional<BotToken> optionalBotToken = botTokenService.findByChatId(chat.getId());
-        if (optionalBotToken.isEmpty()){
+    public SendMessage checkBotToken(User telegramUser, Long chatId){
+        Optional<TelegramGroup> telegramGroup = telegramGroupService.findByChatId(chatId);
+        if (telegramGroup.isEmpty()){
             String sendStringMessage = "\uD83D\uDEAB Kechirasiz, sizdagi mavjud telegram guruhi tizimdan " +
                 "foydalanish uchun ro'yxatdan o'tmagan. Guruh rahbaringiz telegram guruhni tizimdan ro'yxatdan o'tkazishi zarur!";
 
             SendMessage sendMessage = new SendMessage();
-            sendMessage.setChatId(chat.getId());
+            sendMessage.setChatId(telegramUser.getId());
             sendMessage.setText(sendStringMessage);
 
             return sendMessage;
@@ -86,22 +88,13 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
                 return null;
             }
 
-            InlineKeyboardMarkup markup = update.getCallbackQuery().getMessage().getReplyMarkup();
-            List<InlineKeyboardButton> buttonList = markup.getKeyboard().get(0);
-
             SendMessage sendMessage = whenPressingInlineButton(update.getCallbackQuery());
             if (sendMessage != null) return sendMessage;
         }else {
             Message message = update.getMessage();
             User telegramUser = message.getFrom();
-            Chat chat = message.getChat();
 
-            SendMessage sendMessage = checkBotToken(chat);
-            if (sendMessage != null) {
-                return sendMessage;
-            }
-
-            sendMessage = new SendMessage();
+            SendMessage sendMessage;
             String requestMessage = message.getText();
 
             if (message.getText() == null) {
@@ -116,17 +109,33 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             }
             boolean isEnteredStartCommand = false;
             if (requestMessage.startsWith("/start ")) {
-                chatIdCreatedByManager = Long.parseLong(requestMessage.substring(7));
-                startCommand(telegramUser, sendMessage);
-                isEnteredStartCommand = true;
+                try {
+                    chatIdCreatedByManager = Long.parseLong(requestMessage.substring(7));
+                    sendMessage = checkBotToken(telegramUser, chatIdCreatedByManager);
+                    if (sendMessage != null) {
+                        return sendMessage;
+                    }
+
+                    startCommand(telegramUser, sendMessage);
+                    isEnteredStartCommand = true;
+                }catch (NumberFormatException numberFormatException){
+                    log.error("Error parsing chatId to Long when bot started");
+                    return sendMessage(telegramUser.getId(), "❌ Chat raqami xato kiritilgan!");
+                }
             }
 
             Optional<CustomerTelegram> customerTelegramOptional = customerTelegramRepository.findByTelegramId(telegramUser.getId());
             if (customerTelegramOptional.isEmpty()) {
                 CustomerTelegram customerTelegram = createCustomerTelegramToSaveDatabase(telegramUser);
+
                 if (chatIdCreatedByManager != null) {
-                    TelegramGroup telegramGroup = new TelegramGroup();
-                    customerTelegram.setTelegramGroups(Set.of(telegramGroup));
+                    entityManager.detach(customerTelegram);
+                    Optional<TelegramGroup> telegramGroupOptional = telegramGroupService.findByChatId(chatIdCreatedByManager);
+                    if (telegramGroupOptional.isPresent()){
+                        TelegramGroup telegramGroup = new TelegramGroup();
+                        telegramGroup.setId(telegramGroupOptional.get().getId());
+                        customerTelegram.setTelegramGroups(Set.of(telegramGroup));
+                    }
                 }
                 customerTelegramRepository.save(customerTelegram);
 
@@ -157,34 +166,8 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         return null;
     }
 
-    @Override
-    public CustomerTelegramDTO findByTelegramId(Long telegramId) {
-        if(telegramId == null){
-            return null;
-        }
-        Optional<CustomerTelegram> customerTelegramOptional =
-            customerTelegramRepository.findByTelegramId(telegramId);
-
-        return customerTelegramOptional.map(customerTelegramMapper::toDto).orElse(null);
-    }
-
-    @Override
-    public CustomerTelegram findEntityByTelegramId(Long telegramId) {
-        if(telegramId == null){
-            return null;
-        }
-        Optional<CustomerTelegram> customerTelegramOptional =
-            customerTelegramRepository.findByTelegramId(telegramId);
-
-        return customerTelegramOptional.orElse(null);
-    }
-
-
     private SendMessage whenPressingInlineButton(CallbackQuery callbackQuery) {
-        String inlineButtonText = callbackQuery.getMessage().getText();
-//        String data = callbackQuery.getData();
-        User telegramUser = callbackQuery.getFrom();
-        SendMessage sendMessage = new SendMessage();
+
 
         String stringMessage = """
                 To'lamoqchi bo'lgan summangizni kiriting
@@ -200,6 +183,10 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     }
 
     private SendMessage payRequestForService(User telegramUser, CustomerTelegram customerTelegram, String paymentData){
+//        InlineKeyboardMarkup markup = update.getCallbackQuery().getMessage().getReplyMarkup();
+//        List<InlineKeyboardButton> buttonList = markup.getKeyboard().get(0);
+
+
         //        Optional<CustomerTelegram> optionalCustomerTelegram = customerTelegramRepository.findByTelegramId(telegramUser.getId());
 //        if (authenticatedCustomer == null || optionalCustomerTelegram.isEmpty())
 //            return sendCustomerDataNotFoundMessage(telegramUser);

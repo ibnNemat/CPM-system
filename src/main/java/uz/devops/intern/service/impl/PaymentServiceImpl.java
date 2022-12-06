@@ -253,7 +253,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public List<Payment> getAllCustomerPaymentsPayedIsFalse(Customers customer) {
         log.debug("Request to get all customer Payments which payment is false");
-        return paymentRepository.findAllByCustomerAndIsPayedFalse(customer);
+        return paymentRepository.findAllByCustomerAndIsPayedFalseOrderByStartedPeriod(customer);
     }
 
     @Override

@@ -8,6 +8,7 @@ import uz.devops.intern.domain.TelegramGroup;
 import java.util.List;
 import java.util.Optional;
 
+
 /**
  * Spring Data JPA repository for the TelegramGroup entity.
  */

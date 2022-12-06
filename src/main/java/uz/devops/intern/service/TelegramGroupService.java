@@ -63,4 +63,6 @@ public interface TelegramGroupService {
     List<TelegramGroupDTO> findByOwnerId(Long managerId);
 
     TelegramGroup getEntityByChatId(Long chatId);
+
+    Optional<TelegramGroup> findByChatId(Long chatId);
 }
