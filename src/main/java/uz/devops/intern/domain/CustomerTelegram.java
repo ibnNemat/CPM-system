@@ -59,7 +59,6 @@ public class CustomerTelegram implements Serializable {
     @OneToOne
     @JoinColumn(unique = true)
     private Customers customer;
-
     @ManyToMany
     @JoinTable(
         name = "rel_customer_telegram__telegram_group",
@@ -70,7 +69,6 @@ public class CustomerTelegram implements Serializable {
     private Set<TelegramGroup> telegramGroups = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
-
 
     public Long getChatId() {
         return chatId;
