@@ -540,7 +540,6 @@ public class AdminTgServiceImpl implements AdminTgService {
             bot.getId(), groupId, link);
     }
 
-
     private Update sendRequestWithFeign(String token, SendMessage sendMessage){
         try {
             URI uri = new URI(telegramAPI + token);

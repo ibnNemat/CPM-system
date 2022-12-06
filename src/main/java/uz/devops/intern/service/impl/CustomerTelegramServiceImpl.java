@@ -86,6 +86,9 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
                 return null;
             }
 
+            InlineKeyboardMarkup markup = update.getCallbackQuery().getMessage().getReplyMarkup();
+            List<InlineKeyboardButton> buttonList = markup.getKeyboard().get(0);
+
             SendMessage sendMessage = whenPressingInlineButton(update.getCallbackQuery());
             if (sendMessage != null) return sendMessage;
         }else {
@@ -111,16 +114,20 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
                 case "/help":
                     return helpCommand(message);
             }
-
+            boolean isEnteredStartCommand = false;
             if (requestMessage.startsWith("/start ")) {
                 chatIdCreatedByManager = Long.parseLong(requestMessage.substring(7));
                 startCommand(telegramUser, sendMessage);
+                isEnteredStartCommand = true;
             }
 
             Optional<CustomerTelegram> customerTelegramOptional = customerTelegramRepository.findByTelegramId(telegramUser.getId());
             if (customerTelegramOptional.isEmpty()) {
                 CustomerTelegram customerTelegram = createCustomerTelegramToSaveDatabase(telegramUser);
-                if (chatIdCreatedByManager != null) customerTelegram.setChatId(chatIdCreatedByManager);
+                if (chatIdCreatedByManager != null) {
+                    TelegramGroup telegramGroup = new TelegramGroup();
+                    customerTelegram.setTelegramGroups(Set.of(telegramGroup));
+                }
                 customerTelegramRepository.save(customerTelegram);
 
                 String responseString = "Quyidagi tillardan birini tanlang \uD83D\uDC47";
@@ -132,12 +139,17 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
                 CustomerTelegram customerTelegram = customerTelegramOptional.get();
                 Integer step = customerTelegram.getStep();
 
+                if (step != 1 && isEnteredStartCommand){
+                    step = 1;
+                }
+
                 switch (step) {
                     case 1:
                         return registerCustomerClientAndShowCustomerMenu(requestMessage, telegramUser, customerTelegram);
                     case 2:
                         sendMessage = mainCommand(requestMessage, telegramUser, customerTelegram);
                         if (sendMessage != null) return sendMessage;
+//                    case 3:
                 }
             }
         }
@@ -170,22 +182,30 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
 
     private SendMessage whenPressingInlineButton(CallbackQuery callbackQuery) {
         String inlineButtonText = callbackQuery.getMessage().getText();
-        String data = callbackQuery.getData();
+//        String data = callbackQuery.getData();
         User telegramUser = callbackQuery.getFrom();
         SendMessage sendMessage = new SendMessage();
 
-        Optional<CustomerTelegram> optionalCustomerTelegram = customerTelegramRepository.findByTelegramId(telegramUser.getId());
-        if (authenticatedCustomer == null || optionalCustomerTelegram.isEmpty())
-            return sendCustomerDataNotFoundMessage(telegramUser);
+        String stringMessage = """
+                To'lamoqchi bo'lgan summangizni kiriting
 
-        CustomerTelegram customerTelegram = optionalCustomerTelegram.get();
+                <i>Qo'shimcha: </i> Kiritiladigan summa faqat butun sonlardan tashkil topgan bo'lishi va manfiy bo'lmasligi zarur \uD83D\uDC47""";
+//
 //        return switch (inlineButtonText){
-//            case inlineButtonPayForService -> payRequestForService(telegramUser, customerTelegram, data);
+//            case inlineButtonPayForService -> sendMessage(telegramUser.getId(), stringMessage);
+//
 //        };
+
         return null;
     }
 
     private SendMessage payRequestForService(User telegramUser, CustomerTelegram customerTelegram, String paymentData){
+        //        Optional<CustomerTelegram> optionalCustomerTelegram = customerTelegramRepository.findByTelegramId(telegramUser.getId());
+//        if (authenticatedCustomer == null || optionalCustomerTelegram.isEmpty())
+//            return sendCustomerDataNotFoundMessage(telegramUser);
+//
+//        CustomerTelegram customerTelegram = optionalCustomerTelegram.get();
+
         String stringId = paymentData.substring(9);
         Long id = Long.parseLong(stringId);
 
@@ -221,31 +241,46 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
                 return sendMessage;
             }
         } else {
-            Customers customer = checkCustomerPhoneNumber(requestMessage);
-            Authority customerAuthority = new Authority();
-            customerAuthority.setName("ROLE_CUSTOMER");
-            if (customer == null) {
-                String sendStringMessage = "\uD83D\uDEAB Kechirasiz, bu raqam ma'lumotlar omboridan topilmadi\n" +
-                    "Tizim web-sahifasi orqali ro'yxatdan o'tishingizni so'raymiz!";
 
-                sendMessage = sendMessage(telegramUser.getId(), sendStringMessage, sendMarkup());
-                log.info("Message send successfully! User id: {} | Message text: {}", telegramUser, sendMessage);
-                return sendMessage;
-            } else if (customer.getUser() == null || !customer.getUser().getAuthorities().contains(customerAuthority)) {
-                String sendStringMessage = "\uD83D\uDEAB Kechirasiz, bu raqamga 'Foydalanuvchi' huquqi berilmagan\n" +
-                    "Boshqa raqam kiritishingizni so'raymiz!";
+            // when customer entered from another telegram bot
+            if (customerTelegram.getPhoneNumber() != null){
+                if (chatIdCreatedByManager != null) {
+                    TelegramGroup telegramGroup = new TelegramGroup();
+                    telegramGroup.setChatId(chatIdCreatedByManager);
 
-                sendMessage = sendMessage(telegramUser.getId(), sendStringMessage, sendMarkup());
-                log.info("Message send successfully! User id: {} | Message text: {}", telegramUser, sendMessage);
-                return sendMessage;
-            } else {
-                customerTelegram.customer(customer);
-                customerTelegramRepository.save(customerTelegram);
+                    Set<TelegramGroup> customerTelegramGroups = customerTelegram.getTelegramGroups();
 
-                authenticatedCustomer = customer;
-            }
+                    if (customerTelegramGroups != null){
+                        customerTelegramGroups.add(telegramGroup);
+                    }
+                }
+                return sendCustomerMenu(telegramUser);
 
-            if (customerTelegram.getPhoneNumber() == null) {
+            }else {
+                Customers customer = checkCustomerPhoneNumber(requestMessage);
+                Authority customerAuthority = new Authority();
+                customerAuthority.setName("ROLE_CUSTOMER");
+                if (customer == null) {
+                    String sendStringMessage = "\uD83D\uDEAB Kechirasiz, bu raqam ma'lumotlar omboridan topilmadi\n" +
+                        "Tizim web-sahifasi orqali ro'yxatdan o'tishingizni so'raymiz!";
+
+                    sendMessage = sendMessage(telegramUser.getId(), sendStringMessage, sendMarkup());
+                    log.info("Message send successfully! User id: {} | Message text: {}", telegramUser, sendMessage);
+                    return sendMessage;
+                } else if (customer.getUser() == null || !customer.getUser().getAuthorities().contains(customerAuthority)) {
+                    String sendStringMessage = "\uD83D\uDEAB Kechirasiz, bu raqamga 'Foydalanuvchi' huquqi berilmagan\n" +
+                        "Boshqa raqam kiritishingizni so'raymiz!";
+
+                    sendMessage = sendMessage(telegramUser.getId(), sendStringMessage, sendMarkup());
+                    log.info("Message send successfully! User id: {} | Message text: {}", telegramUser, sendMessage);
+                    return sendMessage;
+                } else {
+                    customerTelegram.customer(customer);
+                    customerTelegramRepository.save(customerTelegram);
+
+                    authenticatedCustomer = customer;
+                }
+
                 customerTelegram.setPhoneNumber(requestMessage);
                 customerTelegram.setStep(2);
                 customerTelegramRepository.save(customerTelegram);
@@ -256,11 +291,12 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
                     ", tizimdan foydalanish uchun muvaffaqiyatli ro'yxatdan o'tdingiz ✅");
 
                 customerFeign.sendMessage(sendMessage);
-            }
-            if (redisOptional.isEmpty()) {
-                CustomerTelegramRedis customerTelegramRedis = new CustomerTelegramRedis(telegramUser.getId(), telegramUser);
-                customerTelegramRedisRepository.save(customerTelegramRedis);
-                log.info("New telegram user successfully saved to redis! UserRedis : {}", customerTelegramRedis);
+
+                if (redisOptional.isEmpty()) {
+                    CustomerTelegramRedis customerTelegramRedis = new CustomerTelegramRedis(telegramUser.getId(), telegramUser);
+                    customerTelegramRedisRepository.save(customerTelegramRedis);
+                    log.info("New telegram user successfully saved to redis! UserRedis : {}", customerTelegramRedis);
+                }
             }
         }
 
@@ -285,7 +321,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         markup.setResizeKeyboard(true);
         markup.setKeyboard(List.of(row1, row2, row3));
 
-        return sendMessage(userTelegram.getId(), "Menu", markup);
+        return sendMessage(userTelegram.getId(), "\uD83C\uDFE0 Menu", markup);
     }
 
     private SendMessage sendCustomerDataNotFoundMessage(User telegramUser){
