@@ -1,5 +1,6 @@
 package uz.devops.intern.service;
 
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.ChatMemberUpdated;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -18,13 +19,13 @@ public interface AdminTgService {
 
     void checkIsBotInGroup(Message message, String botId);
 
-    void checkIsBotAdmin(ChatMemberUpdated member);
+//    void checkIsBotAdmin(ChatMemberUpdated member);
 
     boolean menu(Message message, CustomerTelegram customer);
 
     void addOrganization(Message message, CustomerTelegram manager);
 
-    void addGroup(Message message, CustomerTelegram manager);
+    void addGroup(CallbackQuery callbackQuery, CustomerTelegram manager);
 
     void addServices(Message message, CustomerTelegram manager);
 }

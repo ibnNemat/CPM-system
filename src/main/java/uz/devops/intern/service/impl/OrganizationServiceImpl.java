@@ -2,6 +2,8 @@ package uz.devops.intern.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.devops.intern.domain.Organization;
@@ -101,6 +103,16 @@ public class OrganizationServiceImpl implements OrganizationService {
     public void delete(Long id) {
         log.debug("Request to delete Organization : {}", id);
         organizationRepository.deleteById(id);
+    }
+
+    @Override
+    public List<OrganizationDTO> getOrganizationsByUserLogin() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(user != null && user.getUsername() != null){
+            List<Organization> organizations = organizationRepository.findAllByOrgOwnerName(user.getUsername());
+            return organizations.stream().map(organizationMapper::toDto).collect(Collectors.toList());
+        }
+        return List.of();
     }
 
     @Override

@@ -2,9 +2,12 @@ package uz.devops.intern.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -20,12 +23,10 @@ import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.feign.CustomerFeignClient;
 import uz.devops.intern.repository.BotTokenRepository;
 import uz.devops.intern.repository.CustomerTelegramRepository;
-import uz.devops.intern.repository.TelegramGroupRepository;
 import uz.devops.intern.repository.UserRepository;
-import uz.devops.intern.service.AdminTgService;
-import uz.devops.intern.service.OrganizationService;
-import uz.devops.intern.service.ServicesService;
-import uz.devops.intern.service.TelegramGroupService;
+import uz.devops.intern.service.*;
+import uz.devops.intern.service.dto.CustomerTelegramDTO;
+import uz.devops.intern.service.dto.GroupsDTO;
 import uz.devops.intern.service.dto.OrganizationDTO;
 import uz.devops.intern.service.dto.TelegramGroupDTO;
 import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
@@ -37,9 +38,7 @@ import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class AdminTgServiceImpl implements AdminTgService {
@@ -47,26 +46,44 @@ public class AdminTgServiceImpl implements AdminTgService {
     private static String telegramAPI = "https://api.telegram.org/bot";
     private static String webhookAPI = "/setWebhook?url=https://b243-83-221-180-161.in.ngrok.io/api/new-message";
     private final Logger log = LoggerFactory.getLogger(AdminTgServiceImpl.class);
-    @Autowired
-    private TelegramGroupService telegramGroupService;
-    @Autowired
-    private OrganizationService organizationService;
-    @Autowired
-    private ServicesService servicesService;
-    @Autowired
-    private BotTokenRepository botTokenRepository;
-    @Autowired
-    private CustomerTelegramRepository customerTelegramRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private AdminFeign adminFeign;
-    @Autowired
-    private CustomerFeignClient customerFeign;
+//    @Autowired
+    private final TelegramGroupService telegramGroupService;
+//    @Autowired
+    private final OrganizationService organizationService;
+    private final GroupsService groupsService;
+//    @Autowired
+    private final ServicesService servicesService;
+
+    private final CustomerTelegramService customerTelegramService;
+//    @Autowired
+    private final BotTokenRepository botTokenRepository;
+//    @Autowired
+    private final CustomerTelegramRepository customerTelegramRepository;
+//    @Autowired
+    private final UserRepository userRepository;
+//    @Autowired
+    private final AdminFeign adminFeign;
+//    @Autowired
+    private final CustomerFeignClient customerFeign;
+
+    public AdminTgServiceImpl(TelegramGroupService telegramGroupService, OrganizationService organizationService, GroupsService groupsService, ServicesService servicesService, CustomerTelegramService customerTelegramService, BotTokenRepository botTokenRepository, CustomerTelegramRepository customerTelegramRepository, UserRepository userRepository, AdminFeign adminFeign, CustomerFeignClient customerFeign) {
+        this.telegramGroupService = telegramGroupService;
+        this.organizationService = organizationService;
+        this.groupsService = groupsService;
+        this.servicesService = servicesService;
+        this.customerTelegramService = customerTelegramService;
+        this.botTokenRepository = botTokenRepository;
+        this.customerTelegramRepository = customerTelegramRepository;
+        this.userRepository = userRepository;
+        this.adminFeign = adminFeign;
+        this.customerFeign = customerFeign;
+    }
 
     @Override
     public void main(Update update) {
-        Long userId = update.getMessage().getFrom().getId();
+        Long userId = update.getMessage() != null?
+            update.getMessage().getChatId():
+            update.getCallbackQuery().getFrom().getId();
         Optional<CustomerTelegram> customerOptional = customerTelegramRepository.findByTelegramId(userId);
         if(customerOptional.isEmpty()){
             // Bazadan user ma'lumotlar topilmasa shu if ichiga kiradi.
@@ -94,7 +111,18 @@ public class AdminTgServiceImpl implements AdminTgService {
             }else if(step == 5){
                 addOrganization(update.getMessage(), customer);
             }else if(step == 6){
-                showOtherGroup(update.getCallbackQuery(), customer);
+                if(update.hasCallbackQuery()) {
+
+                    addGroup(update.getCallbackQuery(), customer);
+                }else{
+                    wrongValue(customer.getTelegramId());
+                }
+            }else if(step == 7){
+                if(update.hasCallbackQuery()){
+                    chooseOrganization(update.getCallbackQuery(), customer);
+                }else {
+                    wrongValue(customer.getTelegramId());
+                }
             }
         }
     }
@@ -232,9 +260,10 @@ public class AdminTgServiceImpl implements AdminTgService {
         CustomerTelegram manager = customerTelegramRepository.findByBot(Long.parseLong(botId)).get();
         String userId = String.valueOf(manager.getTelegramId());
         if(isBot){
+
             sayThanksToManager(bot);
             sendInviteLink(bot, message.getChat().getId());
-            saveToTelegramGroup(message.getChat());
+            saveToTelegramGroup(message.getChat(), manager.getTelegramId());
 
         }else {
             String newMessage = "Iltimos hozirgi botni qo'shing";
@@ -243,24 +272,24 @@ public class AdminTgServiceImpl implements AdminTgService {
             log.warn("Something goes wrong, Bot id: {} | Group id: {}", botId, message.getChat().getId());
         }
     }
-
-    @Override
-    public void checkIsBotAdmin(ChatMemberUpdated member){
-        boolean isBot = member.getNewChatMember().getUser().getIsBot();
-        if(isBot){
-            String status = member.getNewChatMember().getStatus().toUpperCase();
-            if(status.equals("ADMINISTRATOR")){
-                org.telegram.telegrambots.meta.api.objects.User bot = member.getNewChatMember().getUser();
-                sayThanksToManager(bot);
-                sendInviteLink(bot, member.getChat().getId());
-            }else {
-                log.warn("Bot is not administrator, Bot status: {}", member.getNewChatMember().getStatus());
-            }
-        }else{
-            log.warn("Something goes wrong, New member username and id: {} {} | Group id: {}",
-                member.getFrom().getUserName(), member.getFrom().getId(), member.getChat().getId());
-        }
-    }
+//
+//    @Override
+//    public void checkIsBotAdmin(ChatMemberUpdated member){
+//        boolean isBot = member.getNewChatMember().getUser().getIsBot();
+//        if(isBot){
+//            String status = member.getNewChatMember().getStatus().toUpperCase();
+//            if(status.equals("ADMINISTRATOR")){
+//                org.telegram.telegrambots.meta.api.objects.User bot = member.getNewChatMember().getUser();
+//                sayThanksToManager(bot);
+//                sendInviteLink(bot, member.getChat().getId());
+//            }else {
+//                log.warn("Bot is not administrator, Bot status: {}", member.getNewChatMember().getStatus());
+//            }
+//        }else{
+//            log.warn("Something goes wrong, New member username and id: {} {} | Group id: {}",
+//                member.getFrom().getUserName(), member.getFrom().getId(), member.getChat().getId());
+//        }
+//    }
 
     @Override
     public boolean menu(Message message, CustomerTelegram customer) {
@@ -276,17 +305,17 @@ public class AdminTgServiceImpl implements AdminTgService {
                 customer.setStep(5);
                 return true;
             }else if(text.equals("Guruh qo'shish")){
-                List<TelegramGroupDTO> telegramGroups = telegramGroupService.findAll();
+                CustomerTelegramDTO manager = customerTelegramService.findByTelegramId(customer.getTelegramId());
+                List<TelegramGroupDTO> telegramGroups = manager.getTelegramGroups().stream().toList();
+                
                 if(!telegramGroups.isEmpty()){
-                    TelegramGroupDTO telegramGroupDTO = telegramGroups.get(0);
-                    newMessage = createGroupText(telegramGroupDTO);
-                    InlineKeyboardMarkup markup = createGroupButtons(telegramGroupDTO.getChatId(),
-                        null,
-                        telegramGroups.get(1) == null? null: telegramGroups.get(1).getChatId());
-                    SendMessage sendMessage = TelegramsUtil.sendMessage(customer.getTelegramId(), newMessage, markup);
-                    adminFeign.sendMessage(sendMessage);
-                    log.info("Bot send group as text, Manager id: {} | Telegram groups count: {} | Group: {}",
-                        customer.getTelegramId(), telegramGroups.size(), telegramGroupDTO);
+                    for(TelegramGroupDTO dto: telegramGroups){
+                        newMessage = createGroupText(dto);
+                        InlineKeyboardMarkup markup = createGroupButtons(dto.getChatId());
+                        SendMessage sendMessage =
+                            TelegramsUtil.sendMessage(customer.getTelegramId(), newMessage, markup);
+                        adminFeign.sendMessage(sendMessage);
+                    }
                     customer.setStep(6);
                     return true;
                 }else {
@@ -309,6 +338,11 @@ public class AdminTgServiceImpl implements AdminTgService {
     @Override
     public void addOrganization(Message message, CustomerTelegram manager) {
         if(message.hasText()){
+            Optional<User> userOptional = userRepository.getUserByPhoneNumber(manager.getPhoneNumber());
+            if(userOptional.isEmpty()){
+                return;
+            }
+            setUserToContextHolder(userOptional.get());
             String messageText = message.getText();
             OrganizationDTO organization = new OrganizationDTO();
             organization.setName(messageText);
@@ -329,23 +363,80 @@ public class AdminTgServiceImpl implements AdminTgService {
         }
     }
 
-    private void showOtherGroup(CallbackQuery callback, CustomerTelegram manager){
-        String callbackText = callback.getMessage().getText();
+    private void showOtherGroup(CallbackQuery callback){
+//        String callbackText = callback.getMessage().getText();
         String callbackData = callback.getData();
-
         if(callbackData != null){
-            TelegramGroupDTO group =
-                telegramGroupService.findOne(Long.parseLong(callbackData)).get();
+            Long groupId = Long.parseLong(callbackData);
+            List<TelegramGroupDTO> telegramGroups =
+                telegramGroupService.getThreeDTO(groupId);
 
-            String groupAsText = createGroupText(group);
-//
-//            createGroupButtons(group.getChatId(), )
+            Long previous = null, next = null;
+            String groupAsText = null;
+            InlineKeyboardMarkup markup = null;
+            TelegramGroupDTO groupDTO = null;
+            for(TelegramGroupDTO group: telegramGroups){
+                if(group.getChatId().equals(groupId)){
+//                    groupAsText = createGroupText(group);
+                    groupDTO = group;
+//                    markup = createGroupButtons(groupId, previous, next);
+                }else if(group.getChatId() > groupId){
+                    next = group.getChatId();
+                }else{
+                    previous = group.getChatId();
+                }
+            }
 
+            groupAsText = createGroupText(groupDTO);
+            markup = createGroupButtons(groupDTO.getChatId(), previous, next);
+
+            SendMessage sendMessage =
+                TelegramsUtil.sendMessage(callback.getFrom().getId(), groupAsText, markup);
+            adminFeign.sendMessage(sendMessage);
         }
     }
 
     @Override
-    public void addGroup(Message message, CustomerTelegram manager) {
+    public void addGroup(CallbackQuery callback, CustomerTelegram manager) {
+        String callbackText = callback.getMessage().getReplyMarkup().getKeyboard().get(0).get(0).getText();
+        if(callbackText.equals("Shu guruhni qo'shish")){
+            Long groupChatId = Long.parseLong(callback.getData());
+            TelegramGroupDTO telegramGroup = telegramGroupService.findOneByChatId(groupChatId);
+            Optional<User> userOptional = userRepository.getUserByPhoneNumber(manager.getPhoneNumber());
+            if(userOptional.isPresent()){
+                setUserToContextHolder(userOptional.get());
+                List<OrganizationDTO> organizations = organizationService.getOrganizationsByUserLogin();
+                InlineKeyboardMarkup markup = createGroupButtons(organizations, telegramGroup.getChatId());
+                adminFeign.editMessageReplyMarkup(markup);
+                manager.setStep(7);
+                customerTelegramRepository.save(manager);
+            }
+        }
+    }
+
+    public void chooseOrganization(CallbackQuery callbackQuery, CustomerTelegram manager) {
+        String callbackData = callbackQuery.getData();
+        String[] data = callbackData.split(":");
+        Long telegramGroupId = Long.parseLong(data[0]);
+        Long organizationId = Long.parseLong(data[1]);
+
+        TelegramGroupDTO telegramGroup = telegramGroupService.findOneByChatId(telegramGroupId);
+        OrganizationDTO organization = organizationService.findOne(organizationId).get();
+
+        GroupsDTO groupsDTO = new GroupsDTO();
+        groupsDTO.setName(telegramGroup.getName());
+        groupsDTO.setOrganization(organization);
+
+        groupsService.save(groupsDTO);
+
+        manager.setStep(4);
+        customerTelegramRepository.save(manager);
+
+        String newMessage = "Asosiy menyu";
+        ReplyKeyboardMarkup markup = createMenu();
+        SendMessage sendMessage =
+            TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage, markup);
+        adminFeign.sendMessage(sendMessage);
     }
 
     @Override
@@ -465,13 +556,17 @@ public class AdminTgServiceImpl implements AdminTgService {
         }
     }
 
-    private void saveToTelegramGroup(Chat chat){
+    private void saveToTelegramGroup(Chat chat, Long managerId){
         TelegramGroupDTO dto = new TelegramGroupDTO();
         dto.setChatId(chat.getId());
         dto.setName(chat.getTitle());
 
         dto = telegramGroupService.save(dto);
+        TelegramGroup group = telegramGroupService.getEntityByChatId(chat.getId());
         log.info("Telegram group is saved successfully, Chat id: {} | DTO: {}", chat.getId(), dto);
+        CustomerTelegram manager = customerTelegramRepository.findByTelegramId(managerId).get();
+        manager.setTelegramGroups(Set.of(group));
+
     }
 
 //    private User isBotExistsIntoGroup(Chat chat, String botId){
@@ -510,6 +605,33 @@ public class AdminTgServiceImpl implements AdminTgService {
         log.warn("User send invalid value, Chat id: {} | Update: {}", chatId, update);
     }
 
+
+    private InlineKeyboardMarkup createGroupButtons(Long currentGroupId){
+        InlineKeyboardButton current = new InlineKeyboardButton("Shu guruhni qo'shish");
+        current.setCallbackData(String.valueOf(currentGroupId));
+
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
+        markup.setKeyboard(List.of(List.of(current)));
+
+        return markup;
+    }
+
+    private InlineKeyboardMarkup createGroupButtons(List<OrganizationDTO> organizations, Long telegramGroupId){
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboards = new ArrayList<>();
+
+        for(OrganizationDTO organization: organizations){
+            InlineKeyboardButton button = new InlineKeyboardButton();
+            button.setText(organization.getName());
+            button.setCallbackData(telegramGroupId + ":" + organization.getId());
+
+            keyboards.add(List.of(button));
+        }
+
+        markup.setKeyboard(keyboards);
+        return markup;
+    }
+
     private InlineKeyboardMarkup createGroupButtons(Long currentId, Long previousId, Long nextId){
         InlineKeyboardButton previous = new InlineKeyboardButton("⬅");
         previous.setCallbackData(String.valueOf(previousId));
@@ -517,7 +639,7 @@ public class AdminTgServiceImpl implements AdminTgService {
         InlineKeyboardButton current = new InlineKeyboardButton("✋");
         current.setCallbackData(String.valueOf(currentId));
 
-        InlineKeyboardButton next = new InlineKeyboardButton();
+        InlineKeyboardButton next = new InlineKeyboardButton("➡");
         next.setCallbackData(String.valueOf(nextId));
 
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
@@ -530,19 +652,32 @@ public class AdminTgServiceImpl implements AdminTgService {
         List<CustomerTelegram> customersList =
             customerTelegramRepository.getCountCustomersByChatId(telegramGroup.getChatId());
 
-        StringBuilder builder = new StringBuilder(String.format(
+        String groupAsText = String.format(
             "Guruh nomi: %s\n" +
             "Guruh odamlari soni: %s\n" +
                 "===========================\n",
             telegramGroup.getName(), customersList.size()
-        ));
+        );
 
-        for(CustomerTelegram customer: customersList){
-            builder.append(customer.getUsername()).append("\n");
-        }
-
-        return builder.toString();
+        return groupAsText;
     }
 
+    private void setUserToContextHolder(User user){
+        Collection<GrantedAuthority> authorities = setAuthoritiesToCollection(user.getAuthorities());
+        org.springframework.security.core.userdetails.User principal =
+            new org.springframework.security.core.userdetails.User(user.getLogin(),
+                user.getPassword() == null? "": user.getPassword(), authorities);
+        UsernamePasswordAuthenticationToken authentication =
+            new UsernamePasswordAuthenticationToken(principal, null, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+    private Collection<GrantedAuthority> setAuthoritiesToCollection(Set<Authority> authorities){
+        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
+        for(Authority auth: authorities){
+            grantedAuthorities.add(new SimpleGrantedAuthority(auth.getName()));
+        }
+
+        return grantedAuthorities;
+    }
 
 }

@@ -54,4 +54,6 @@ public interface OrganizationService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    List<OrganizationDTO> getOrganizationsByUserLogin();
 }

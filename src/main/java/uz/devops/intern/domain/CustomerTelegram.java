@@ -60,7 +60,7 @@ public class CustomerTelegram implements Serializable {
     @JoinColumn(unique = true)
     private Customers customer;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "rel_customer_telegram__telegram_group",
         joinColumns = @JoinColumn(name = "customer_telegram_id"),

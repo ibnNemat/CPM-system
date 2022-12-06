@@ -2,6 +2,8 @@ package uz.devops.intern.service;
 
 import java.util.List;
 import java.util.Optional;
+
+import uz.devops.intern.domain.TelegramGroup;
 import uz.devops.intern.service.dto.TelegramGroupDTO;
 
 /**
@@ -53,4 +55,12 @@ public interface TelegramGroupService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    List<TelegramGroupDTO> getThreeDTO(Long telegramGroupId);
+
+    TelegramGroupDTO findOneByChatId(Long chatId);
+
+    List<TelegramGroupDTO> findByOwnerId(Long managerId);
+
+    TelegramGroup getEntityByChatId(Long chatId);
 }

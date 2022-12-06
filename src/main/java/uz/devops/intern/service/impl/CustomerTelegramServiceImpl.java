@@ -20,8 +20,9 @@ import uz.devops.intern.redis.CustomerTelegramRedis;
 import uz.devops.intern.redis.CustomerTelegramRedisRepository;
 import uz.devops.intern.repository.CustomerTelegramRepository;
 import uz.devops.intern.service.*;
+import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.PaymentDTO;
-import uz.devops.intern.service.dto.ResponseDTO;
+import uz.devops.intern.service.mapper.CustomerTelegramMapper;
 import uz.devops.intern.service.utils.DateUtils;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
 
@@ -51,7 +52,8 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     private final BotTokenService botTokenService;
     private final PaymentService paymentService;
     private final PaymentHistoryService paymentHistoryService;
-    public CustomerTelegramServiceImpl(CustomerTelegramRepository customerTelegramRepository, CustomerTelegramRedisRepository customerTelegramRedisRepository, CustomersService customersService, CustomerFeign customerFeign, BotTokenService botTokenService, PaymentService paymentService, PaymentHistoryService paymentHistoryService) {
+    private final CustomerTelegramMapper customerTelegramMapper;
+    public CustomerTelegramServiceImpl(CustomerTelegramRepository customerTelegramRepository, CustomerTelegramRedisRepository customerTelegramRedisRepository, CustomersService customersService, CustomerFeign customerFeign, BotTokenService botTokenService, PaymentService paymentService, PaymentHistoryService paymentHistoryService, CustomerTelegramMapper customerTelegramMapper) {
         this.customerTelegramRepository = customerTelegramRepository;
         this.customerTelegramRedisRepository = customerTelegramRedisRepository;
         this.customersService = customersService;
@@ -59,6 +61,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         this.botTokenService = botTokenService;
         this.paymentService = paymentService;
         this.paymentHistoryService = paymentHistoryService;
+        this.customerTelegramMapper = customerTelegramMapper;
     }
 
     public SendMessage checkBotToken(Chat chat){
@@ -141,6 +144,29 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
 
         return null;
     }
+
+    @Override
+    public CustomerTelegramDTO findByTelegramId(Long telegramId) {
+        if(telegramId == null){
+            return null;
+        }
+        Optional<CustomerTelegram> customerTelegramOptional =
+            customerTelegramRepository.findByTelegramId(telegramId);
+
+        return customerTelegramOptional.map(customerTelegramMapper::toDto).orElse(null);
+    }
+
+    @Override
+    public CustomerTelegram findEntityByTelegramId(Long telegramId) {
+        if(telegramId == null){
+            return null;
+        }
+        Optional<CustomerTelegram> customerTelegramOptional =
+            customerTelegramRepository.findByTelegramId(telegramId);
+
+        return customerTelegramOptional.orElse(null);
+    }
+
 
     private SendMessage whenPressingInlineButton(CallbackQuery callbackQuery) {
         String inlineButtonText = callbackQuery.getMessage().getText();

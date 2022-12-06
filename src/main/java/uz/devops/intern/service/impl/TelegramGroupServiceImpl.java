@@ -82,4 +82,39 @@ public class TelegramGroupServiceImpl implements TelegramGroupService {
         log.debug("Request to delete TelegramGroup : {}", id);
         telegramGroupRepository.deleteById(id);
     }
+
+    @Override
+    public List<TelegramGroupDTO> getThreeDTO(Long telegramGroupId) {
+        if(telegramGroupId == null){
+            return List.of();
+        }
+        return telegramGroupRepository.getThreeEntityWithUnion(telegramGroupId)
+                .stream().map(telegramGroupMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public TelegramGroupDTO findOneByChatId(Long chatId) {
+        if(chatId != null){
+            Optional<TelegramGroup> groupOptional = telegramGroupRepository.findByChatId(chatId);
+            return groupOptional.map(telegramGroupMapper::toDto).orElse(null);
+        }
+        return null;
+    }
+
+    @Override
+    public List<TelegramGroupDTO> findByOwnerId(Long managerId) {
+        if(managerId != null){
+            List<TelegramGroup> groups = telegramGroupRepository.findByCustomer(managerId);
+            return groups.stream().map(telegramGroupMapper::toDto).collect(Collectors.toList());
+        }
+        return List.of();
+    }
+
+    @Override
+    public TelegramGroup getEntityByChatId(Long chatId) {
+        if(chatId == null){
+            return null;
+        }
+        return telegramGroupRepository.findByChatId(chatId).orElse(null);
+    }
 }
