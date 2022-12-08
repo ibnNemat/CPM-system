@@ -24,4 +24,12 @@ public interface CustomersRepository extends JpaRepository<Customers, Long>, Gro
 
     Optional<Customers> findByUser(User user);
     Optional<Customers> findByPhoneNumber(String phoneNumber);
+
+    @Modifying
+    @Query("update Customers c set c.balance = c.balance + ?1 where c.id = ?2")
+    void replenishCustomerBalance(Double money, Long customerId);
+
+    @Modifying
+    @Query("update Customers c set c.phoneNumber = ?1 where c.id = ?2")
+    void updatePhoneNumber(String phoneNumber, Long customerId);
 }

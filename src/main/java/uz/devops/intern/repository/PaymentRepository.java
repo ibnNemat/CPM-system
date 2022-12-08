@@ -31,7 +31,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("select p from Payment p where p.group.groupOwnerName = ?1")
     List<Payment> findAllByGroupOwnerName(String managerName);
 
-    List<Payment> findAllByCustomer(Customers customer);
+    List<Payment> findAllByCustomerOrderByStartedPeriod(Customers customer);
 
     List<Payment> findAllByCustomerAndIsPayedFalseOrderByStartedPeriod(Customers customer);
 }
