@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import uz.devops.intern.domain.CustomerTelegram;
 
-import static uz.devops.intern.telegram.bot.utils.KeyboardUtil.sendKeyboardButtonToMarkPhoneNumber;
+import static uz.devops.intern.telegram.bot.utils.KeyboardUtil.sendMarkup;
 
 
 public class TelegramsUtil {
@@ -38,19 +38,6 @@ public class TelegramsUtil {
             .languageCode(telegramUser.getLanguageCode())
             .step(1)
             .isActive(true);
-    }
-
-    public static SendMessage checkPhoneNumberIsNull(CustomerTelegram customerTelegram, User telegramUser){
-        SendMessage sendMessage;
-
-        if (customerTelegram.getPhoneNumber() == null){
-            sendMessage = sendKeyboardButtonToMarkPhoneNumber(telegramUser);
-
-            log.info("Message send successfully! User id: {} | Message text: {}", telegramUser, sendMessage);
-            return sendMessage;
-        }
-
-        return null;
     }
 
     /**

@@ -14,6 +14,7 @@ import uz.devops.intern.service.GroupsService;
 import uz.devops.intern.service.PaymentHistoryService;
 import uz.devops.intern.service.PaymentService;
 import uz.devops.intern.service.dto.*;
+import uz.devops.intern.service.mapper.PaymentHistoryMapper;
 import uz.devops.intern.service.mapper.PaymentMapper;
 import uz.devops.intern.service.mapper.PaymentsMapper;
 import uz.devops.intern.service.utils.AuthenticatedUserUtil;
@@ -41,8 +42,9 @@ public class PaymentServiceImpl implements PaymentService {
     private final GroupsService groupsService;
     private final AuthenticatedUserUtil authenticatedUserUtil;
     private final PaymentMapper paymentMapper;
+    private final PaymentHistoryMapper paymentHistoryMapper;
     private static final String ENTITY_NAME = "payment";
-    public PaymentServiceImpl(PaymentRepository paymentRepository, CustomersService customersService, ServicesRepository servicesRepository, PaymentHistoryService paymentHistoryService, GroupsService groupsService, AuthenticatedUserUtil authenticatedUserUtil, PaymentMapper paymentMapper) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository, CustomersService customersService, ServicesRepository servicesRepository, PaymentHistoryService paymentHistoryService, GroupsService groupsService, AuthenticatedUserUtil authenticatedUserUtil, PaymentMapper paymentMapper, PaymentHistoryMapper paymentHistoryMapper) {
         this.paymentRepository = paymentRepository;
         this.customersService = customersService;
         this.servicesRepository = servicesRepository;
@@ -50,6 +52,7 @@ public class PaymentServiceImpl implements PaymentService {
         this.groupsService = groupsService;
         this.authenticatedUserUtil = authenticatedUserUtil;
         this.paymentMapper = paymentMapper;
+        this.paymentHistoryMapper = paymentHistoryMapper;
     }
 
     @Override
@@ -83,7 +86,7 @@ public class PaymentServiceImpl implements PaymentService {
         return PaymentsMapper.toDto(payment);
     }
     @Override
-    public ResponseDTO payForService(PaymentDTO paymentDTO) {
+    public ResponseDTO<PaymentHistoryDTO> payForService(PaymentDTO paymentDTO) {
         log.debug("Request to pay for Service : {}", paymentDTO);
 
         Payment requestPayment = PaymentsMapper.toEntity(paymentDTO);
@@ -94,13 +97,13 @@ public class PaymentServiceImpl implements PaymentService {
         Optional<Services> servicesOptional = servicesRepository.findById(service.getId());
 
         if (servicesOptional.isEmpty() || customerPayer == null) {
-            return new ResponseDTO(NOT_FOUND, ResponseMessage.NOT_FOUND, false, null);
+            return new ResponseDTO<>(NOT_FOUND, ResponseMessage.NOT_FOUND, false, null);
         }
 
         requestPayment.setCustomer(customerPayer);
         ResponseDTO<Double> responseDTO = checkCustomerBalance(requestPayment);
         if (!responseDTO.getSuccess()) {
-            return responseDTO;
+            return new ResponseDTO<>(responseDTO.getCode(), responseDTO.getMessage(), false, null);
         }
 
         service = servicesOptional.get();
@@ -111,7 +114,7 @@ public class PaymentServiceImpl implements PaymentService {
             .findByCustomerAndGroupAndServiceAndStartedPeriodAndIsPayedFalse(
             customerPayer, group, service, startedDate);
         if (optionalPayment.isEmpty()) {
-            return new ResponseDTO(OK, "Looks like you already paid", false, null);
+            return new ResponseDTO<>(OK, "Looks like you already paid", false, null);
         }
 
         Payment paymentInDataBase = optionalPayment.get();
@@ -150,15 +153,15 @@ public class PaymentServiceImpl implements PaymentService {
 
             paymentRepository.saveAll(paymentList);
             customersService.decreaseCustomerBalance(requestPaidMoney, customerPayer.getId());
-            createPaymentHistory(service, customerPayer, group, requestPaidMoney);
-            return new ResponseDTO(OK, "Successfully payed", true, null);
+            PaymentHistory paymentHistory = createPaymentHistory(service, customerPayer, group, requestPayment.getPaidMoney());
+            return new ResponseDTO<>(OK, "Successfully payed", true, paymentHistoryMapper.toDto(paymentHistory));
         }
 
         paymentInDataBase.setPaidMoney(paymentInDataBase.getPaidMoney()+requestPaidMoney);
         customersService.decreaseCustomerBalance(requestPaidMoney, customerPayer.getId());
-        createPaymentHistory(service, customerPayer, group, requestPaidMoney);
+        PaymentHistory paymentHistory = createPaymentHistory(service, customerPayer, group, requestPayment.getPaidMoney());
 
-        return new ResponseDTO(OK, "Successfully payed", true, null);
+        return new ResponseDTO<>(OK, "Successfully payed", true, paymentHistoryMapper.toDto(paymentHistory));
     }
 
     private Payment buildNewPayment(Services service, Double paymentForPeriod, Groups group, Customers customerPayer, LocalDate oldFinishedDate){
@@ -177,7 +180,7 @@ public class PaymentServiceImpl implements PaymentService {
         return newPayment;
     }
 
-    private void createPaymentHistory(Services service, Customers customer, Groups group, Double paidMoney) {
+    private PaymentHistory createPaymentHistory(Services service, Customers customer, Groups group, Double paidMoney) {
         PaymentHistory paymentHistory = new PaymentHistory();
         Optional<GroupsDTO> optionalGroupsDTO = groupsService.findOne(group.getId());
         if (optionalGroupsDTO.isPresent()) {
@@ -189,7 +192,7 @@ public class PaymentServiceImpl implements PaymentService {
         paymentHistory.setCustomer(customer);
         paymentHistory.setSum(paidMoney);
         paymentHistory.setCreatedAt(LocalDate.now());
-        paymentHistoryService.save(paymentHistory);
+        return paymentHistoryService.save(paymentHistory);
     }
 
     private ResponseDTO<Double> checkCustomerBalance(Payment payment) {
@@ -263,7 +266,7 @@ public class PaymentServiceImpl implements PaymentService {
         if (customer == null)
             return new ResponseDTO<>(NOT_FOUND, "customer not found", false, null);
 
-        List<Payment> customerPayments = paymentRepository.findAllByCustomer(customer);
+        List<Payment> customerPayments = paymentRepository.findAllByCustomerOrderByStartedPeriod(customer);
         if (customerPayments.size() == 0)
             return new ResponseDTO<>(NOT_FOUND, "customer payments not found", false, null);
         List<PaymentDTO> paymentDTOList = customerPayments.stream()

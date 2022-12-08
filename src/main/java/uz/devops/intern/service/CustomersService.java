@@ -63,4 +63,9 @@ public interface CustomersService {
     void delete(Long id);
 
     Page<CustomersDTO> findAllWithEagerRelationships(Pageable pageable);
+
+
+    void replenishCustomerBalance(Double money, Long customerId);
+
+    void updateCustomerPhoneNumber(String phoneNumber, Long customerId);
 }

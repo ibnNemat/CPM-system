@@ -48,13 +48,6 @@ public class KeyboardUtil {
         return markup;
     }
 
-    public static SendMessage sendKeyboardButtonToMarkPhoneNumber(User telegramUser){
-        String sendStringMessage = "❗️ Siz hali telegram botdan foydalanish uchun ro'yxatdan o'tmagansiz, iltimos telefon raqamingizni jo'natish" +
-            " uchun quyidagi tugmani bosing \uD83D\uDC47\n";
-
-        return TelegramsUtil.sendMessage(telegramUser.getId(), sendStringMessage, sendMarkup());
-    }
-
     public static ReplyKeyboardMarkup sendMarkup(){
         KeyboardButton button = new KeyboardButton("\uD83D\uDCF1 Telefon raqam");
         button.setRequestContact(true);

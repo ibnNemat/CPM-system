@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import uz.devops.intern.domain.User;
 
@@ -36,4 +38,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.createdBy = :phoneNumber")
     Optional<User> getUserByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+
+    Optional<User> findByEmail(String email);
+
+    Optional<User> findByFirstName(String firstName);
 }

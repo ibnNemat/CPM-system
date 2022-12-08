@@ -87,6 +87,10 @@ public class UserService {
             });
     }
 
+    public Optional<User> findByEmail(String email){
+        return userRepository.findByEmail(email);
+    }
+
     public User registerUser(AdminUserDTO userDTO, String password) {
         userRepository
             .findOneByLogin(userDTO.getLogin().toLowerCase())
@@ -275,6 +279,10 @@ public class UserService {
             });
     }
 
+    public void UpdateUserPhoneNumber(String phoneNumber){
+
+    }
+
     @Transactional
     public void changePassword(String currentClearTextPassword, String newPassword) {
         SecurityUtils
@@ -345,5 +353,9 @@ public class UserService {
         dto.setLogin(user.getLogin());
 
         return dto;
+    }
+
+    public Optional<User> findByFirstName(String firstName) {
+        return userRepository.findByFirstName(firstName);
     }
 }

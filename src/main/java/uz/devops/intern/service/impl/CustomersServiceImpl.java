@@ -138,4 +138,14 @@ public class CustomersServiceImpl implements CustomersService {
     public Page<CustomersDTO> findAllWithEagerRelationships(Pageable pageable) {
         return null;
     }
+
+    @Override
+    public void replenishCustomerBalance(Double money, Long customerId) {
+        customersRepository.replenishCustomerBalance(money, customerId);
+    }
+
+    @Override
+    public void updateCustomerPhoneNumber(String phoneNumber, Long customerId) {
+        customersRepository.updatePhoneNumber(phoneNumber, customerId);
+    }
 }
