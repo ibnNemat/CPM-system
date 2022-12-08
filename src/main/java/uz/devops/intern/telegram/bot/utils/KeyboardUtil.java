@@ -1,21 +1,37 @@
 package uz.devops.intern.telegram.bot.utils;
 
+import org.checkerframework.checker.units.qual.K;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class KeyboardUtil {
 
+    public final static List<String> languages = List.of(
+        "\uD83C\uDDFA\uD83C\uDDFF O`zbekcha", "\uD83C\uDDF7\uD83C\uDDFA Русский");
+
     public static ReplyKeyboardMarkup language(){
+        List<KeyboardRow> rows = new ArrayList<>();
+
         KeyboardRow row = new KeyboardRow();
+        for(String language: languages){
+            row.add(new KeyboardButton(language));
+            if(row.size() == 2){
+                rows.add(row);
+                row = new KeyboardRow();
+            }
+        }
+        if(!row.isEmpty()) rows.add(row);
+
         row.add(new KeyboardButton("\uD83C\uDDFA\uD83C\uDDFF O`zbekcha"));
         row.add(new KeyboardButton("\uD83C\uDDF7\uD83C\uDDFA Русский"));
 
-        ReplyKeyboardMarkup markup =  new ReplyKeyboardMarkup(List.of(row));
+        ReplyKeyboardMarkup markup =  new ReplyKeyboardMarkup(rows);
         markup.setResizeKeyboard(true);
         return markup;
     }

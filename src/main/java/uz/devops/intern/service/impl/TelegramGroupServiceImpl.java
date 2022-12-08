@@ -35,8 +35,14 @@ public class TelegramGroupServiceImpl implements TelegramGroupService {
     @Override
     public TelegramGroupDTO save(TelegramGroupDTO telegramGroupDTO) {
         log.debug("Request to save TelegramGroup : {}", telegramGroupDTO);
+        if(telegramGroupDTO == null || telegramGroupDTO.getChatId() == null){
+            return null;
+        }
+        if(telegramGroupRepository.existsByChatId(telegramGroupDTO.getChatId())){
+            return null;
+        }
         TelegramGroup telegramGroup = telegramGroupMapper.toEntity(telegramGroupDTO);
-        telegramGroup = telegramGroupRepository.save(telegramGroup);
+        telegramGroup = telegramGroupRepository.saveAndFlush(telegramGroup);
         return telegramGroupMapper.toDto(telegramGroup);
     }
 
@@ -123,5 +129,13 @@ public class TelegramGroupServiceImpl implements TelegramGroupService {
         log.debug("Request to get TelegramGroup by chatId: {}", chatId);
 
         return telegramGroupRepository.findByChatId(chatId);
+    }
+
+    public TelegramGroup mapToEntity(TelegramGroupDTO groupDTO){
+        return telegramGroupMapper.toEntity(groupDTO);
+    }
+
+    public TelegramGroupRepository getTelegramGroupRepository(){
+        return this.telegramGroupRepository;
     }
 }

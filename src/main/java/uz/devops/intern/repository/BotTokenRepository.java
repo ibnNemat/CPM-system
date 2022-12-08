@@ -18,4 +18,6 @@ public interface BotTokenRepository extends JpaRepository<BotToken, Long> {
     List<BotToken> findByCreatedByIsCurrentUser();
 
     Optional<BotToken> findByTelegramId(Long chatId);
+
+    Boolean existsByToken(String token);
 }

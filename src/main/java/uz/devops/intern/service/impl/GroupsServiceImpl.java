@@ -57,6 +57,14 @@ public class GroupsServiceImpl implements GroupsService {
     }
 
     @Override
+    public GroupsDTO findOneByTelegramId(Long telegramId) {
+        if(telegramId == null)return null;
+        Optional<Groups> groupsOptional = groupsRepository.findByTelegramId(telegramId);
+
+        return groupsOptional.map(groupsMapper::toDto).orElse(null);
+    }
+
+    @Override
     public GroupsDTO save(GroupsDTO groupsDTO) {
         log.debug("Request to save Groups : {}", groupsDTO);
         String groupOwner = ContextHolderUtil.getUsernameFromContextHolder();

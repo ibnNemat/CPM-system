@@ -41,10 +41,10 @@ public class CustomerTelegramResource {
                 customerFeign.sendMessage(sendMessage);
         }
 
-        if(update.getMessage() != null) {
-            if (update.getMessage().getNewChatMembers().size() > 0) {
+        if(update.getMyChatMember() != null) {
+            if (update.getMyChatMember().getNewChatMember() != null) {
                 // Shu joyda botni gruppaga add qiganini bilsa bo'ladi
-                adminService.checkIsBotInGroup(update.getMessage(), botId);
+                adminService.checkIsBotInGroup(update.getMyChatMember().getNewChatMember(), update.getMyChatMember().getChat(),botId);
             }
         }
 //        else if(update.getMyChatMember() != null &&

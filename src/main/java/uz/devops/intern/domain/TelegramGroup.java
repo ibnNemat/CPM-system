@@ -25,7 +25,7 @@ public class TelegramGroup implements Serializable {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "chat_id")
+    @Column(name = "chat_id", unique = true)
     private Long chatId;
 
     @ManyToMany(mappedBy = "telegramGroups")

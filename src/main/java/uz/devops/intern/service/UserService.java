@@ -25,6 +25,7 @@ import uz.devops.intern.security.SecurityUtils;
 import uz.devops.intern.service.dto.AdminUserDTO;
 import uz.devops.intern.service.dto.CustomersDTO;
 import uz.devops.intern.service.dto.UserDTO;
+import uz.devops.intern.service.mapper.UserMapper;
 
 /**
  * Service class for managing users.
@@ -332,5 +333,17 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<String> getAuthorities() {
         return authorityRepository.findAll().stream().map(Authority::getName).collect(Collectors.toList());
+    }
+
+    public UserDTO getUserByCreatedBy(String phoneNumber){
+        if(phoneNumber == null || phoneNumber.equals(" ") || phoneNumber.isEmpty())return null;
+        Optional<User> userOptional = userRepository.findByCreatedBy(phoneNumber);
+        if(userOptional.isEmpty())return null;
+        User user = userOptional.get();
+        UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
+        dto.setLogin(user.getLogin());
+
+        return dto;
     }
 }

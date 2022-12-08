@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -98,47 +99,20 @@ public class TelegramsUtil {
         sendMessage.enableHtml(true);
         return sendMessage;
     }
-//
-//    public static SendMessage sendMessage(Long chatId, String text, ReplyKeyboardRemove replyKeyboardRemove){
-//        /**
-//         * param: Long chatId
-//         * param: String text
-//         * param: ReplyKeyboardRemove
-//         *
-//         * return SendMessage with buttons
-//         */
-//        SendMessage sendMessage = new SendMessage();
-//        sendMessage.setChatId(chatId);
-//        sendMessage.setText(text);
-//        sendMessage.setReplyMarkup(replyKeyboardRemove);
-//        sendMessage.enableHtml(true);
-//        return sendMessage;
-//    }
-//
-//    public static SendMessage sendMessage(Long chatId, String text, InlineKeyboardMarkup inlineMarkup){
-//        SendMessage sendMessage = new SendMessage();
-//        sendMessage.setChatId(chatId);
-//        sendMessage.setText(text);
-//        sendMessage.setReplyMarkup(inlineMarkup);
-//
-//        return sendMessage;
-//    }
-//
-//    public static SendMessage sendMessage(Long chatId, String text, ReplyKeyboardRemove removeMarkup){
-//        SendMessage sendMessage = new SendMessage();
-//        sendMessage.setChatId(chatId);
-//        sendMessage.setText(text);
-//        sendMessage.setReplyMarkup(removeMarkup);
-//
-//        return sendMessage;
-//    }
 
-
-    public static SendMessage wrongChoice(Long chatId){
+    public static SendMessage sendMessage(Long chatId, String text, ReplyKeyboardRemove replyKeyboardRemove){
+        /**
+         * param: Long chatId
+         * param: String text
+         * param: ReplyKeyboardRemove
+         *
+         * return SendMessage with buttons
+         */
         SendMessage sendMessage = new SendMessage();
-        sendMessage.setText("Noto'g'ri qiymat");
         sendMessage.setChatId(chatId);
-
+        sendMessage.setText(text);
+        sendMessage.setReplyMarkup(replyKeyboardRemove);
+        sendMessage.enableHtml(true);
         return sendMessage;
     }
 

@@ -16,6 +16,12 @@ import java.util.Optional;
 @Repository
 public interface TelegramGroupRepository extends JpaRepository<TelegramGroup, Long> {
 
+    Boolean existsByChatId(Long chatId);
+
+    @Query(value = "SELECT EXISTS (SELECT * FROM rel_customer_telegram__telegram_group WHERE telegram_group_id = " +
+        "(SELECT id FROM telegram_group WHERE chat_id = :chatId))", nativeQuery = true)
+    Boolean existsInRelatedTableByChatId(@Param("chatId") Long chatId);
+
     @Query(value = "SELECT * FROM ((SELECT * FROM telegram_group WHERE chat_id < :groupId ORDER BY chat_id DESC LIMIT 1)\n" +
         "        UNION\n" +
         "        (SELECT * FROM telegram_group WHERE chat_id = :groupId)\n" +

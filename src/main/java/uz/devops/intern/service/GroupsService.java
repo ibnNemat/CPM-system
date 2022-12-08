@@ -68,4 +68,7 @@ public interface GroupsService {
     void delete(Long id);
 
     List<Groups> getGroupsIncludeToPayment(List<Long> ids);
+
+    GroupsDTO findOneByTelegramId(Long telegramId);
+
 }

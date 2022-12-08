@@ -59,4 +59,14 @@ public class ResponseFromTelegram<T>{
     public void setResult(T result) {
         this.result = result;
     }
+
+    @Override
+    public String toString() {
+        return "ResponseFromTelegram{" +
+            "ok=" + ok +
+            ", errorCode=" + errorCode +
+            ", description='" + description + '\'' +
+            ", result=" + result +
+            '}';
+    }
 }

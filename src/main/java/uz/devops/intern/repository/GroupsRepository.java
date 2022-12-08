@@ -32,4 +32,7 @@ public interface GroupsRepository extends GroupsRepositoryWithBagRelationships, 
     List<Groups> findAllByGroupOwnerName(String ownerName);
 
     List<Groups> findAllByIdIn(List<Long> ids);
+
+    @Query("SELECT g FROM Groups g WHERE g.name = (SELECT tg.name FROM TelegramGroup tg WHERE tg.chatId = :telegramId)")
+    Optional<Groups> findByTelegramId(@Param("telegramId") Long telegramId);
 }

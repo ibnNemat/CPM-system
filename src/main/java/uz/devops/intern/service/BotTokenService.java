@@ -56,5 +56,5 @@ public interface BotTokenService {
      */
     void delete(Long id);
 
-    Optional<BotToken> findByChatId(Long chatId);
+    BotTokenDTO findByChatId(Long chatId);
 }

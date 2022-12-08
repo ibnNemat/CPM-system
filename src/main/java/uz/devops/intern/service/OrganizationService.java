@@ -56,4 +56,6 @@ public interface OrganizationService {
     void delete(Long id);
 
     List<OrganizationDTO> getOrganizationsByUserLogin();
+
+    OrganizationDTO getOrganizationByName(String name);
 }

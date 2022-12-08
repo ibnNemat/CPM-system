@@ -110,9 +110,18 @@ public class OrganizationServiceImpl implements OrganizationService {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(user != null && user.getUsername() != null){
             List<Organization> organizations = organizationRepository.findAllByOrgOwnerName(user.getUsername());
-            return organizations.stream().map(organizationMapper::toDto).collect(Collectors.toList());
+            return organizations.stream().map(OrganizationsMapper::toDtoWithoutGroups).collect(Collectors.toList());
         }
         return List.of();
+    }
+
+    @Override
+    public OrganizationDTO getOrganizationByName(String name) {
+        if(name == null || name.trim().isEmpty())return null;
+
+        Optional<Organization> organizationOptional =
+            organizationRepository.findByName(name);
+        return organizationOptional.map(organizationMapper::toDto).orElse(null);
     }
 
     @Override

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import uz.devops.intern.domain.TelegramGroup;
+import uz.devops.intern.repository.TelegramGroupRepository;
 import uz.devops.intern.service.dto.TelegramGroupDTO;
 
 /**
@@ -65,4 +66,8 @@ public interface TelegramGroupService {
     TelegramGroup getEntityByChatId(Long chatId);
 
     Optional<TelegramGroup> findByChatId(Long chatId);
+
+    TelegramGroup mapToEntity(TelegramGroupDTO groupDTO);
+
+    TelegramGroupRepository getTelegramGroupRepository();
 }

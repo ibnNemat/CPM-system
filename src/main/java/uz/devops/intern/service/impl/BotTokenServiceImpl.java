@@ -84,7 +84,8 @@ public class BotTokenServiceImpl implements BotTokenService {
     }
 
     @Override
-    public Optional<BotToken> findByChatId(Long chatId) {
-        return botTokenRepository.findByTelegramId(chatId);
+    public BotTokenDTO findByChatId(Long chatId) {
+        if(chatId == null)return null;
+        return botTokenRepository.findByTelegramId(chatId).map(botTokenMapper::toDto).orElse(null);
     }
 }

@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -20,7 +21,9 @@ import uz.devops.intern.redis.CustomerTelegramRedis;
 import uz.devops.intern.redis.CustomerTelegramRedisRepository;
 import uz.devops.intern.repository.CustomerTelegramRepository;
 import uz.devops.intern.service.*;
+import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.PaymentDTO;
+import uz.devops.intern.service.mapper.CustomerTelegramMapper;
 import uz.devops.intern.service.utils.DateUtils;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
 
@@ -56,7 +59,8 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     private final PaymentService paymentService;
     private final TelegramGroupService telegramGroupService;
     private final PaymentHistoryService paymentHistoryService;
-    public CustomerTelegramServiceImpl(CustomerTelegramRepository customerTelegramRepository, CustomerTelegramRedisRepository customerTelegramRedisRepository, CustomersService customersService, CustomerFeign customerFeign, PaymentService paymentService, TelegramGroupService telegramGroupService, PaymentHistoryService paymentHistoryService) {
+    private final CustomerTelegramMapper customerTelegramMapper;
+    public CustomerTelegramServiceImpl(CustomerTelegramRepository customerTelegramRepository, CustomerTelegramRedisRepository customerTelegramRedisRepository, CustomersService customersService, CustomerFeign customerFeign, PaymentService paymentService, TelegramGroupService telegramGroupService, PaymentHistoryService paymentHistoryService, CustomerTelegramMapper customerTelegramMapper) {
         this.customerTelegramRepository = customerTelegramRepository;
         this.customerTelegramRedisRepository = customerTelegramRedisRepository;
         this.customersService = customersService;
@@ -64,6 +68,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         this.paymentService = paymentService;
         this.telegramGroupService = telegramGroupService;
         this.paymentHistoryService = paymentHistoryService;
+        this.customerTelegramMapper = customerTelegramMapper;
     }
 
     public SendMessage checkBotToken(User telegramUser, Long chatId){
@@ -94,7 +99,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             Message message = update.getMessage();
             User telegramUser = message.getFrom();
 
-            SendMessage sendMessage;
+            SendMessage sendMessage = null;
             String requestMessage = message.getText();
 
             if (message.getText() == null) {
@@ -166,8 +171,33 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         return null;
     }
 
-    private SendMessage whenPressingInlineButton(CallbackQuery callbackQuery) {
+    @Override
+    public CustomerTelegramDTO findByTelegramId(Long telegramId) {
+        if(telegramId == null){
+            return null;
+        }
+        Optional<CustomerTelegram> customerTelegramOptional =
+            customerTelegramRepository.findByTelegramId(telegramId);
 
+        return customerTelegramOptional.map(customerTelegramMapper::toDto).orElse(null);
+    }
+
+    @Override
+    public CustomerTelegram findEntityByTelegramId(Long telegramId) {
+        if(telegramId == null){
+            return null;
+        }
+        Optional<CustomerTelegram> customerTelegramOptional =
+            customerTelegramRepository.findByTelegramId(telegramId);
+
+        return customerTelegramOptional.orElse(null);
+    }
+
+    private SendMessage whenPressingInlineButton(CallbackQuery callbackQuery) {
+        String inlineButtonText = callbackQuery.getMessage().getText();
+//        String data = callbackQuery.getData();
+        User telegramUser = callbackQuery.getFrom();
+        SendMessage sendMessage = new SendMessage();
 
         String stringMessage = """
                 To'lamoqchi bo'lgan summangizni kiriting
@@ -414,6 +444,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     public void startCommand(User user, SendMessage sendMessage){
         String sendStringMessage = "Assalomu alaykum " + user.getUserName() +
             ", CPM(nom qo'yiladi) to'lov tizimiga xush kelibsiz! \n";
+        sendMessage = new SendMessage();
         sendMessage.setText(sendStringMessage);
         sendMessage.setChatId(user.getId());
 
