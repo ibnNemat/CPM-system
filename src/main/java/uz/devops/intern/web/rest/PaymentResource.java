@@ -22,6 +22,7 @@ import tech.jhipster.web.util.ResponseUtil;
 import uz.devops.intern.repository.PaymentRepository;
 import uz.devops.intern.service.PaymentService;
 import uz.devops.intern.service.dto.PaymentDTO;
+import uz.devops.intern.service.dto.PaymentHistoryDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.web.rest.errors.BadRequestAlertException;
 
@@ -44,7 +45,7 @@ public class PaymentResource {
     }
     @PreAuthorize("hasAnyAuthority('ROLE_CUSTOMER')")
     @PutMapping("/payment/pay")
-    public ResponseEntity<ResponseDTO> payForService(@Valid @RequestBody PaymentDTO paymentDTO){
+    public ResponseEntity<ResponseDTO<PaymentHistoryDTO>> payForService(@Valid @RequestBody PaymentDTO paymentDTO){
         return ResponseEntity.ok(paymentService.payForService(paymentDTO));
     }
 

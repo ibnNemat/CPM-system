@@ -84,7 +84,7 @@ public class BotTokenServiceImpl implements BotTokenService {
     }
 
     @Override
-    public Optional<BotToken> findByChatId(Long chatId) {
+    public Optional<BotToken> findByBotId(Long chatId) {
         return botTokenRepository.findByTelegramId(chatId);
     }
 }

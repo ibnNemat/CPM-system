@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import uz.devops.intern.domain.Customers;
 import uz.devops.intern.domain.Payment;
 import uz.devops.intern.service.dto.PaymentDTO;
+import uz.devops.intern.service.dto.PaymentHistoryDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 
 /**
@@ -17,7 +18,7 @@ public interface PaymentService {
     ResponseDTO<List<PaymentDTO>> getAllCustomerPayments();
     List<PaymentDTO> getAllPaymentsCreatedByGroupManager();
     List<Payment> saveAll(List<Payment> paymentList);
-    ResponseDTO payForService(PaymentDTO paymentDTO);
+    ResponseDTO<PaymentHistoryDTO> payForService(PaymentDTO paymentDTO);
     /**
      * Save a payment.
      *
