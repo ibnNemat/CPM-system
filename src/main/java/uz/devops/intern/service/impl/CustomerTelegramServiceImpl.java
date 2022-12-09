@@ -1,5 +1,7 @@
 package uz.devops.intern.service.impl;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 import org.slf4j.Logger;
@@ -27,7 +29,11 @@ import uz.devops.intern.redis.CustomerTelegramRedis;
 import uz.devops.intern.redis.CustomerTelegramRedisRepository;
 import uz.devops.intern.repository.CustomerTelegramRepository;
 import uz.devops.intern.service.*;
-import uz.devops.intern.service.dto.PaymentDTO;
+import uz.devops.intern.service.dto.*;
+import uz.devops.intern.service.mapper.BotTokenMapper;
+import uz.devops.intern.service.mapper.CustomerTelegramMapper;
+import uz.devops.intern.service.mapper.PaymentHistoryMapper;
+import uz.devops.intern.service.mapper.PaymentsMapper;
 import uz.devops.intern.service.utils.DateUtils;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
 
@@ -78,7 +84,9 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     private final PaymentHistoryMapper paymentHistoryMapper;
     private final UserService userService;
     private final BotTokenService botTokenService;
-    public CustomerTelegramServiceImpl(CustomerTelegramRepository customerTelegramRepository, CustomerTelegramRedisRepository customerTelegramRedisRepository, CustomersService customersService, CustomerFeign customerFeign, PaymentService paymentService, TelegramGroupService telegramGroupService, PaymentHistoryService paymentHistoryService, CallbackRedisRepository callbackRedisRepository, PaymentHistoryMapper paymentHistoryMapper, UserService userService, BotTokenService botTokenService) {
+    private final CustomerTelegramMapper customerTelegramMapper;
+    private final BotTokenMapper botTokenMapper;
+    public CustomerTelegramServiceImpl(CustomerTelegramRepository customerTelegramRepository, CustomerTelegramRedisRepository customerTelegramRedisRepository, CustomersService customersService, CustomerFeign customerFeign, PaymentService paymentService, TelegramGroupService telegramGroupService, PaymentHistoryService paymentHistoryService, CallbackRedisRepository callbackRedisRepository, PaymentHistoryMapper paymentHistoryMapper, UserService userService, BotTokenService botTokenService, CustomerTelegramMapper customerTelegramMapper, BotTokenMapper botTokenMapper) {
         this.customerTelegramRepository = customerTelegramRepository;
         this.customerTelegramRedisRepository = customerTelegramRedisRepository;
         this.customersService = customersService;
@@ -90,6 +98,8 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         this.paymentHistoryMapper = paymentHistoryMapper;
         this.userService = userService;
         this.botTokenService = botTokenService;
+        this.customerTelegramMapper = customerTelegramMapper;
+        this.botTokenMapper = botTokenMapper;
     }
 
     public SendMessage checkBotToken(User telegramUser, Long chatId){
@@ -118,6 +128,9 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
 
             return whenPressingInlineButton(update.getCallbackQuery());
         }else {
+            if(!update.getMessage().getChatId().equals(update.getMessage().getFrom().getId())){
+                return null;
+            }
             Message message = update.getMessage();
             User telegramUser = message.getFrom();
 
@@ -197,7 +210,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             };
         }
 
-        return null;
+//        return null;
     }
 
     @Override
@@ -522,10 +535,13 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         customerProfileBuilder.append(String.format("<b>Familiya: </b>%s\n", jhi_user.getLastName()));
         customerProfileBuilder.append(String.format("<b>Email: </b> %s\n", jhi_user.getEmail()));
         customerProfileBuilder.append(String.format("<b>Tel raqam: </b> %s\n", customerTelegram.getPhoneNumber()));
-        Optional<BotToken> botTokenOptional = botTokenService.findByBotId(customerTelegram.getChatId());
+//        Optional<BotToken> botTokenOptional = botTokenService.findByBotId(customerTelegram.getChatId());
+        BotTokenDTO botTokenDTO = botTokenService.findByChatId(customerTelegram.getChatId());
         Optional<TelegramGroup> telegramGroupOptional = telegramGroupService.findByChatId(customerTelegram.getChatId());
-        if (botTokenOptional.isPresent() && telegramGroupOptional.isPresent()){
-            BotToken botToken = botTokenOptional.get();
+//        if (botTokenOptional.isPresent() && telegramGroupOptional.isPresent()){
+        if(botTokenDTO != null && telegramGroupOptional.isPresent()){
+//            BotToken botToken = botTokenOptional.get();
+            BotToken botToken = botTokenMapper.toEntity(botTokenDTO);
             TelegramGroup telegramGroup = telegramGroupOptional.get();
             uz.devops.intern.domain.User managerUser = botToken.getCreatedBy();
 

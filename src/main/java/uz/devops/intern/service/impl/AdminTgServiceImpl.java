@@ -532,7 +532,7 @@ public class AdminTgServiceImpl implements AdminTgService {
     }
 
     private WebhookResponseDTO setWebhookToNewBot(String token, Long botId){
-        String webhookAPI = "/setWebhook?url=https://f5e0-83-221-180-161.in.ngrok.io/api/new-message";
+        String webhookAPI = "/setWebhook?url=https://217d-83-221-180-161.eu.ngrok.io/api/new-message";
         String url = telegramAPI + token + webhookAPI + "/" + botId;
         log.info("Url: {}", url);
         RestTemplate template = new RestTemplate();

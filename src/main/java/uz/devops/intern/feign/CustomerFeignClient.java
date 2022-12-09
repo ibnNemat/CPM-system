@@ -5,6 +5,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -23,5 +24,5 @@ public interface CustomerFeignClient {
     ResponseFromTelegram<User> getMe(URI uri);
 
     @GetMapping("/getChatMember")
-    ResponseFromTelegram<ChatMember> getChatMember(URI uri, @Param("chat_id") Integer chat_id, @Param("user_id") Integer user_id);
+    ResponseFromTelegram<ChatMember> getChatMember(URI uri, @RequestParam("chat_id") Integer chat_id, @RequestParam("user_id") Integer user_id);
 }

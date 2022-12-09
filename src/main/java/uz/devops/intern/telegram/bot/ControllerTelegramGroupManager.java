@@ -12,8 +12,8 @@ import uz.devops.intern.service.AdminTgService;
 @Component
 public class ControllerTelegramGroupManager extends TelegramLongPollingBot {
     private final Logger log = LoggerFactory.getLogger(ControllerTelegramGroupManager.class);
-    private static final String BOT_USERNAME = "@iqroKitaab_bot";
-    private static final String BOT_TOKEN = "5149475148:AAHfcyltnIyq7LCN0GamAcrHpxwxT1yV1EE";
+    private static final String BOT_USERNAME = "@devopsInternBot";
+    private static final String BOT_TOKEN = "5543292898:AAGoR3GLOCOL7Lir7sjYyCFYS7BLiUwNbHA";
     @Autowired
     private AdminFeign adminFeign;
     @Autowired
