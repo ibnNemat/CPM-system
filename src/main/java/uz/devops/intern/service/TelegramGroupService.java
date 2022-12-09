@@ -70,4 +70,6 @@ public interface TelegramGroupService {
     TelegramGroup mapToEntity(TelegramGroupDTO groupDTO);
 
     TelegramGroupRepository getTelegramGroupRepository();
+
+    TelegramGroupDTO getNotRegisteredTelegramGroups(Long managerTelegramId);
 }

@@ -4,6 +4,7 @@ import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,6 +33,7 @@ import uz.devops.intern.service.*;
 import uz.devops.intern.service.dto.*;
 import uz.devops.intern.telegram.bot.AdminKeyboards;
 import uz.devops.intern.telegram.bot.dto.EditMessageDTO;
+import uz.devops.intern.telegram.bot.dto.EditMessageTextDTO;
 import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
@@ -50,6 +52,8 @@ import java.util.stream.Collectors;
 @Service
 public class AdminTgServiceImpl implements AdminTgService {
 
+    @Value("${ngrok.url}")
+    private String WEBHOOK_URL;
     @Autowired
     private EntityManager entityManager;
     private static final String telegramAPI = "https://api.telegram.org/bot";
@@ -296,22 +300,24 @@ public class AdminTgServiceImpl implements AdminTgService {
         BotTokenDTO botToken = botTokenService.findByChatId(Long.parseLong(botId));
         if(botToken != null){
             CustomerTelegram manager = customerTelegramRepository.findByBot(Long.parseLong(botId)).get();
-//            boolean isNotExistsInGroups = isNotExistsInGroups(manager.getTelegramGroups(), botToken);
-//            if(isNotExistsInGroups){
-                boolean isExists = telegramGroupService.getTelegramGroupRepository().existsInRelatedTableByChatId(chat.getId());
-                if (isBot && !isExists) {
+            boolean isNotExistsInGroups = isNotExistsInGroups(manager.getTelegramGroups(), botToken);
+            if(isNotExistsInGroups){
+//                boolean isExists = telegramGroupService.getTelegramGroupRepository().existsInRelatedTableByChatId(chat.getId());
+//                if (isBot && !isExists) {
+                if(isBot) {
                     org.telegram.telegrambots.meta.api.objects.User bot = user.getUser();
                     sayThanksToManager(bot.getId(), manager);
                     sendInviteLink(bot, chat.getId());
                     saveToTelegramGroup(chat, manager);
 
-                } else if (!isBot) {
+//                } else if (!isBot) {
+                }else{
                     wrongValue(user.getUser().getId(), "Hozirgi botni guruhga qo'shing!");
                     log.warn("Something goes wrong, Bot id: {} | Group id: {}", botId, chat.getId());
                 }
-//            }else {
-//                wrongValue(manager.getTelegramId(), "Bot guruhda mavjud!");
-//            }
+            }else {
+                wrongValue(manager.getTelegramId(), "Bot guruhda mavjud!");
+            }
         }
     }
 
@@ -358,7 +364,7 @@ public class AdminTgServiceImpl implements AdminTgService {
             adminFeign.sendMessage(sendMessage);
             customer.setStep(8);
             return true;
-        }else if(text.equals("\uD83D\uDCB8 Qarzdorliklarni ko'rish")){
+        }else if(text.equals("\uD83D\uDCB8 Bolalar qarzdorliklari")){
             showPayments(message, customer);
         }else if(text.equals("\uD83D\uDC40 Guruhlarni ko'rish")){
             showGroups(message, customer);
@@ -424,8 +430,8 @@ public class AdminTgServiceImpl implements AdminTgService {
             return false;
         }
         InlineKeyboardMarkup markup = createGroupButtons(organizations, telegramGroup.getChatId());
-        EditMessageDTO dto = createEditMessage(callback, markup);
-        adminFeign.editMessageReplyMarkup(dto);
+        EditMessageTextDTO dto = createEditMessageText(callback, markup, "\n Iltimos tashkilotni tanlang\uD83D\uDC47");
+        adminFeign.editMessageText(dto);
         return true;
     }
 
@@ -436,6 +442,19 @@ public class AdminTgServiceImpl implements AdminTgService {
         dto.setMessageId(callback.getMessage().getMessageId());
         dto.setInlineMessageId(String.valueOf(callback.getInlineMessageId()));
         dto.setReplyMarkup(markup);
+
+        return dto;
+    }
+
+    private EditMessageTextDTO createEditMessageText(CallbackQuery callback, InlineKeyboardMarkup markup, String text){
+
+        EditMessageTextDTO dto = new EditMessageTextDTO();
+        dto.setMessageId(callback.getMessage().getMessageId());
+        dto.setInlineMessageId(callback.getInlineMessageId());
+        dto.setChatId(String.valueOf(callback.getFrom().getId()));
+        dto.setReplyMarkup(markup);
+        dto.setText(callback.getMessage().getText() + text);
+        dto.setParseMode("HTML");
 
         return dto;
     }
@@ -457,6 +476,11 @@ public class AdminTgServiceImpl implements AdminTgService {
         groupsDTO.setOrganization(organization);
 
         groupsService.save(groupsDTO);
+
+        InlineKeyboardMarkup inlineMarkup = new InlineKeyboardMarkup();
+
+        EditMessageTextDTO dto = createEditMessageText(callbackQuery, inlineMarkup, "");
+        adminFeign.editMessageText(dto);
 
         String newMessage = "Asosiy menyu";
         ReplyKeyboardMarkup markup = AdminKeyboards.createMenu();
@@ -532,7 +556,7 @@ public class AdminTgServiceImpl implements AdminTgService {
     }
 
     private WebhookResponseDTO setWebhookToNewBot(String token, Long botId){
-        String webhookAPI = "/setWebhook?url=https://217d-83-221-180-161.eu.ngrok.io/api/new-message";
+        String webhookAPI = "/setWebhook?url=" + WEBHOOK_URL + "/api/new-message";
         String url = telegramAPI + token + webhookAPI + "/" + botId;
         log.info("Url: {}", url);
         RestTemplate template = new RestTemplate();
@@ -956,7 +980,7 @@ public class AdminTgServiceImpl implements AdminTgService {
 
         List<PaymentDTO> payments = paymentService.getAllPaymentsCreatedByGroupManager();
         if(payments.isEmpty()){
-            wrongValue(managerId, "Sizda ");
+            wrongValue(managerId, "Hozircha sizda qarzdorliklar yo'q");
             log.warn("Payments list is empty, Manager id: {} ", managerId);
             return;
         }
@@ -995,8 +1019,12 @@ public class AdminTgServiceImpl implements AdminTgService {
     private boolean isNotExistsInGroups(Set<TelegramGroup> telegramGroups, BotTokenDTO botToken){
         for(TelegramGroup group: telegramGroups){
             URI uri = createCustomerURI(botToken.getToken());
+
+            String chatId = String.valueOf(group.getChatId());
+            String userId = String.valueOf(botToken.getTelegramId());
+
             ResponseFromTelegram<ChatMember> response =
-                customerFeign.getChatMember(uri, group.getChatId().intValue(), botToken.getTelegramId().intValue());
+                customerFeign.getChatMember(uri, chatId, userId);
             if(response.getOk()){
                 log.info("Bot is already exists in other group, Bot token: {} | Group id: {} | Response: {} ",
                     botToken.getToken(), group.getChatId(), response);

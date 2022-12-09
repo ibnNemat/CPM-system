@@ -25,7 +25,7 @@ public class AdminKeyboards {
 
         KeyboardRow body = new KeyboardRow();
         body.add(new KeyboardButton("\uD83E\uDEC2 Xizmat qo'shish"));
-        body.add(new KeyboardButton("\uD83D\uDCB8 Qarzdorliklarni ko'rish"));
+        body.add(new KeyboardButton("\uD83D\uDCB8 Bolalar qarzdorliklari"));
 
         KeyboardRow footer = new KeyboardRow();
         footer.add(new KeyboardButton("\uD83D\uDC40 Guruhlarni ko'rish"));

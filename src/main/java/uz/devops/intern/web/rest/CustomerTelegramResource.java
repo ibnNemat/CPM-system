@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 import uz.devops.intern.feign.CustomerFeign;
 import uz.devops.intern.service.AdminTgService;
 import uz.devops.intern.service.BotTokenService;
@@ -58,9 +60,13 @@ public class CustomerTelegramResource {
             }
 //        }
 //        if(update.getMessage() != null) {
-        if (update.getMyChatMember() != null) {
-            // Shu joyda botni gruppaga add qiganini bilsa bo'ladi
-            adminService.checkIsBotInGroup(update.getMyChatMember().getNewChatMember(), update.getMyChatMember().getChat(), botId);
+        boolean hasMyChatMember = update.hasMyChatMember();
+        if (hasMyChatMember){
+            Chat chat = update.getMyChatMember().getChat();
+            User user = update.getMyChatMember().getFrom();
+            if (!chat.getId().equals(user.getId())) {
+                adminService.checkIsBotInGroup(update.getMyChatMember().getNewChatMember(), update.getMyChatMember().getChat(), botId);
+            }
         }
 //        }
 //        else if(update.getMyChatMember() != null &&

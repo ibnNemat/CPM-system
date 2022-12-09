@@ -24,5 +24,5 @@ public interface CustomerFeignClient {
     ResponseFromTelegram<User> getMe(URI uri);
 
     @GetMapping("/getChatMember")
-    ResponseFromTelegram<ChatMember> getChatMember(URI uri, @RequestParam("chat_id") Integer chat_id, @RequestParam("user_id") Integer user_id);
+    ResponseFromTelegram<ChatMember> getChatMember(URI uri, @RequestParam("chat_id") String chat_id, @RequestParam("user_id") String user_id);
 }
