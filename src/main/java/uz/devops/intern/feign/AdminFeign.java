@@ -15,7 +15,7 @@ import uz.devops.intern.telegram.bot.dto.EditMessageDTO;
 import uz.devops.intern.telegram.bot.dto.EditMessageTextDTO;
 
 @FeignClient(value = "admin-feign",
-    url = "https://api.telegram.org/bot5543292898:AAGoR3GLOCOL7Lir7sjYyCFYS7BLiUwNbHA")
+    url = "https://api.telegram.org/bot5926613188:AAF3AKO0Yfwc5dk-oFiMvAPDvMGztkGCTkc")
 public interface AdminFeign {
     @PostMapping("/sendMessage")
     Update sendMessage(@RequestBody SendMessage sendMessage);

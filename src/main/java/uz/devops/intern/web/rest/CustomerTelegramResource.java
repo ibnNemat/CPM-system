@@ -58,10 +58,10 @@ public class CustomerTelegramResource {
             }
 //        }
 //        if(update.getMessage() != null) {
-        if (update.getMyChatMember() != null) {
-            // Shu joyda botni gruppaga add qiganini bilsa bo'ladi
-            adminService.checkIsBotInGroup(update.getMyChatMember().getNewChatMember(), update.getMyChatMember().getChat(), botId);
-        }
+//        if (update.getMyChatMember() != null) {
+//            // Shu joyda botni gruppaga add qiganini bilsa bo'ladi
+//            adminService.checkIsBotInGroup(update.getMyChatMember().getNewChatMember(), update.getMyChatMember().getChat(), botId);
+//        }
 //        }
 //        else if(update.getMyChatMember() != null &&
 //                update.getMyChatMember().getNewChatMember().getUser().getIsBot()){

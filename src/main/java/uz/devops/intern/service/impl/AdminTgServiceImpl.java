@@ -456,6 +456,7 @@ public class AdminTgServiceImpl implements AdminTgService {
         groupsDTO.setName(telegramGroup.getName());
         groupsDTO.setOrganization(organization);
 
+//        customerTelegram
         groupsService.save(groupsDTO);
 
         String newMessage = "Asosiy menyu";
@@ -817,7 +818,7 @@ public class AdminTgServiceImpl implements AdminTgService {
 
         if(!isPeriodExists){
             wrongValue(managerId, "Iltimos ko'rsatilgan qiymatlardan birini tanlang");
-            log.warn("User send invalid type of period, , Manager id: {} | Value: {}",
+            log.warn("User send invalid type of period, Manager id: {} | Value: {}",
                 managerId, messageText);
             return false;
         }

@@ -28,4 +28,6 @@ public interface CustomerTelegramRepository extends JpaRepository<CustomerTelegr
 
     @Query("SELECT ct FROM CustomerTelegram ct WHERE ct.chatId = :chatId")
     List<CustomerTelegram> getCountCustomersByChatId(@Param("chatId") Long chatId);
+
+    List<CustomerTelegram> findAllByTelegramGroupsChatId(Long chatId);
 }
