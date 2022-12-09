@@ -475,6 +475,16 @@ public class AdminTgServiceImpl implements AdminTgService {
         groupsDTO.setName(telegramGroup.getName());
         groupsDTO.setOrganization(organization);
 
+        List<CustomerTelegramDTO> customerTelegramDTOS = customerTelegramService.findByTelegramGroupTelegramId(manager.getChatId());
+        if (customerTelegramDTOS != null) {
+            Set<CustomersDTO> customersSet = new HashSet<>();
+            for (CustomerTelegramDTO customerTelegramDTO : customerTelegramDTOS) {
+                CustomersDTO customersDTO = new CustomersDTO();
+                customersDTO.setId(customerTelegramDTO.getCustomer().getId());
+                customersSet.add(customersDTO);
+            }
+            groupsDTO.setCustomers(customersSet);
+        }
         groupsService.save(groupsDTO);
 
         InlineKeyboardMarkup inlineMarkup = new InlineKeyboardMarkup();
@@ -841,7 +851,7 @@ public class AdminTgServiceImpl implements AdminTgService {
 
         if(!isPeriodExists){
             wrongValue(managerId, "Iltimos ko'rsatilgan qiymatlardan birini tanlang");
-            log.warn("User send invalid type of period, , Manager id: {} | Value: {}",
+            log.warn("User send invalid type of period, Manager id: {} | Value: {}",
                 managerId, messageText);
             return false;
         }

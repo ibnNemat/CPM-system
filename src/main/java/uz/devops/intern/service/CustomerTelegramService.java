@@ -8,6 +8,7 @@ import uz.devops.intern.service.dto.CustomerTelegramDTO;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 /**
  * Service Interface for managing {@link uz.devops.intern.domain.CustomerTelegram}.
@@ -18,5 +19,7 @@ public interface CustomerTelegramService {
     CustomerTelegramDTO findByTelegramId(Long telegramId);
 
     CustomerTelegram findEntityByTelegramId(Long telegramId);
+
+    List<CustomerTelegramDTO> findByTelegramGroupTelegramId(Long telegramId);
 
 }
