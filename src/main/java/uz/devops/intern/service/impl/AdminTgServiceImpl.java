@@ -456,7 +456,16 @@ public class AdminTgServiceImpl implements AdminTgService {
         groupsDTO.setName(telegramGroup.getName());
         groupsDTO.setOrganization(organization);
 
-//        customerTelegram
+        List<CustomerTelegramDTO> customerTelegramDTOS = customerTelegramService.findByTelegramGroupTelegramId(manager.getChatId());
+        if (customerTelegramDTOS != null) {
+            Set<CustomersDTO> customersSet = new HashSet<>();
+            for (CustomerTelegramDTO customerTelegramDTO : customerTelegramDTOS) {
+                CustomersDTO customersDTO = new CustomersDTO();
+                customersDTO.setId(customerTelegramDTO.getCustomer().getId());
+                customersSet.add(customersDTO);
+            }
+            groupsDTO.setCustomers(customersSet);
+        }
         groupsService.save(groupsDTO);
 
         String newMessage = "Asosiy menyu";

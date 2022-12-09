@@ -30,13 +30,9 @@ import uz.devops.intern.redis.CustomerTelegramRedisRepository;
 import uz.devops.intern.repository.CustomerTelegramRepository;
 import uz.devops.intern.service.*;
 import uz.devops.intern.service.dto.*;
-import uz.devops.intern.service.mapper.BotTokenMapper;
-import uz.devops.intern.service.mapper.CustomerTelegramMapper;
-import uz.devops.intern.service.mapper.PaymentHistoryMapper;
-import uz.devops.intern.service.mapper.PaymentsMapper;
+import uz.devops.intern.service.mapper.*;
 import uz.devops.intern.service.utils.DateUtils;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
-
 
 import javax.persistence.EntityManager;
 
@@ -235,6 +231,17 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         return customerTelegramOptional.orElse(null);
     }
 
+    @Override
+    public List<CustomerTelegramDTO> findByTelegramGroupTelegramId(Long telegramId) {
+        List<CustomerTelegram> customerTelegramList = customerTelegramRepository.findAllByTelegramGroupsChatId(telegramId);
+        if (customerTelegramList == null)
+            return null;
+
+        return customerTelegramList.stream()
+            .map(customerTelegramMapper::toDto)
+            .toList();
+    }
+
     private SendMessage whenPressingInlineButton(CallbackQuery callbackQuery) {
         User telegramUser = callbackQuery.getFrom();
         Optional<CustomerTelegram> optionalCustomerTelegram = customerTelegramRepository.findByTelegramId(telegramUser.getId());
@@ -421,7 +428,10 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         try {
             double requestPaymentSum = Double.parseDouble(paymentSum);
             if (requestPaymentSum < 1000){
-                return sendMessage(telegramUser.getId(), "❌ Summa 1000 sumdan kattaroq bo'lishi kerak, " +
+                return sendMessage(telegramUser.getId(), "❌ Summa 1000 so'mdan kattaroq bo'lishi kerak, " +
+                    "qaytadan to'lamoqchi bo'lgan summangizni kiriting!");
+            }else if(requestPaymentSum > 100_000_000) {
+                return sendMessage(telegramUser.getId(), "❌ Summa 100 mln so'mdan kichikroq bo'lishi kerak, " +
                     "qaytadan to'lamoqchi bo'lgan summangizni kiriting!");
             }
 
@@ -529,18 +539,18 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         StringBuilder customerProfileBuilder = new StringBuilder();
 
         uz.devops.intern.domain.User jhi_user = customerTelegram.getCustomer().getUser();
+        Customers customer = customerTelegram.getCustomer();
 
         customerProfileBuilder.append("<b>Mening profilim: </b>\n\n");
         customerProfileBuilder.append(String.format("<b>Ism: </b> %s\n", jhi_user.getFirstName()));
         customerProfileBuilder.append(String.format("<b>Familiya: </b>%s\n", jhi_user.getLastName()));
         customerProfileBuilder.append(String.format("<b>Email: </b> %s\n", jhi_user.getEmail()));
         customerProfileBuilder.append(String.format("<b>Tel raqam: </b> %s\n", customerTelegram.getPhoneNumber()));
-//        Optional<BotToken> botTokenOptional = botTokenService.findByBotId(customerTelegram.getChatId());
+        customerProfileBuilder.append(String.format("<b>Balans: </b> %.2f", customer.getBalance()));
+
         BotTokenDTO botTokenDTO = botTokenService.findByChatId(customerTelegram.getChatId());
         Optional<TelegramGroup> telegramGroupOptional = telegramGroupService.findByChatId(customerTelegram.getChatId());
-//        if (botTokenOptional.isPresent() && telegramGroupOptional.isPresent()){
         if(botTokenDTO != null && telegramGroupOptional.isPresent()){
-//            BotToken botToken = botTokenOptional.get();
             BotToken botToken = botTokenMapper.toEntity(botTokenDTO);
             TelegramGroup telegramGroup = telegramGroupOptional.get();
             uz.devops.intern.domain.User managerUser = botToken.getCreatedBy();
@@ -775,6 +785,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         for (Groups group : customer.getGroups()) {
             buildCustomerGroups.append(String.format("<b>Guruh nomi: </b> %s\n", group.getName()));
             buildCustomerGroups.append(String.format("<b>Tashkilot nomi:</b> %s\n\n", group.getOrganization().getName()));
+            buildCustomerGroups.append("--------------------\n");
             buildCustomerGroups.append("          <b>Guruhdagi bolalar</b>\n\n");
 
             for (Customers groupCustomer : group.getCustomers()) {
