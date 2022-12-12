@@ -12,6 +12,7 @@ import uz.devops.intern.domain.BotToken;
 import uz.devops.intern.repository.BotTokenRepository;
 import uz.devops.intern.service.BotTokenService;
 import uz.devops.intern.service.dto.BotTokenDTO;
+import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.mapper.BotTokenMapper;
 
 /**
@@ -88,4 +89,47 @@ public class BotTokenServiceImpl implements BotTokenService {
         if(chatId == null)return null;
         return botTokenRepository.findByTelegramId(chatId).map(botTokenMapper::toDto).orElse(null);
     }
+
+    @Override
+    public ResponseDTO<BotTokenDTO> findByChatId(Long chatId, Boolean newMethod) {
+        if(chatId == null){
+            return ResponseDTO.<BotTokenDTO>builder()
+                .success(false).message("Parameter \"Chat id\" is null!").build();
+        }
+
+        Optional<BotToken> botTokenOptional = botTokenRepository.findByTelegramId(chatId);
+        if(botTokenOptional.isEmpty()){
+            return ResponseDTO.<BotTokenDTO>builder()
+                .success(false).message("Data is not found!").build();
+        }
+
+        BotTokenDTO dto = botTokenOptional.map(botTokenMapper::toDto).get();
+        return ResponseDTO.<BotTokenDTO>builder()
+            .success(true).message("OK").responseData(dto).build();
+    }
+
+    @Override
+    public ResponseDTO<BotTokenDTO> findByToken(String token) {
+        if(token == null){
+            return ResponseDTO.<BotTokenDTO>builder()
+                .success(false).message("Parameter \"Token\" is null!").build();
+        }
+
+        if(token.trim().isEmpty()){
+            return ResponseDTO.<BotTokenDTO>builder()
+                .success(false).message("Parameter \"Token\" is empty!").build();
+        }
+
+        Optional<BotToken> botTokenOptional = botTokenRepository.findByToken(token);
+        if(botTokenOptional.isEmpty()){
+            return ResponseDTO.<BotTokenDTO>builder()
+                .success(false).message("Data is not found!").build();
+        }
+
+        BotTokenDTO dto = botTokenOptional.map(botTokenMapper::toDto).get();
+        return ResponseDTO.<BotTokenDTO>builder()
+            .success(true).message("OK").responseData(dto).build();
+    }
+
+
 }

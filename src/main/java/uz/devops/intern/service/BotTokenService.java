@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import uz.devops.intern.domain.BotToken;
 import uz.devops.intern.service.dto.BotTokenDTO;
+import uz.devops.intern.service.dto.ResponseDTO;
 
 /**
  * Service Interface for managing {@link uz.devops.intern.domain.BotToken}.
@@ -57,4 +58,7 @@ public interface BotTokenService {
     void delete(Long id);
 
     BotTokenDTO findByChatId(Long chatId);
+    ResponseDTO<BotTokenDTO> findByChatId(Long chatId, Boolean newMethod);
+
+    ResponseDTO<BotTokenDTO> findByToken(String token);
 }

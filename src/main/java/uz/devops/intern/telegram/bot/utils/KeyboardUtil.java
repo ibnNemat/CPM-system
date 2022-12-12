@@ -12,14 +12,18 @@ import java.util.List;
 
 public class KeyboardUtil {
 
-    public final static List<String> languages = List.of(
+    private final static List<String> LANGUAGES = List.of(
         "\uD83C\uDDFA\uD83C\uDDFF O`zbekcha", "\uD83C\uDDF7\uD83C\uDDFA Русский");
+
+    public static List<String> availableLanguages(){
+        return LANGUAGES;
+    }
 
     public static ReplyKeyboardMarkup language(){
         List<KeyboardRow> rows = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        for(String language: languages){
+        for(String language: LANGUAGES){
             row.add(new KeyboardButton(language));
             if(row.size() == 2){
                 rows.add(row);

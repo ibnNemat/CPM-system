@@ -42,7 +42,7 @@ public class CustomerTelegramResource {
     public void sendMessage(@RequestBody Update update, @PathVariable String botId) throws URISyntaxException {
         log.info("[REST] Bot id: {} | Update: {}", botId, update);
 //        if(update.getMessage()) {
-            try {
+//            try {
                 long idBot = Long.parseLong(botId);
 //            Optional<BotToken> botTokenOptional = botTokenService.findByBotId(idBot);
                 BotTokenDTO botTokenDTO = botTokenService.findByChatId(idBot);
@@ -54,10 +54,10 @@ public class CustomerTelegramResource {
                     if (sendMessage != null)
                         customerFeign.sendMessage(uri, sendMessage);
                 }
-            } catch (Exception e) {
-                log.error(e.getMessage());
-                e.printStackTrace();
-            }
+//            } catch (Exception e) {
+//                log.error(e.getMessage());
+//                e.printStackTrace();
+//            }
 //        }
 //        if(update.getMessage() != null) {
         boolean hasMyChatMember = update.hasMyChatMember();

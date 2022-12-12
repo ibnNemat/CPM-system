@@ -35,6 +35,7 @@ import uz.devops.intern.service.utils.DateUtils;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
 
 import javax.persistence.EntityManager;
+import javax.swing.text.html.Option;
 
 import static uz.devops.intern.telegram.bot.utils.KeyboardUtil.sendMarkup;
 import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.*;
@@ -240,6 +241,55 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         return customerTelegramList.stream()
             .map(customerTelegramMapper::toDto)
             .toList();
+    }
+
+    @Override
+    public ResponseDTO<CustomerTelegramDTO> getCustomerByTelegramId(Long telegramId) {
+        if(telegramId == null){
+            return ResponseDTO.<CustomerTelegramDTO>builder()
+                .success(false).message("Parameter \"Telegram id\" is null!").build();
+        }
+        Optional<CustomerTelegramDTO> customerOptional =
+            customerTelegramRepository.findByTelegramId(telegramId).map(customerTelegramMapper::toDto);
+
+        if(customerOptional.isEmpty()){
+            return ResponseDTO.<CustomerTelegramDTO>builder()
+                .success(false).message("Data is not found!").build();
+        }
+
+        return ResponseDTO.<CustomerTelegramDTO>builder()
+            .success(true).message("OK").responseData(customerOptional.get()).build();
+    }
+
+    @Override
+    public ResponseDTO<CustomerTelegramDTO> update(CustomerTelegramDTO dto) {
+        if(dto == null){
+            return ResponseDTO.<CustomerTelegramDTO>builder()
+                .success(false).message("DTO is null!").build();
+        }
+        CustomerTelegram entity = customerTelegramMapper.toEntity(dto);
+        customerTelegramRepository.save(entity);
+        dto = customerTelegramMapper.toDto(entity);
+        System.out.println("CustomerTelegram is updated: " + dto);
+        return ResponseDTO.<CustomerTelegramDTO>builder()
+            .success(true).message("OK").responseData(dto).build();
+    }
+
+    @Override
+    public ResponseDTO<CustomerTelegramDTO> findByBotTgId(Long botId) {
+        if(botId == null){
+            return ResponseDTO.<CustomerTelegramDTO>builder()
+                .success(false).message("Parameter \"Bot id\" is null!").build();
+        }
+        Optional<CustomerTelegram> customerTelegramOptional = customerTelegramRepository.findByBot(botId);
+        if(customerTelegramOptional.isEmpty()){
+            return ResponseDTO.<CustomerTelegramDTO>builder()
+                .success(false).message("Data is not found!").build();
+        }
+
+        CustomerTelegramDTO dto = customerTelegramOptional.map(customerTelegramMapper::toDto).get();
+        return ResponseDTO.<CustomerTelegramDTO>builder()
+            .success(true).message("OK").responseData(dto).build();
     }
 
     private SendMessage whenPressingInlineButton(CallbackQuery callbackQuery) {

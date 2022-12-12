@@ -1,5 +1,8 @@
 package uz.devops.intern.service.dto;
 
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.Objects;
 import javax.validation.constraints.*;
@@ -8,6 +11,7 @@ import javax.validation.constraints.*;
  * A DTO for the {@link uz.devops.intern.domain.BotToken} entity.
  */
 @SuppressWarnings("common-java:DuplicatedBlocks")
+@Builder
 public class BotTokenDTO implements Serializable {
 
     private Long id;

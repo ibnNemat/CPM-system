@@ -20,4 +20,6 @@ public interface BotTokenRepository extends JpaRepository<BotToken, Long> {
     Optional<BotToken> findByTelegramId(Long chatId);
 
     Boolean existsByToken(String token);
+
+    Optional<BotToken> findByToken(String token);
 }

@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 import uz.devops.intern.domain.ResponseFromTelegram;
+import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
 
 import java.net.URI;
 
@@ -25,4 +26,7 @@ public interface CustomerFeignClient {
 
     @GetMapping("/getChatMember")
     ResponseFromTelegram<ChatMember> getChatMember(URI uri, @RequestParam("chat_id") String chat_id, @RequestParam("user_id") String user_id);
+
+    @GetMapping("/setWebhook")
+    WebhookResponseDTO setWebhook(URI uri, @RequestParam("url") String url);
 }

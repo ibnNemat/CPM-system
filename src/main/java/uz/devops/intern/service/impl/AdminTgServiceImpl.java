@@ -35,6 +35,7 @@ import uz.devops.intern.telegram.bot.AdminKeyboards;
 import uz.devops.intern.telegram.bot.dto.EditMessageDTO;
 import uz.devops.intern.telegram.bot.dto.EditMessageTextDTO;
 import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
+import uz.devops.intern.telegram.bot.service.RegistrationCommandImpl;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
@@ -73,8 +74,9 @@ public class AdminTgServiceImpl implements AdminTgService {
     private final AdminFeign adminFeign;
     private final CustomerFeignClient customerFeign;
     private final ServicesRedisRepository servicesRedisRepository;
+    private final RegistrationCommandImpl registrationCommand;
 
-    public AdminTgServiceImpl(TelegramGroupService telegramGroupService, OrganizationService organizationService, GroupsService groupsService, ServicesService servicesService, CustomerTelegramService customerTelegramService, BotTokenRepository botTokenRepository, BotTokenService botTokenService, CustomerTelegramRepository customerTelegramRepository, UserRepository userRepository, UserService userService, PaymentService paymentService, AdminFeign adminFeign, CustomerFeignClient customerFeign, ServicesRedisRepository servicesRedisRepository) {
+    public AdminTgServiceImpl(TelegramGroupService telegramGroupService, OrganizationService organizationService, GroupsService groupsService, ServicesService servicesService, CustomerTelegramService customerTelegramService, BotTokenRepository botTokenRepository, BotTokenService botTokenService, CustomerTelegramRepository customerTelegramRepository, UserRepository userRepository, UserService userService, PaymentService paymentService, AdminFeign adminFeign, CustomerFeignClient customerFeign, ServicesRedisRepository servicesRedisRepository, RegistrationCommandImpl registrationCommand) {
         this.telegramGroupService = telegramGroupService;
         this.organizationService = organizationService;
         this.groupsService = groupsService;
@@ -89,6 +91,7 @@ public class AdminTgServiceImpl implements AdminTgService {
         this.adminFeign = adminFeign;
         this.customerFeign = customerFeign;
         this.servicesRedisRepository = servicesRedisRepository;
+        this.registrationCommand = registrationCommand;
     }
 
     @Override
@@ -109,14 +112,16 @@ public class AdminTgServiceImpl implements AdminTgService {
             }
         }else{
             CustomerTelegram customer = customerOptional.get();
+            System.out.println("CustomerTelegram from DB: " + customer);
             Integer step = customer.getStep();
             boolean isSuccess = false;
             if(update.hasMessage()) {
                 if (step == 1) {
-                    isSuccess = getLanguage(update.getMessage(), customer);
-                    if (isSuccess) updateCustomerStep(customer, 2);
+                    isSuccess = registrationCommand.execute(update);
+//                    if (isSuccess) updateCustomerStep(customer, 2);
                 } else if (step == 2) {
-                    isSuccess = verifyAdminByPhoneNumber(update.getMessage(), customer);
+                    registrationCommand.execute(update);
+//                    isSuccess = verifyAdminByPhoneNumber(update.getMessage(), customer);
                     if (isSuccess) updateCustomerStep(customer, 3);
                 } else if (step == 3) {
                     isSuccess = getAdminBotToken(update.getMessage(), customer);
@@ -155,7 +160,8 @@ public class AdminTgServiceImpl implements AdminTgService {
                     if (isSuccess) updateCustomerStep(customer, 4);
                 }
             }
-            if(isSuccess)customerTelegramRepository.save(customer);
+            System.out.println(customer);
+//            if(isSuccess)customerTelegramRepository.save(customer);
         }
     }
 
@@ -191,7 +197,7 @@ public class AdminTgServiceImpl implements AdminTgService {
         Long userId = message.getFrom().getId();
         String messageText = message.getText();
 
-        if(!KeyboardUtil.languages.contains(messageText)){
+        if(!KeyboardUtil.availableLanguages().contains(messageText)){
             wrongValue(userId, "Iltimos ko'rsatilgan tillardan birini tanlang\uD83D\uDE4F");
             log.info("User send invalid value while choosing language, Message: {} | Manager: {}", messageText, customer);
             return false;
@@ -556,13 +562,14 @@ public class AdminTgServiceImpl implements AdminTgService {
     }
 
     private BotTokenDTO createBotEntity(org.telegram.telegrambots.meta.api.objects.User bot, UserDTO owner,String token){
-        BotTokenDTO entity = new BotTokenDTO();
-        entity.setToken(token);
-        entity.setCreatedBy(owner);
-        entity.setTelegramId(bot.getId());
-        entity.setUsername(bot.getUserName());
+        return BotTokenDTO.builder()
+            .token(token).createdBy(owner).telegramId(bot.getId()).username(bot.getUserName()).build();
+//        entity.setToken(token);
+//        entity.setCreatedBy(owner);
+//        entity.setTelegramId(bot.getId());
+//        entity.setUsername(bot.getUserName());
 
-        return entity;
+//        return entity;
     }
 
     private WebhookResponseDTO setWebhookToNewBot(String token, Long botId){
