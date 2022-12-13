@@ -14,9 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
-import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import tech.jhipster.config.DefaultProfileUtil;
 import tech.jhipster.config.JHipsterConstants;
 import uz.devops.intern.config.ApplicationProperties;
@@ -25,8 +23,6 @@ import uz.devops.intern.config.CRLFLogConverter;
 @SpringBootApplication
 @EnableConfigurationProperties({ LiquibaseProperties.class, ApplicationProperties.class })
 @EnableFeignClients
-//@EnableRedisRepositories({"uz.devops.intern.*"})
-//@ComponentScan({"uz.devops.intern.*"})
 public class CpmSystemApp {
     private static final Logger log = LoggerFactory.getLogger(CpmSystemApp.class);
 

@@ -28,7 +28,7 @@ public class TelegramGroup implements Serializable {
     @Column(name = "chat_id", unique = true)
     private Long chatId;
 
-    @ManyToMany(mappedBy = "telegramGroups")
+    @ManyToMany(mappedBy = "telegramGroups", fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = { "customer", "telegramGroups" }, allowSetters = true)
     private Set<CustomerTelegram> customerTelegrams = new HashSet<>();
 

@@ -254,9 +254,10 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public List<Payment> getAllCustomerPaymentsPayedIsFalse(Customers customer) {
+    public List<PaymentDTO> getAllCustomerPaymentsPayedIsFalse(Customers customer) {
         log.debug("Request to get all customer Payments which payment is false");
-        return paymentRepository.findAllByCustomerAndIsPayedFalseOrderByStartedPeriod(customer);
+        List<Payment> paymentList = paymentRepository.findAllByCustomerAndIsPayedFalseOrderByStartedPeriod(customer);
+        return PaymentsMapper.paymentDTOList(paymentList);
     }
 
     @Override
@@ -281,7 +282,7 @@ public class PaymentServiceImpl implements PaymentService {
     public List<PaymentDTO> getAllPaymentsCreatedByGroupManager(){
         String managerName = ContextHolderUtil.getUsernameFromContextHolder();
         List<Payment> paymentList = paymentRepository.findAllByGroupOwnerName(managerName);
-        return PaymentsMapper.paymentDTOSet(paymentList);
+        return PaymentsMapper.paymentDTOList(paymentList);
     }
 
     @Override

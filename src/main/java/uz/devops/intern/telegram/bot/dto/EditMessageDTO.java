@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 public class EditMessageDTO {
-
     @JsonProperty("chat_id")
     private String chatId;
     @JsonProperty("message_id")

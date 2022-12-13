@@ -61,4 +61,13 @@ public class KeyboardUtil {
 
         return markup;
     }
+
+    public static ReplyKeyboardMarkup sendBackHomeButton(String text){
+        KeyboardRow keyboardRow = new KeyboardRow();
+        keyboardRow.add(new KeyboardButton(text));
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(List.of(keyboardRow));
+        replyKeyboardMarkup.setResizeKeyboard(true);
+
+        return replyKeyboardMarkup;
+    }
 }

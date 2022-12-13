@@ -39,24 +39,16 @@ public class CustomerTelegramResource {
     @PostMapping("/new-message/{botId}")
     public void sendMessage(@RequestBody Update update, @PathVariable String botId) throws URISyntaxException {
         log.info("[REST] Bot id: {} | Update: {}", botId, update);
-//        if(update.getMessage()) {
-            try {
-                long idBot = Long.parseLong(botId);
-//            Optional<BotToken> botTokenOptional = botTokenService.findByBotId(idBot);
-                BotTokenDTO botTokenDTO = botTokenService.findByChatId(idBot);
-//            if (botTokenOptional.isPresent() && botTokenOptional.get().getToken() != null) {
-//                URI uri = new URI("https://api.telegram.org/bot" + botTokenOptional.get().getToken());
-                if (botTokenDTO != null && botTokenDTO.getToken() != null) {
-                    URI uri = new URI("https://api.telegram.org/bot" + botTokenDTO.getToken());
-                    SendMessage sendMessage = customerTelegramService.botCommands(update, uri);
-                    if (sendMessage != null)
-                        customerFeign.sendMessage(uri, sendMessage);
-                }
-            } catch (Exception e) {
-                log.error(e.getMessage());
-                e.printStackTrace();
-            }
-//        }
+
+        long idBot = Long.parseLong(botId);
+        BotTokenDTO botTokenDTO = botTokenService.findByChatId(idBot);
+        if (botTokenDTO != null && botTokenDTO.getToken() != null) {
+            URI uri = new URI("https://api.telegram.org/bot" + botTokenDTO.getToken());
+            SendMessage sendMessage = customerTelegramService.botCommands(update, uri);
+            if (sendMessage.getText() != null)
+                customerFeign.sendMessage(uri, sendMessage);
+        }
+
 //        if(update.getMessage() != null) {
 //        if (update.getMyChatMember() != null) {
 //            // Shu joyda botni gruppaga add qiganini bilsa bo'ladi

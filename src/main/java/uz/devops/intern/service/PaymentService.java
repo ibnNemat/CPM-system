@@ -14,7 +14,7 @@ import uz.devops.intern.service.dto.ResponseDTO;
  * Service Interface for managing {@link uz.devops.intern.domain.Payment}.
  */
 public interface PaymentService {
-    List<Payment> getAllCustomerPaymentsPayedIsFalse(Customers customer);
+    List<PaymentDTO> getAllCustomerPaymentsPayedIsFalse(Customers customer);
     ResponseDTO<List<PaymentDTO>> getAllCustomerPayments();
     List<PaymentDTO> getAllPaymentsCreatedByGroupManager();
     List<Payment> saveAll(List<Payment> paymentList);

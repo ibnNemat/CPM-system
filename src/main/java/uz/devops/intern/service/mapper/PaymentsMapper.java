@@ -4,8 +4,6 @@ import uz.devops.intern.domain.*;
 import uz.devops.intern.service.dto.*;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class PaymentsMapper {
 
@@ -59,7 +57,7 @@ public class PaymentsMapper {
         return userDTO;
     }
 
-    public static List<PaymentDTO> paymentDTOSet(List<Payment> paymentList){
+    public static List<PaymentDTO> paymentDTOList(List<Payment> paymentList){
         if (paymentList == null)
             return null;
         return paymentList.stream()

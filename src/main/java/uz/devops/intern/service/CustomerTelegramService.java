@@ -21,5 +21,8 @@ public interface CustomerTelegramService {
     CustomerTelegram findEntityByTelegramId(Long telegramId);
 
     List<CustomerTelegramDTO> findByTelegramGroupTelegramId(Long telegramId);
-
+    List<CustomerTelegramDTO> findAllByIsActiveTrue();
+    List<CustomerTelegramDTO> findAll();
+    void setFalseToTelegramCustomerProfile(List<Long> ids);
+    void deleteAllTelegramCustomersIsActiveFalse(List<Long> ids);
 }
