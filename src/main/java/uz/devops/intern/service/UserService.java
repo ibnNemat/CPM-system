@@ -24,6 +24,7 @@ import uz.devops.intern.security.AuthoritiesConstants;
 import uz.devops.intern.security.SecurityUtils;
 import uz.devops.intern.service.dto.AdminUserDTO;
 import uz.devops.intern.service.dto.CustomersDTO;
+import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.dto.UserDTO;
 import uz.devops.intern.service.mapper.UserMapper;
 
@@ -353,6 +354,29 @@ public class UserService {
         dto.setLogin(user.getLogin());
 
         return dto;
+    }
+
+    public ResponseDTO<Set<Authority>> getUserAuthorityByCreatedBy(String phoneNumber){
+        if(phoneNumber == null){
+            return ResponseDTO.<Set<Authority>>builder()
+                .success(false).message("Parameter \"Phone number\" is null!").build();
+        }
+        if(phoneNumber.trim().isEmpty()){
+            return ResponseDTO.<Set<Authority>>builder()
+                .success(false).message("Phone number is empty!").build();
+        }
+
+        Optional<User> userOptional = userRepository.findByCreatedBy(phoneNumber);
+
+        if(userOptional.isEmpty()){
+            return ResponseDTO.<Set<Authority>>builder()
+                .success(false).message("Data is not found! Phone number: " + phoneNumber).build();
+        }
+
+        User user = userOptional.get();
+
+        return ResponseDTO.<Set<Authority>>builder()
+            .success(true).message("OK").responseData(user.getAuthorities()).build();
     }
 
     public Optional<User> findByFirstName(String firstName) {

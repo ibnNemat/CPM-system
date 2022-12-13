@@ -25,4 +25,10 @@ public interface CustomerTelegramService {
     List<CustomerTelegramDTO> findAll();
     void setFalseToTelegramCustomerProfile(List<Long> ids);
     void deleteAllTelegramCustomersIsActiveFalse(List<Long> ids);
+
+    ResponseDTO<CustomerTelegramDTO> getCustomerByTelegramId(Long telegramId);
+
+    ResponseDTO<CustomerTelegramDTO> update(CustomerTelegramDTO dto);
+
+    ResponseDTO<CustomerTelegramDTO> findByBotTgId(Long botId);
 }

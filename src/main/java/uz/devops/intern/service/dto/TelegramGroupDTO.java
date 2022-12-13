@@ -1,5 +1,9 @@
 package uz.devops.intern.service.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -7,6 +11,9 @@ import java.util.Objects;
  * A DTO for the {@link uz.devops.intern.domain.TelegramGroup} entity.
  */
 @SuppressWarnings("common-java:DuplicatedBlocks")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TelegramGroupDTO implements Serializable {
 
     private Long id;

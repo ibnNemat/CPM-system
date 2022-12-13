@@ -36,5 +36,8 @@ public interface TelegramGroupRepository extends JpaRepository<TelegramGroup, Lo
     @Query("SELECT tg FROM TelegramGroup tg WHERE tg.id IN (SELECT ct.telegramGroups FROM CustomerTelegram ct WHERE ct.chatId = :managerId)")
     List<TelegramGroup> findByCustomer(@Param("managerId") Long managerId);
 
-
+    @Query(value = "SELECT telegram_group_id FROM rel_customer_telegram__telegram_group WHERE customer_telegram_id = " +
+        "(SELECT id FROM customer_telegram WHERE telegram_id = :managerId)",
+        nativeQuery = true)
+    List<TelegramGroup> getNotRegisteredTgGroups(@Param("managerId") Long managerId);
 }

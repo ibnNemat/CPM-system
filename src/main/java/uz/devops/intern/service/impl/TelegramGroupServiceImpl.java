@@ -137,4 +137,14 @@ public class TelegramGroupServiceImpl implements TelegramGroupService {
     public TelegramGroupRepository getTelegramGroupRepository(){
         return this.telegramGroupRepository;
     }
+
+    @Override
+    public TelegramGroupDTO getNotRegisteredTelegramGroups(Long managerTelegramId) {
+        if(managerTelegramId == null){
+            return null;
+        }
+        telegramGroupRepository.findByCustomer(managerTelegramId);
+
+        return null;
+    }
 }
