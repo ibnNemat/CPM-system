@@ -265,6 +265,21 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         customerTelegramRepository.deleteAllByIdInAndIsActiveFalse(ids);
     }
 
+    @Override
+    public ResponseDTO<CustomerTelegramDTO> getCustomerByTelegramId(Long telegramId) {
+        return null;
+    }
+
+    @Override
+    public ResponseDTO<CustomerTelegramDTO> update(CustomerTelegramDTO dto) {
+        return null;
+    }
+
+    @Override
+    public ResponseDTO<CustomerTelegramDTO> findByBotTgId(Long botId) {
+        return null;
+    }
+
     private SendMessage whenPressingInlineButton(CallbackQuery callbackQuery) {
         User telegramUser = callbackQuery.getFrom();
         Optional<CustomerTelegram> optionalCustomerTelegram = customerTelegramRepository.findByTelegramId(telegramUser.getId());
