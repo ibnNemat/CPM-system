@@ -79,6 +79,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     private final BotTokenService botTokenService;
     private final CustomerTelegramMapper customerTelegramMapper;
     private final BotTokenMapper botTokenMapper;
+
     public CustomerTelegramServiceImpl(CustomerTelegramRepository customerTelegramRepository, CustomerTelegramRedisRepository customerTelegramRedisRepository, CustomerPaymentRepository customerPaymentRepository, CustomersService customersService, CustomerFeign customerFeign, PaymentService paymentService, TelegramGroupService telegramGroupService, PaymentHistoryService paymentHistoryService, CallbackRedisRepository callbackRedisRepository, PaymentHistoryMapper paymentHistoryMapper, UserService userService, BotTokenService botTokenService, CustomerTelegramMapper customerTelegramMapper, BotTokenMapper botTokenMapper) {
         this.customerTelegramRepository = customerTelegramRepository;
         this.customerTelegramRedisRepository = customerTelegramRedisRepository;

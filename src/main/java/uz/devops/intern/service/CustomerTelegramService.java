@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import uz.devops.intern.domain.CustomerTelegram;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
+import uz.devops.intern.service.dto.ResponseDTO;
 
 import java.net.URI;
 import java.net.URISyntaxException;
