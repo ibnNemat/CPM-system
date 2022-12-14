@@ -1,4 +1,4 @@
-package uz.devops.intern.command;
+package uz.devops.intern.pattern.command;
 
 import uz.devops.intern.telegram.bot.service.Command;
 

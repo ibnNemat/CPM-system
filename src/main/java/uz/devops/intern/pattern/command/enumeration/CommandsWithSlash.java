@@ -1,4 +1,4 @@
-package uz.devops.intern.command.enumeration;
+package uz.devops.intern.pattern.command.enumeration;
 
 import lombok.Getter;
 
@@ -7,7 +7,8 @@ public enum CommandsWithSlash {
     START("/start"),
     START_WITH_CHAT_ID("/start "),
     HELP("/help"),
-    COMMANDS_WITHOUT_SLASH("command without slash");
+    COMMAND_WITH_MESSAGE("update with message"),
+    COMMAND_WITH_CALLBACK_QUERY("update with callback query");
 
     private final String commandName;
 

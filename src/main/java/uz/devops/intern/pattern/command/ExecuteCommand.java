@@ -1,4 +1,4 @@
-package uz.devops.intern.command;
+package uz.devops.intern.pattern.command;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
 
