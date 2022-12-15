@@ -20,7 +20,6 @@ import uz.devops.intern.service.dto.ResponseCode;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.dto.ResponseMessage;
 import uz.devops.intern.service.dto.ServicesDTO;
-import uz.devops.intern.service.mapper.PaymentsMapper;
 import uz.devops.intern.service.mapper.ServiceMapper;
 import uz.devops.intern.service.mapper.ServicesMapper;
 import uz.devops.intern.service.utils.AuthenticatedUserUtil;
@@ -30,7 +29,6 @@ import uz.devops.intern.web.rest.errors.BadRequestAlertException;
 import java.time.LocalDate;
 import java.util.*;
 
-import static uz.devops.intern.service.dto.ResponseCode.NOT_FOUND;
 import static uz.devops.intern.service.dto.ResponseMessage.*;
 import static uz.devops.intern.service.dto.ResponseCode.OK;
 
@@ -103,7 +101,7 @@ public class ServicesServiceImpl implements ServicesService {
                     newPaymentForService.setCustomer(customerForService);
                     newPaymentForService.setStartedPeriod(startedPeriod);
                     newPaymentForService.setFinishedPeriod(endPeriod);
-                    newPaymentForService.setIsPayed(false);
+                    newPaymentForService.setIsPaid(false);
                     newPaymentForService.setPaidMoney(0D);
                     newPaymentForService.setPaymentForPeriod(service.getPrice());
                     paymentList.add(newPaymentForService);

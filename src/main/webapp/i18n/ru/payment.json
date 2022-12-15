@@ -20,7 +20,7 @@
       "id": "ID",
       "paidMoney": "Paid Money",
       "paymentForPeriod": "Payment For Period",
-      "isPayed": "Is Payed",
+      "isPaid": "Is Payed",
       "startedPeriod": "Started Period",
       "finishedPeriod": "Finished Period",
       "customer": "Customer",

@@ -86,12 +86,12 @@
         </div>
 
         <div class="row mb-3">
-          <label class="form-label" jhiTranslate="cpmSystemApp.payment.isPayed" for="field_isPayed">Is Payed</label>
-          <input type="checkbox" class="form-check" name="isPayed" id="field_isPayed" data-cy="isPayed" formControlName="isPayed" />
-          <div *ngIf="editForm.get('isPayed')!.invalid && (editForm.get('isPayed')!.dirty || editForm.get('isPayed')!.touched)">
+          <label class="form-label" jhiTranslate="cpmSystemApp.payment.isPaid" for="field_isPaid">Is Payed</label>
+          <input type="checkbox" class="form-check" name="isPaid" id="field_isPaid" data-cy="isPaid" formControlName="isPaid" />
+          <div *ngIf="editForm.get('isPaid')!.invalid && (editForm.get('isPaid')!.dirty || editForm.get('isPaid')!.touched)">
             <small
               class="form-text text-danger"
-              *ngIf="editForm.get('isPayed')?.errors?.required"
+              *ngIf="editForm.get('isPaid')?.errors?.required"
               jhiTranslate="entity.validation.required"
             >
               This field is required.

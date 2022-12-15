@@ -31,8 +31,8 @@ public class Payment implements Serializable {
     @Column(name = "payment_for_period", nullable = false)
     private Double paymentForPeriod;
 
-    @Column(name = "is_payed", nullable = false)
-    private Boolean isPayed;
+    @Column(name = "is_paid", nullable = false)
+    private Boolean isPaid;
 
     @NotNull
     @JsonFormat(pattern="yyyy-MM-dd")
@@ -103,12 +103,12 @@ public class Payment implements Serializable {
         this.paymentForPeriod = paymentForPeriod;
     }
 
-    public Boolean getIsPayed() {
-        return this.isPayed;
+    public Boolean getIsPaid() {
+        return this.isPaid;
     }
 
-    public Payment isPayed(Boolean isPayed) {
-        this.setIsPayed(isPayed);
+    public Payment isPaid(Boolean isPaid) {
+        this.setIsPaid(isPaid);
         return this;
     }
 
@@ -121,8 +121,8 @@ public class Payment implements Serializable {
         this.setService(service);
         return this;
     }
-    public void setIsPayed(Boolean isPayed) {
-        this.isPayed = isPayed;
+    public void setIsPaid(Boolean isPaid) {
+        this.isPaid = isPaid;
     }
 
     public LocalDate getStartedPeriod() {
@@ -204,7 +204,7 @@ public class Payment implements Serializable {
             "id=" + id +
             ", paidMoney=" + paidMoney +
             ", paymentForPeriod=" + paymentForPeriod +
-            ", isPayed=" + isPayed +
+            ", isPaid=" + isPaid +
             ", startedPeriod=" + startedPeriod +
             ", finishedPeriod=" + finishedPeriod +
             ", customer=" + customer +

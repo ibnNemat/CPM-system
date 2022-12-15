@@ -21,8 +21,8 @@ logging:
     uz.devops.intern: INFO
 
 telegram:
-  username: "@UzExpo_centre_bot"
-  token: 5225793240:AAEDojpbQM780zRMWIvmJXCIGeEBXWoY6RM
+  username: "@NTfoundBot"
+  token: 5156167848:AAHnrLe0T8FnbF8vK-3LiR8bAjUrGxnTzR4
 
 ngrok:
   url: https://066b-83-221-180-161.in.ngrok.io
@@ -69,7 +69,7 @@ spring:
     cache: false
 
 server:
-  port: 8443
+  port: 80
 
 # ===================================================================
 # JHipster specific properties

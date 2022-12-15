@@ -18,7 +18,7 @@ public class PaymentsMapper {
         payment.setId( dto.getId() );
         payment.setPaidMoney( dto.getPaidMoney() );
         payment.setPaymentForPeriod( dto.getPaymentForPeriod() );
-        payment.setIsPayed( dto.getIsPayed() );
+        payment.setIsPaid( dto.getIsPaid() );
         payment.setStartedPeriod( dto.getStartedPeriod() );
         payment.setFinishedPeriod( dto.getFinishedPeriod() );
         payment.customer( CustomerMapper.toEntityWithNoUser(dto.getCustomer()));
@@ -77,7 +77,7 @@ public class PaymentsMapper {
         paymentDTO.setId( s.getId() );
         paymentDTO.setPaidMoney( s.getPaidMoney() );
         paymentDTO.setPaymentForPeriod( s.getPaymentForPeriod() );
-        paymentDTO.setIsPayed( s.getIsPayed() );
+        paymentDTO.setIsPaid( s.getIsPaid() );
         paymentDTO.setStartedPeriod( s.getStartedPeriod() );
         paymentDTO.setFinishedPeriod( s.getFinishedPeriod() );
 
