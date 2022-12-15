@@ -17,7 +17,7 @@ import java.util.List;
 public interface CustomerTelegramService {
     SendMessage botCommands(Update update, URI telegramUri) throws URISyntaxException;
 
-    CustomerTelegramDTO findByTelegramId(Long telegramId);
+    ResponseDTO<CustomerTelegramDTO> findByTelegramId(Long telegramId);
 
     CustomerTelegram findEntityByTelegramId(Long telegramId);
 
@@ -28,4 +28,6 @@ public interface CustomerTelegramService {
     ResponseDTO<CustomerTelegramDTO> update(CustomerTelegramDTO dto);
 
     ResponseDTO<CustomerTelegramDTO> findByBotTgId(Long botId);
+
+    ResponseDTO<List<CustomerTelegramDTO>> getCustomerTgByChatId(Long chatId);
 }

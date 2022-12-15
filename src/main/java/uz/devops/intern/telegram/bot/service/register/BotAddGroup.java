@@ -11,7 +11,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import uz.devops.intern.domain.BotToken;
 import uz.devops.intern.domain.ResponseFromTelegram;
 import uz.devops.intern.repository.BotTokenRepository;
-import uz.devops.intern.repository.CustomerTelegramRepository;
 import uz.devops.intern.service.BotTokenService;
 import uz.devops.intern.service.CustomerTelegramService;
 import uz.devops.intern.service.TelegramGroupService;
@@ -20,17 +19,16 @@ import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.dto.TelegramGroupDTO;
 import uz.devops.intern.telegram.bot.AdminKeyboards;
-import uz.devops.intern.telegram.bot.service.CommandHalfImpl;
+import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
-import javax.persistence.EntityManager;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class BotAddGroup extends CommandHalfImpl {
+public class BotAddGroup extends BotStrategyAbs {
 
     private final String STATE = "MANAGER_BOT_ADD_GROUP";
     private final Integer STEP = 0;
@@ -56,19 +54,25 @@ public class BotAddGroup extends CommandHalfImpl {
     }
 
     public void execute(Update update, String botId){
+        log.info("Into \"BotAddGroup\", Update: {}", update);
         boolean hasMyChatMember = update.hasMyChatMember();
         if (hasMyChatMember){
             Chat chat = update.getMyChatMember().getChat();
             User user = update.getMyChatMember().getFrom();
-            if (!chat.getId().equals(user.getId())) {
-                checkIsBotInGroup(update.getMyChatMember().getNewChatMember(), update.getMyChatMember().getChat(), botId);
+//            if (!chat.getId().equals(user.getId())) {
+            checkIsBotInGroup(update.getMyChatMember().getNewChatMember(), update.getMyChatMember().getChat(), botId);
+//            }
+        }else {
+            log.warn("Update has not \"MyChatMember\"");
+            if(update.hasMessage() && update.getMessage().getNewChatMembers().size() > 0){
+                checkIsBotInGroup(update.getMessage().getNewChatMembers().get(0), update.getMessage().getChat(), botId);
             }
         }
     }
 
     public boolean checkIsBotInGroup(ChatMember user, Chat chat, String botId) {
         boolean isBot = user.getUser().getIsBot();
-        if(isBot){
+        if(!isBot){
             log.warn("New user is not bot! Bot id: {} | New user: {}", botId, user);
             return false;
         }
@@ -96,6 +100,40 @@ public class BotAddGroup extends CommandHalfImpl {
         User bot = user.getUser();
         sayThanksToManager(bot.getId(), manager);
         sendInviteLink(bot, chat.getId());
+        saveToTelegramGroup(chat, manager);
+
+        return true;
+    }
+
+    public boolean checkIsBotInGroup(User user, Chat chat, String botId) {
+        boolean isBot = user.getIsBot();
+        if(isBot){
+            log.warn("New user is not bot! Bot id: {} | New user: {}", botId, user);
+            return false;
+        }
+
+        ResponseDTO<BotTokenDTO> responseDTO = botTokenService.findByChatId(Long.parseLong(botId), true);
+        if(!responseDTO.getSuccess() && responseDTO.getResponseData() == null){
+            log.warn("Bot is not found! Chat id: {} | Response: {}", botId, responseDTO);
+            return false;
+        }
+
+        BotTokenDTO botToken = responseDTO.getResponseData();
+        ResponseDTO<CustomerTelegramDTO> customerTgResponse = customerTelegramService.findByBotTgId(Long.parseLong(botId));
+        if(!customerTgResponse.getSuccess() && customerTgResponse.getResponseData() == null){
+            log.warn("Owner of bot is not found! BotTokenDTO: {}", botToken);
+            return false;
+        }
+        CustomerTelegramDTO manager = customerTgResponse.getResponseData();
+
+        boolean isNotExistsInGroups = isNotExistsInGroups(manager.getTelegramGroups(), botToken);
+        if(!isNotExistsInGroups) {
+            wrongValue(manager.getTelegramId(), "Bot guruhda mavjud!");
+            return false;
+        }
+
+        sayThanksToManager(user.getId(), manager);
+        sendInviteLink(user, chat.getId());
         saveToTelegramGroup(chat, manager);
 
         return true;
@@ -145,9 +183,10 @@ public class BotAddGroup extends CommandHalfImpl {
             botTelegramId, manager.getTelegramId(), update);
     }
 
-    private void sendInviteLink(org.telegram.telegrambots.meta.api.objects.User bot, Long groupId){
+    private void sendInviteLink(User bot, Long groupId){
         String link = "https://t.me/" + bot.getUserName() + "?start=" + groupId;
-        String newMessage = "Shu havola orqali botga start bering\uD83D\uDC49 " + link;
+        String newMessage = String.format(
+            "Shu havola orqali botga start bering\uD83D\uDC49 <a href=\"%s\">Bot ga start berish</a>", link);
 
         SendMessage sendMessage = TelegramsUtil.sendMessage(groupId, newMessage);
         BotToken botToken = botTokenRepository.findByTelegramId(bot.getId()).get();

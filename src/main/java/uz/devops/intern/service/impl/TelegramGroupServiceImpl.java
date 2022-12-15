@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uz.devops.intern.domain.TelegramGroup;
 import uz.devops.intern.repository.TelegramGroupRepository;
 import uz.devops.intern.service.TelegramGroupService;
+import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.dto.TelegramGroupDTO;
 import uz.devops.intern.service.mapper.TelegramGroupMapper;
 
@@ -146,5 +147,21 @@ public class TelegramGroupServiceImpl implements TelegramGroupService {
         telegramGroupRepository.findByCustomer(managerTelegramId);
 
         return null;
+    }
+
+    @Override
+    public ResponseDTO<List<TelegramGroupDTO>> getTelegramGroupsByCustomer(Long id) {
+        if(id == null){
+            return ResponseDTO.<List<TelegramGroupDTO>>builder()
+                .success(false).message("Parameter \"Manager id\" is null!").build();
+        }
+
+        List<TelegramGroupDTO> telegramGroups =
+            telegramGroupRepository.findBYCustomerWhichIsNotInGroups(id)
+                .stream().map(telegramGroupMapper::toDto).toList();
+
+
+        return ResponseDTO.<List<TelegramGroupDTO>>builder()
+            .success(true).message("OK").responseData(telegramGroups).build();
     }
 }

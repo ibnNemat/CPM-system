@@ -12,20 +12,22 @@ import java.util.HashMap;
 import java.util.List;
 
 @Service
-public class RegistrationCommandImpl {
+public class BotStrategyImpl {
     @Autowired
-    private List<CommandHalfImpl> commands;
-    private HashMap<Integer, Command> map;
+    private List<BotStrategyAbs> commands;
+    @Autowired
+    private List<BotCommand> botCommands;
+    private HashMap<Integer, BotStrategy> map;
     private final CustomerTelegramService customerTelegramService;
 
-    public RegistrationCommandImpl(CustomerTelegramService customerTelegramService) {
+    public BotStrategyImpl(CustomerTelegramService customerTelegramService) {
         this.customerTelegramService = customerTelegramService;
     }
 
     @PostConstruct
     public void inject(){
         map = new HashMap<>();
-        for (Command command: commands){
+        for (BotStrategy command: commands){
             map.put(command.getStep(), command);
         }
     }
@@ -45,7 +47,7 @@ public class RegistrationCommandImpl {
         }
 
         CustomerTelegramDTO customerTgDTO = response.getResponseData();
-        Command obj = map.get(customerTgDTO.getStep());
+        BotStrategy obj = map.get(customerTgDTO.getStep());
         boolean isSuccess = obj.execute(update, customerTgDTO);
         if(isSuccess){
             ResponseDTO<CustomerTelegramDTO> updatedCustomerTgDTO = customerTelegramService.update(customerTgDTO);

@@ -26,8 +26,8 @@ public interface CustomerTelegramRepository extends JpaRepository<CustomerTelegr
         "    r ON ct.phone_number = r.created_by", nativeQuery = true)
     Optional<CustomerTelegram> findByBot(@Param("botId") Long botId);
 
-    @Query("SELECT ct FROM CustomerTelegram ct WHERE ct.chatId = :chatId")
-    List<CustomerTelegram> getCountCustomersByChatId(@Param("chatId") Long chatId);
+    @Query(value = "SELECT * FROM customer_telegram WHERE id IN (SELECT customer_telegram_id FROM rel_customer_telegram__telegram_group WHERE telegram_group_id = :chatId)", nativeQuery = true)
+    List<CustomerTelegram> getCustomersByChatId(@Param("chatId") Long chatId);
 
     List<CustomerTelegram> findAllByTelegramGroupsChatId(Long chatId);
 }

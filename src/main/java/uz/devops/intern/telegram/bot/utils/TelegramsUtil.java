@@ -10,6 +10,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import uz.devops.intern.domain.CustomerTelegram;
+import uz.devops.intern.service.dto.CustomerTelegramDTO;
+
+import java.util.Set;
 
 import static uz.devops.intern.telegram.bot.utils.KeyboardUtil.sendMarkup;
 
@@ -38,6 +41,22 @@ public class TelegramsUtil {
             .languageCode(telegramUser.getLanguageCode())
             .step(1)
             .isActive(true);
+    }
+
+    public static CustomerTelegramDTO createCustomerTelegramDTO(User telegramUser, Long userId) {
+        return CustomerTelegramDTO.builder()
+            .id(userId)
+            .isBot(telegramUser.getIsBot())
+            .telegramId(telegramUser.getId())
+            .canJoinGroups(telegramUser.getCanJoinGroups())
+            .firstname(telegramUser.getFirstName())
+            .lastname(telegramUser.getFirstName())
+            .username(telegramUser.getUserName())
+            .languageCode(telegramUser.getLanguageCode())
+            .step(1)
+            .isActive(true)
+            .telegramGroups(Set.of())
+            .build();
     }
 
     /**

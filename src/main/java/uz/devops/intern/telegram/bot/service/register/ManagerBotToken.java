@@ -1,7 +1,6 @@
 package uz.devops.intern.telegram.bot.service.register;
 
 import feign.FeignException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -16,27 +15,32 @@ import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.dto.UserDTO;
 import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
-import uz.devops.intern.telegram.bot.service.CommandHalfImpl;
+import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
 import java.net.URI;
 
 @Service
-@RequiredArgsConstructor
-public class ManagerBotToken extends CommandHalfImpl {
+//@RequiredArgsConstructor
+public class ManagerBotToken extends BotStrategyAbs {
 
     private final String STATE = "MANAGER_NEW_BOT_TOKEN";
     private final Integer STEP = 3;
 
     @Value("${ngrok.url}")
-    private final String WEBHOOK_URL;
+    private String WEBHOOK_URL;
 
     private final BotTokenService botTokenService;
     private final UserService userService;
 
+    public ManagerBotToken(BotTokenService botTokenService, UserService userService) {
+        this.botTokenService = botTokenService;
+        this.userService = userService;
+    }
+
     @Override
     public boolean execute(Update update, CustomerTelegramDTO manager) {
-        if(update.hasMessage()){
+        if(!update.hasMessage() && !update.getMessage().hasText()){
             Long userId = update.hasCallbackQuery()? update.getCallbackQuery().getFrom().getId() : null;
             messageHasNotText(userId, update);
             log.warn("Manager didn't send text! Manager: {}", manager);
@@ -107,7 +111,7 @@ public class ManagerBotToken extends CommandHalfImpl {
     private WebhookResponseDTO setWebhookToNewBot(String token, Long botId){
         URI uri = createCustomerURI(token);
         log.info("URI: {}", uri);
-        String webhookAPI = WEBHOOK_URL + "/api/new-message" + botId;
+        String webhookAPI = WEBHOOK_URL + "/api/new-message/" + botId;
         WebhookResponseDTO webhookResponseDTO = customerFeign.setWebhook(uri, webhookAPI);
         log.info("Response from telegram server: {}", webhookResponseDTO);
         return webhookResponseDTO;
