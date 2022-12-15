@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import uz.devops.intern.service.CustomerTelegramService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 
@@ -24,7 +25,7 @@ public class ScheduleJob {
     @Scheduled(fixedDelay = 1000)
     public void checkCustomerProfileIsActive() throws InterruptedException {
         log.info("Schedule started working");
-        List<CustomerTelegramDTO> customerTelegramDTOS = customerTelegramService.findAllByIsActiveTrue();
+        List<CustomerTelegramDTO> customerTelegramDTOS = customerTelegramService.findAll();
 
         if (customerTelegramDTOS != null){
             List<Long> telegramCustomerIds = new ArrayList<>();
@@ -41,6 +42,7 @@ public class ScheduleJob {
         }
     }
 
+    @Transactional
     public void timerTaskToDeleteNotActivatingTelegramCustomers(List<Long> telegramCustomerIds){
         Timer timer = new Timer();
         TimerTask timerTask = new TimerTask() {
@@ -52,6 +54,7 @@ public class ScheduleJob {
                 timer.purge();
             }
         };
-        timer.schedule(timerTask, 1000 * 60 * 15);
+
+        timer.schedule(timerTask, 1000 * 60 * 1);
     }
 }

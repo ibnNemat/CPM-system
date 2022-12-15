@@ -17,7 +17,7 @@ import java.util.Optional;
 @SuppressWarnings("unused")
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
-    Optional<Payment> findByCustomerAndGroupAndServiceAndStartedPeriodAndIsPayedFalse(
+    Optional<Payment> findByCustomerAndGroupAndServiceAndStartedPeriodAndIsPaidFalse(
         Customers customer, Groups group, Services service, LocalDate startedDate
     );
 
@@ -33,5 +33,5 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     List<Payment> findAllByCustomerOrderByStartedPeriod(Customers customer);
 
-    List<Payment> findAllByCustomerAndIsPayedFalseOrderByStartedPeriod(Customers customer);
+    List<Payment> findAllByCustomerAndIsPaidFalseOrderByStartedPeriod(Customers customer);
 }

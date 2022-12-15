@@ -180,6 +180,7 @@ public class AdminTgServiceImpl implements AdminTgService {
             Update update = adminFeign.sendMessage(sendMessage);
             log.info("Message send successfully! User id: {} | Message text: {} | Update: {}",
                 userId, messageText, update);
+
             CustomerTelegram customer = createCustomerTelegramToSaveDatabase(message.getFrom());
             customerTelegramRepository.save(customer);
         }else {

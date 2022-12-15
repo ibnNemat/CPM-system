@@ -2,6 +2,7 @@ package uz.devops.intern.telegram.bot.service.register;
 
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -22,17 +23,17 @@ import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 import java.net.URI;
 
 @Service
-@RequiredArgsConstructor
 public class ManagerBotToken extends CommandHalfImpl {
 
     private final String STATE = "MANAGER_NEW_BOT_TOKEN";
     private final Integer STEP = 3;
 
     @Value("${ngrok.url}")
-    private final String WEBHOOK_URL;
-
-    private final BotTokenService botTokenService;
-    private final UserService userService;
+    private  String WEBHOOK_URL;
+    @Autowired
+    private BotTokenService botTokenService;
+    @Autowired
+    private UserService userService;
 
     @Override
     public boolean execute(Update update, CustomerTelegramDTO manager) {

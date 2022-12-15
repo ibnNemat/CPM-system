@@ -14,13 +14,13 @@ type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>
  */
 type PaymentFormGroupInput = IPayment | PartialWithRequiredKeyOf<NewPayment>;
 
-type PaymentFormDefaults = Pick<NewPayment, 'id' | 'isPayed'>;
+type PaymentFormDefaults = Pick<NewPayment, 'id' | 'isPaid'>;
 
 type PaymentFormGroupContent = {
   id: FormControl<IPayment['id'] | NewPayment['id']>;
   paidMoney: FormControl<IPayment['paidMoney']>;
   paymentForPeriod: FormControl<IPayment['paymentForPeriod']>;
-  isPayed: FormControl<IPayment['isPayed']>;
+  isPaid: FormControl<IPayment['isPaid']>;
   startedPeriod: FormControl<IPayment['startedPeriod']>;
   finishedPeriod: FormControl<IPayment['finishedPeriod']>;
   customer: FormControl<IPayment['customer']>;
@@ -50,7 +50,7 @@ export class PaymentFormService {
       paymentForPeriod: new FormControl(paymentRawValue.paymentForPeriod, {
         validators: [Validators.required, Validators.min(10000)],
       }),
-      isPayed: new FormControl(paymentRawValue.isPayed, {
+      isPaid: new FormControl(paymentRawValue.isPaid, {
         validators: [Validators.required],
       }),
       startedPeriod: new FormControl(paymentRawValue.startedPeriod, {
@@ -79,7 +79,7 @@ export class PaymentFormService {
   private getFormDefaults(): PaymentFormDefaults {
     return {
       id: null,
-      isPayed: false,
+      isPaid: false,
     };
   }
 }

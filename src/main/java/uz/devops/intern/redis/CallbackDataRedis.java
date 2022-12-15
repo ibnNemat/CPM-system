@@ -2,7 +2,7 @@ package uz.devops.intern.redis;
 
 import org.springframework.data.redis.core.RedisHash;
 
-@RedisHash(timeToLive = 60 * 60 * 24)
+@RedisHash(timeToLive = 60 * 20)
 public class CallbackDataRedis {
     private Long id;
     private String callbackDate;

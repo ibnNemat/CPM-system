@@ -27,7 +27,7 @@ public class TimerTaskToSendMessage {
             @Override
             public void run() {
                 Optional<Payment> paymentOptional = paymentRepository
-                    .findByCustomerAndGroupAndServiceAndStartedPeriodAndIsPayedFalse(
+                    .findByCustomerAndGroupAndServiceAndStartedPeriodAndIsPaidFalse(
                     customer, group, service, startedPeriod);
 
                 if (paymentOptional.isPresent()){

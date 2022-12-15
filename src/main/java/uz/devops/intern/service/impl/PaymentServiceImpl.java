@@ -111,7 +111,7 @@ public class PaymentServiceImpl implements PaymentService {
         Double requestPaidMoney = requestPayment.getPaidMoney();
 
         Optional<Payment> optionalPayment = paymentRepository
-            .findByCustomerAndGroupAndServiceAndStartedPeriodAndIsPayedFalse(
+            .findByCustomerAndGroupAndServiceAndStartedPeriodAndIsPaidFalse(
             customerPayer, group, service, startedDate);
         if (optionalPayment.isEmpty()) {
             return new ResponseDTO<>(OK, "Looks like you already paid", false, null);
@@ -126,7 +126,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             List<Payment> paymentList = new ArrayList<>();
             paymentInDataBase.setPaidMoney(paymentForPeriod);
-            paymentInDataBase.setIsPayed(true);
+            paymentInDataBase.setIsPaid(true);
             paymentList.add(paymentInDataBase);
 
             LocalDate oldFinishedPeriodDateWithPlusDate = paymentInDataBase.getFinishedPeriod().plusDays(1);
@@ -146,7 +146,7 @@ public class PaymentServiceImpl implements PaymentService {
                     oldFinishedPeriodDateWithPlusDate = newPayment.getFinishedPeriod().plusDays(1);
                 }
                 newPayment = buildNewPayment(service, paymentForPeriod, group, customerPayer, oldFinishedPeriodDateWithPlusDate);
-                newPayment.setIsPayed(false);
+                newPayment.setIsPaid(false);
                 newPayment.setPaidMoney(requestPaidMoney);
                 paymentList.add(newPayment);
             }
@@ -172,7 +172,7 @@ public class PaymentServiceImpl implements PaymentService {
         newPayment.setGroup(group);
         newPayment.setPaymentForPeriod(paymentForPeriod);
         newPayment.setPaidMoney(paymentForPeriod);
-        newPayment.setIsPayed(true);
+        newPayment.setIsPaid(true);
         newPayment.setService(service);
         newPayment.setCustomer(customerPayer);
         newPayment.setStartedPeriod(paymentToSetPeriod.getStartedPeriod());
@@ -256,7 +256,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public List<PaymentDTO> getAllCustomerPaymentsPayedIsFalse(Customers customer) {
         log.debug("Request to get all customer Payments which payment is false");
-        List<Payment> paymentList = paymentRepository.findAllByCustomerAndIsPayedFalseOrderByStartedPeriod(customer);
+        List<Payment> paymentList = paymentRepository.findAllByCustomerAndIsPaidFalseOrderByStartedPeriod(customer);
         return PaymentsMapper.paymentDTOList(paymentList);
     }
 
