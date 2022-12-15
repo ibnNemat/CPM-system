@@ -1,20 +1,32 @@
 package uz.devops.intern.telegram.bot.utils;
 
-import org.checkerframework.checker.units.qual.K;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class KeyboardUtil {
+    public static final String UZ_LANGUAGE = "\uD83C\uDDFA\uD83C\uDDFF Uzbek";
+    public static final String RU_LANGUAGE = "\uD83C\uDDF7\uD83C\uDDFA Русский";
+    public static final String EN_LANGUAGE = "\uD83C\uDDEC\uD83C\uDDE7 English";
 
     private final static List<String> LANGUAGES = List.of(
-        "\uD83C\uDDFA\uD83C\uDDFF O`zbekcha", "\uD83C\uDDF7\uD83C\uDDFA Русский");
+        UZ_LANGUAGE, RU_LANGUAGE, EN_LANGUAGE
+    );
 
+    private static final Map<String, String> languageMap = Map.of(
+        UZ_LANGUAGE, "uz",
+        RU_LANGUAGE,"ru",
+        EN_LANGUAGE ,"en"
+    );
+
+    public static Map<String, String> getLanguages(){
+        return languageMap;
+    }
     public static List<String> availableLanguages(){
         return LANGUAGES;
     }
@@ -32,8 +44,9 @@ public class KeyboardUtil {
         }
         if(!row.isEmpty()) rows.add(row);
 
-        row.add(new KeyboardButton("\uD83C\uDDFA\uD83C\uDDFF O`zbekcha"));
-        row.add(new KeyboardButton("\uD83C\uDDF7\uD83C\uDDFA Русский"));
+        row.add(new KeyboardButton(UZ_LANGUAGE));
+        row.add(new KeyboardButton(RU_LANGUAGE));
+        row.add(new KeyboardButton(EN_LANGUAGE));
 
         ReplyKeyboardMarkup markup =  new ReplyKeyboardMarkup(rows);
         markup.setResizeKeyboard(true);
@@ -64,5 +77,14 @@ public class KeyboardUtil {
         markup.setKeyboard(List.of(row));
 
         return markup;
+    }
+
+    public static ReplyKeyboardMarkup sendBackHomeButton(String text){
+        KeyboardRow keyboardRow = new KeyboardRow();
+        keyboardRow.add(new KeyboardButton(text));
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(List.of(keyboardRow));
+        replyKeyboardMarkup.setResizeKeyboard(true);
+
+        return replyKeyboardMarkup;
     }
 }

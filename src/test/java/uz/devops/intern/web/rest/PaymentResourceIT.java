@@ -78,7 +78,7 @@ class PaymentResourceIT {
         Payment payment = new Payment()
             .paidMoney(DEFAULT_PAID_MONEY)
             .paymentForPeriod(DEFAULT_PAYMENT_FOR_PERIOD)
-            .isPayed(DEFAULT_IS_PAYED)
+            .isPaid(DEFAULT_IS_PAYED)
             .startedPeriod(DEFAULT_STARTED_PERIOD)
             .finishedPeriod(DEFAULT_FINISHED_PERIOD);
         return payment;
@@ -94,7 +94,7 @@ class PaymentResourceIT {
         Payment payment = new Payment()
             .paidMoney(UPDATED_PAID_MONEY)
             .paymentForPeriod(UPDATED_PAYMENT_FOR_PERIOD)
-            .isPayed(UPDATED_IS_PAYED)
+            .isPaid(UPDATED_IS_PAYED)
             .startedPeriod(UPDATED_STARTED_PERIOD)
             .finishedPeriod(UPDATED_FINISHED_PERIOD);
         return payment;
@@ -121,7 +121,7 @@ class PaymentResourceIT {
         Payment testPayment = paymentList.get(paymentList.size() - 1);
         assertThat(testPayment.getPaidMoney()).isEqualTo(DEFAULT_PAID_MONEY);
         assertThat(testPayment.getPaymentForPeriod()).isEqualTo(DEFAULT_PAYMENT_FOR_PERIOD);
-        assertThat(testPayment.getIsPayed()).isEqualTo(DEFAULT_IS_PAYED);
+        assertThat(testPayment.getIsPaid()).isEqualTo(DEFAULT_IS_PAYED);
         assertThat(testPayment.getStartedPeriod()).isEqualTo(DEFAULT_STARTED_PERIOD);
         assertThat(testPayment.getFinishedPeriod()).isEqualTo(DEFAULT_FINISHED_PERIOD);
     }
@@ -183,10 +183,10 @@ class PaymentResourceIT {
 
     @Test
     @Transactional
-    void checkIsPayedIsRequired() throws Exception {
+    void checkisPaidIsRequired() throws Exception {
         int databaseSizeBeforeTest = paymentRepository.findAll().size();
         // set the field null
-        payment.setIsPayed(null);
+        payment.setIsPaid(null);
 
         // Create the Payment, which fails.
         PaymentDTO paymentDTO = paymentMapper.toDto(payment);
@@ -231,7 +231,7 @@ class PaymentResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(payment.getId().intValue())))
             .andExpect(jsonPath("$.[*].paidMoney").value(hasItem(DEFAULT_PAID_MONEY.doubleValue())))
             .andExpect(jsonPath("$.[*].paymentForPeriod").value(hasItem(DEFAULT_PAYMENT_FOR_PERIOD.doubleValue())))
-            .andExpect(jsonPath("$.[*].isPayed").value(hasItem(DEFAULT_IS_PAYED.booleanValue())))
+            .andExpect(jsonPath("$.[*].isPaid").value(hasItem(DEFAULT_IS_PAYED.booleanValue())))
             .andExpect(jsonPath("$.[*].startedPeriod").value(hasItem(DEFAULT_STARTED_PERIOD.toString())))
             .andExpect(jsonPath("$.[*].finishedPeriod").value(hasItem(DEFAULT_FINISHED_PERIOD.toString())));
     }
@@ -250,7 +250,7 @@ class PaymentResourceIT {
             .andExpect(jsonPath("$.id").value(payment.getId().intValue()))
             .andExpect(jsonPath("$.paidMoney").value(DEFAULT_PAID_MONEY.doubleValue()))
             .andExpect(jsonPath("$.paymentForPeriod").value(DEFAULT_PAYMENT_FOR_PERIOD.doubleValue()))
-            .andExpect(jsonPath("$.isPayed").value(DEFAULT_IS_PAYED.booleanValue()))
+            .andExpect(jsonPath("$.isPaid").value(DEFAULT_IS_PAYED.booleanValue()))
             .andExpect(jsonPath("$.startedPeriod").value(DEFAULT_STARTED_PERIOD.toString()))
             .andExpect(jsonPath("$.finishedPeriod").value(DEFAULT_FINISHED_PERIOD.toString()));
     }
@@ -277,7 +277,7 @@ class PaymentResourceIT {
         updatedPayment
             .paidMoney(UPDATED_PAID_MONEY)
             .paymentForPeriod(UPDATED_PAYMENT_FOR_PERIOD)
-            .isPayed(UPDATED_IS_PAYED)
+            .isPaid(UPDATED_IS_PAYED)
             .startedPeriod(UPDATED_STARTED_PERIOD)
             .finishedPeriod(UPDATED_FINISHED_PERIOD);
         PaymentDTO paymentDTO = paymentMapper.toDto(updatedPayment);
@@ -296,7 +296,7 @@ class PaymentResourceIT {
         Payment testPayment = paymentList.get(paymentList.size() - 1);
         assertThat(testPayment.getPaidMoney()).isEqualTo(UPDATED_PAID_MONEY);
         assertThat(testPayment.getPaymentForPeriod()).isEqualTo(UPDATED_PAYMENT_FOR_PERIOD);
-        assertThat(testPayment.getIsPayed()).isEqualTo(UPDATED_IS_PAYED);
+        assertThat(testPayment.getIsPaid()).isEqualTo(UPDATED_IS_PAYED);
         assertThat(testPayment.getStartedPeriod()).isEqualTo(UPDATED_STARTED_PERIOD);
         assertThat(testPayment.getFinishedPeriod()).isEqualTo(UPDATED_FINISHED_PERIOD);
     }
@@ -394,7 +394,7 @@ class PaymentResourceIT {
         Payment testPayment = paymentList.get(paymentList.size() - 1);
         assertThat(testPayment.getPaidMoney()).isEqualTo(DEFAULT_PAID_MONEY);
         assertThat(testPayment.getPaymentForPeriod()).isEqualTo(UPDATED_PAYMENT_FOR_PERIOD);
-        assertThat(testPayment.getIsPayed()).isEqualTo(DEFAULT_IS_PAYED);
+        assertThat(testPayment.getIsPaid()).isEqualTo(DEFAULT_IS_PAYED);
         assertThat(testPayment.getStartedPeriod()).isEqualTo(DEFAULT_STARTED_PERIOD);
         assertThat(testPayment.getFinishedPeriod()).isEqualTo(UPDATED_FINISHED_PERIOD);
     }
@@ -414,7 +414,7 @@ class PaymentResourceIT {
         partialUpdatedPayment
             .paidMoney(UPDATED_PAID_MONEY)
             .paymentForPeriod(UPDATED_PAYMENT_FOR_PERIOD)
-            .isPayed(UPDATED_IS_PAYED)
+            .isPaid(UPDATED_IS_PAYED)
             .startedPeriod(UPDATED_STARTED_PERIOD)
             .finishedPeriod(UPDATED_FINISHED_PERIOD);
 
@@ -432,7 +432,7 @@ class PaymentResourceIT {
         Payment testPayment = paymentList.get(paymentList.size() - 1);
         assertThat(testPayment.getPaidMoney()).isEqualTo(UPDATED_PAID_MONEY);
         assertThat(testPayment.getPaymentForPeriod()).isEqualTo(UPDATED_PAYMENT_FOR_PERIOD);
-        assertThat(testPayment.getIsPayed()).isEqualTo(UPDATED_IS_PAYED);
+        assertThat(testPayment.getIsPaid()).isEqualTo(UPDATED_IS_PAYED);
         assertThat(testPayment.getStartedPeriod()).isEqualTo(UPDATED_STARTED_PERIOD);
         assertThat(testPayment.getFinishedPeriod()).isEqualTo(UPDATED_FINISHED_PERIOD);
     }

@@ -4,8 +4,6 @@ import uz.devops.intern.domain.*;
 import uz.devops.intern.service.dto.*;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class PaymentsMapper {
 
@@ -20,7 +18,7 @@ public class PaymentsMapper {
         payment.setId( dto.getId() );
         payment.setPaidMoney( dto.getPaidMoney() );
         payment.setPaymentForPeriod( dto.getPaymentForPeriod() );
-        payment.setIsPayed( dto.getIsPayed() );
+        payment.setIsPaid( dto.getIsPaid() );
         payment.setStartedPeriod( dto.getStartedPeriod() );
         payment.setFinishedPeriod( dto.getFinishedPeriod() );
         payment.customer( CustomerMapper.toEntityWithNoUser(dto.getCustomer()));
@@ -59,7 +57,7 @@ public class PaymentsMapper {
         return userDTO;
     }
 
-    public static List<PaymentDTO> paymentDTOSet(List<Payment> paymentList){
+    public static List<PaymentDTO> paymentDTOList(List<Payment> paymentList){
         if (paymentList == null)
             return null;
         return paymentList.stream()
@@ -79,7 +77,7 @@ public class PaymentsMapper {
         paymentDTO.setId( s.getId() );
         paymentDTO.setPaidMoney( s.getPaidMoney() );
         paymentDTO.setPaymentForPeriod( s.getPaymentForPeriod() );
-        paymentDTO.setIsPayed( s.getIsPayed() );
+        paymentDTO.setIsPaid( s.getIsPaid() );
         paymentDTO.setStartedPeriod( s.getStartedPeriod() );
         paymentDTO.setFinishedPeriod( s.getFinishedPeriod() );
 

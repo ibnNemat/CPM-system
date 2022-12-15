@@ -1,6 +1,8 @@
 package uz.devops.intern.telegram.bot.service.register;
 
 import feign.FeignException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -15,14 +17,14 @@ import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.dto.UserDTO;
 import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
-import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
+import uz.devops.intern.telegram.bot.service.CommandHalfImpl;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
 import java.net.URI;
 
 @Service
-//@RequiredArgsConstructor
-public class ManagerBotToken extends BotStrategyAbs {
+@RequiredArgsConstructor
+public class ManagerBotToken extends CommandHalfImpl {
 
     private final String STATE = "MANAGER_NEW_BOT_TOKEN";
     private final Integer STEP = 3;
@@ -32,6 +34,11 @@ public class ManagerBotToken extends BotStrategyAbs {
 
     private final BotTokenService botTokenService;
     private final UserService userService;
+    private  String WEBHOOK_URL;
+    @Autowired
+    private BotTokenService botTokenService;
+    @Autowired
+    private UserService userService;
 
     public ManagerBotToken(BotTokenService botTokenService, UserService userService) {
         this.botTokenService = botTokenService;
@@ -111,7 +118,7 @@ public class ManagerBotToken extends BotStrategyAbs {
     private WebhookResponseDTO setWebhookToNewBot(String token, Long botId){
         URI uri = createCustomerURI(token);
         log.info("URI: {}", uri);
-        String webhookAPI = WEBHOOK_URL + "/api/new-message/" + botId;
+        String webhookAPI = WEBHOOK_URL + "/api/new-message" + botId;
         WebhookResponseDTO webhookResponseDTO = customerFeign.setWebhook(uri, webhookAPI);
         log.info("Response from telegram server: {}", webhookResponseDTO);
         return webhookResponseDTO;

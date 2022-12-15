@@ -14,7 +14,6 @@ import java.util.Optional;
 @SuppressWarnings("unused")
 @Repository
 public interface CustomerTelegramRepository extends JpaRepository<CustomerTelegram, Long> {
-    boolean existsByTelegramId(Long telegramId);
 
     @Query("SELECT ct FROM CustomerTelegram ct WHERE ct.telegramId = :telegramId")
     Optional<CustomerTelegram> findByTelegramId(@Param("telegramId") Long telegramId);
@@ -30,4 +29,12 @@ public interface CustomerTelegramRepository extends JpaRepository<CustomerTelegr
     List<CustomerTelegram> getCustomersByChatId(@Param("chatId") Long chatId);
 
     List<CustomerTelegram> findAllByTelegramGroupsChatId(Long chatId);
+    List<CustomerTelegram> findAllByIsActiveTrue();
+    boolean existsByTelegramId(Long telegramId);
+    @Modifying
+    @Query("update CustomerTelegram ct set ct.isActive = false where ct.id in ?1")
+    void setFalseTelegramCustomersProfile(List<Long> ids);
+
+    @Modifying
+    void deleteAllByIdInAndIsActiveFalse(List<Long> ids);
 }

@@ -50,9 +50,9 @@
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
-          <th scope="col" jhiSortBy="isPayed">
+          <th scope="col" jhiSortBy="isPaid">
             <div class="d-flex">
-              <span jhiTranslate="cpmSystemApp.payment.isPayed">Is Payed</span>
+              <span jhiTranslate="cpmSystemApp.payment.isPaid">Is Payed</span>
               <fa-icon class="p-1" icon="sort"></fa-icon>
             </div>
           </th>
@@ -90,7 +90,7 @@
           </td>
           <td>{{ payment.paidMoney }}</td>
           <td>{{ payment.paymentForPeriod }}</td>
-          <td>{{ payment.isPayed }}</td>
+          <td>{{ payment.isPaid }}</td>
           <td>{{ payment.startedPeriod | formatMediumDate }}</td>
           <td>{{ payment.finishedPeriod | formatMediumDate }}</td>
           <td>

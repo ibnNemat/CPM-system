@@ -20,7 +20,6 @@ import uz.devops.intern.security.AuthoritiesConstants;
 import uz.devops.intern.service.dto.*;
 import uz.devops.intern.service.mapper.*;
 
-import uz.devops.intern.web.rest.TestUtil;
 import uz.devops.intern.web.rest.vm.LoginVM;
 import uz.devops.intern.web.rest.vm.ManagedUserVM;
 
@@ -174,7 +173,7 @@ public class AllProcessCPMSystemTest {
 
     public Payment createPaymentEntity(Groups savedGroupEntity, Services serviceEntity){
         return new Payment()
-            .isPayed(false)
+            .isPaid(false)
             .startedPeriod(DEFAULT_STARTED_PERIOD)
             .finishedPeriod(DEFAULT_FINISHED_PERIOD)
             .customer(savedAuthenticatedCustomer)
@@ -220,7 +219,7 @@ public class AllProcessCPMSystemTest {
 
         for (Customers customer: customersList){
             Payment newPayment = new Payment()
-                .isPayed(false)
+                .isPaid(false)
                 .startedPeriod(DEFAULT_STARTED_PERIOD)
                 .finishedPeriod(DEFAULT_FINISHED_PERIOD)
                 .customer(customer)
@@ -561,7 +560,7 @@ public class AllProcessCPMSystemTest {
         Assertions.assertEquals(payment.getService().getPrice(), responseServicesDTO.getPrice());
         Assertions.assertEquals(payment.getPaidMoney(), 0D);
 
-        Optional<Payment> paymentOptional = paymentRepository.findByCustomerAndGroupAndServiceAndStartedPeriodAndIsPayedFalse(
+        Optional<Payment> paymentOptional = paymentRepository.findByCustomerAndGroupAndServiceAndStartedPeriodAndIsPaidFalse(
             savedAuthenticatedCustomer, payment.getGroup(), payment.getService(), payment.getStartedPeriod()
         );
 
@@ -610,7 +609,7 @@ public class AllProcessCPMSystemTest {
 
         assertThat(testPayment.getPaidMoney()).isEqualTo(55000D);
         assertThat(testPayment.getPaymentForPeriod()).isEqualTo(DEFAULT_SERVICE_PRICE);
-        assertThat(testPayment.getIsPayed()).isEqualTo(false);
+        assertThat(testPayment.getIsPaid()).isEqualTo(false);
         assertThat(testPayment.getStartedPeriod()).isEqualTo(DEFAULT_STARTED_PERIOD);
     }
 
@@ -652,7 +651,7 @@ public class AllProcessCPMSystemTest {
         Payment remainingPayment = null;
 
         for (Payment p: paymentList){
-            if (!p.getIsPayed()){
+            if (!p.getIsPaid()){
                 remainingPayment = p;
                 break;
             }

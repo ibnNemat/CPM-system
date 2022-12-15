@@ -6,7 +6,7 @@ export interface IPayment {
   id: number;
   paidMoney?: number | null;
   paymentForPeriod?: number | null;
-  isPayed?: boolean | null;
+  isPaid?: boolean | null;
   startedPeriod?: dayjs.Dayjs | null;
   finishedPeriod?: dayjs.Dayjs | null;
   customer?: Pick<ICustomers, 'id'> | null;

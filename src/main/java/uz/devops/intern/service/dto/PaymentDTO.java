@@ -18,7 +18,7 @@ public class PaymentDTO implements Serializable {
     private Double paidMoney;
     @DecimalMin(value = "10000")
     private Double paymentForPeriod;
-    private Boolean isPayed;
+    private Boolean isPaid;
     @NotNull
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate startedPeriod;
@@ -34,12 +34,12 @@ public class PaymentDTO implements Serializable {
         this.group = group;
     }
 
-    public Boolean getPayed() {
-        return isPayed;
+    public Boolean getPaid() {
+        return isPaid;
     }
 
-    public void setPayed(Boolean payed) {
-        isPayed = payed;
+    public void setPaid(Boolean paid) {
+        isPaid = paid;
     }
 
     public Long getId() {
@@ -66,12 +66,12 @@ public class PaymentDTO implements Serializable {
         this.paymentForPeriod = paymentForPeriod;
     }
 
-    public Boolean getIsPayed() {
-        return isPayed;
+    public Boolean getIsPaid() {
+        return isPaid;
     }
 
-    public void setIsPayed(Boolean isPayed) {
-        this.isPayed = isPayed;
+    public void setIsPaid(Boolean isPaid) {
+        this.isPaid = isPaid;
     }
 
     public LocalDate getStartedPeriod() {
@@ -134,7 +134,7 @@ public class PaymentDTO implements Serializable {
             "id=" + id +
             ", paidMoney=" + paidMoney +
             ", paymentForPeriod=" + paymentForPeriod +
-            ", isPayed=" + isPayed +
+            ", isPaid=" + isPaid +
             ", startedPeriod=" + startedPeriod +
             ", finishedPeriod=" + finishedPeriod +
             ", customer=" + customer +
