@@ -13,6 +13,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRem
 import uz.devops.intern.domain.CustomerTelegram;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -36,11 +39,9 @@ public class TelegramsUtil {
 
     public static ResourceBundle getResourceBundleByUserLanguageCode(String languageCode){
         log.info("Language code: {} ", languageCode);
-        languageCode = languageCode.equals("ru")? "ru_RU":
-            languageCode.equals("uz")? "uz_UZ": "en_US";
-
-        String[] texts = languageCode.split("_");
-        Locale locale = new Locale(texts[0], texts[1]);
+        languageCode = languageCode.equals("ru_RU") || languageCode.equals("ru")? "ru":
+            languageCode.equals("uz_UZ") || languageCode.equals("uz")? "uz": "en";
+        Locale locale = new Locale(languageCode);
         LocaleContextHolder.setLocale(locale);
         return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME);
     }
