@@ -2,6 +2,7 @@ package uz.devops.intern.telegram.bot.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
@@ -38,6 +39,7 @@ public class TelegramsUtil {
         LocaleContextHolder.setLocale(locale);
         return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, LocaleContextHolder.getLocale());
     }
+
 
     public static ResourceBundle getResourceBundleByUserLanguageCode(String languageCode){
         log.info("Language code: {} ", languageCode);

@@ -33,7 +33,6 @@ public class Payment implements Serializable {
 
     @Column(name = "is_paid", nullable = false)
     private Boolean isPaid;
-
     @NotNull
     @JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "started_period", nullable = false)

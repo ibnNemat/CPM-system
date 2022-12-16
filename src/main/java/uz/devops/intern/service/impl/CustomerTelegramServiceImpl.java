@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContext;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -134,8 +132,9 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
                 return sendMessageIfNotExistsBotGroup(telegramUser);
             }
 
-            SendMessage sendMessage = new SendMessage();
-            startCommand(telegramUser, sendMessage);
+            Optional<CustomerTelegram> customerTelegramOptional = customerTelegramRepository.findByTelegramId(telegramUser.getId());
+            if (customerTelegramOptional.isPresent()) startCommand(telegramUser, customerTelegramOptional.get());
+            else startCommand(telegramUser);
         } catch (NumberFormatException numberFormatException) {
             log.error("Error parsing chatId to Long when bot started");
             return sendMessage(telegramUser.getId(), "❌ " + resourceBundle.getString("bot.message.invalid.chat.number"));
@@ -201,25 +200,14 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     }
 
     @Override
-    public ResponseDTO<CustomerTelegramDTO> findByTelegramId(Long telegramId) {
-        if(telegramId == null){
-            return ResponseDTO.<CustomerTelegramDTO>builder()
-                .success(false).message("Parameter \"Telegram id\" is null!").build();
-//    public CustomerTelegramDTO findByTelegramId(Long telegramId) {
-//        if (telegramId == null) {
-//            return null;
+    public CustomerTelegramDTO findByTelegramId(Long telegramId) {
+        if (telegramId == null) {
+            return null;
         }
         Optional<CustomerTelegram> customerTelegramOptional =
             customerTelegramRepository.findByTelegramId(telegramId);
 
-        if(customerTelegramOptional.isEmpty()){
-            return ResponseDTO.<CustomerTelegramDTO>builder()
-                .success(false).message("Data is not found!").build();
-        }
-
-        CustomerTelegramDTO  dto = customerTelegramOptional.map(customerTelegramMapper::toDto).orElse(null);
-        return ResponseDTO.<CustomerTelegramDTO>builder()
-            .success(true).message("OK").responseData(dto).build();
+        return customerTelegramOptional.map(customerTelegramMapper::toDto).orElse(null);
     }
 
     @Override
@@ -330,21 +318,6 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             default:
                 return sendMessage(telegramUser.getId(), "❌ " + resourceBundle.getString("bot.message.unknown.command"));
         }
-    }
-
-    @Override
-    public ResponseDTO<List<CustomerTelegramDTO>> getCustomerTgByChatId(Long chatId) {
-        if(chatId == null){
-            return ResponseDTO.<List<CustomerTelegramDTO>>builder()
-                .success(false).message("Parameter \"Chat id\" is null!").build();
-        }
-
-        List<CustomerTelegramDTO> customerTelegrams =
-            customerTelegramRepository.getCustomersByChatId(chatId)
-                .stream().map(customerTelegramMapper::toDto).toList();
-
-        return ResponseDTO.<List<CustomerTelegramDTO>>builder()
-            .success(true).message("OK").responseData(customerTelegrams).build();
     }
 
     private SendMessage changeCustomerProfile(User telegramUser, CustomerTelegram customerTelegram, String dataWithChange) {

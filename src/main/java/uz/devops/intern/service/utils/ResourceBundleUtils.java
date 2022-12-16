@@ -20,6 +20,13 @@ public class ResourceBundleUtils {
         return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME,LocaleContextHolder.getLocale());
     }
 
+    public static ResourceBundle getResourceBundleUsingLanguageCode(String languageCode){
+        log.info("Language code: {} ", languageCode);
+        Locale locale = new Locale(languageCode);
+        LocaleContextHolder.setLocale(locale);
+        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, LocaleContextHolder.getLocale());
+    }
+
     public static ResourceBundle getResourceBundleUsingCustomerTelegram(CustomerTelegram customerTelegram){
         Locale locale = new Locale(customerTelegram.getLanguageCode());
         LocaleContextHolder.setLocale(locale);
