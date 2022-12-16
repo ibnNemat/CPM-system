@@ -204,6 +204,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         if (telegramId == null) {
             return null;
         }
+
         Optional<CustomerTelegram> customerTelegramOptional =
             customerTelegramRepository.findByTelegramId(telegramId);
 
