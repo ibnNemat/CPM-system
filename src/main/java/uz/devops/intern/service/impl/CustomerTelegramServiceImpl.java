@@ -221,6 +221,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             return ResponseDTO.<CustomerTelegramDTO>builder()
                 .success(false).message("Parameter \"Telegram id\" is null!").build();
         }
+
         Optional<CustomerTelegram> customerTelegramOptional =
             customerTelegramRepository.findByTelegramId(telegramId);
 
