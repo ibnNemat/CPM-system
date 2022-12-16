@@ -1,13 +1,13 @@
 package uz.devops.intern.telegram.bot.utils;
 
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static uz.devops.intern.service.utils.ResourceBundleUtils.getResourceBundleUsingTelegramUser;
 
 public class KeyboardUtil {
     public static final String UZ_LANGUAGE = "\uD83C\uDDFA\uD83C\uDDFF Uzbek";
@@ -32,23 +32,11 @@ public class KeyboardUtil {
     }
 
     public static ReplyKeyboardMarkup language(){
-        List<KeyboardRow> rows = new ArrayList<>();
-
         KeyboardRow row = new KeyboardRow();
-        for(String language: LANGUAGES){
-            row.add(new KeyboardButton(language));
-            if(row.size() == 2){
-                rows.add(row);
-                row = new KeyboardRow();
-            }
-        }
-        if(!row.isEmpty()) rows.add(row);
-
         row.add(new KeyboardButton(UZ_LANGUAGE));
         row.add(new KeyboardButton(RU_LANGUAGE));
         row.add(new KeyboardButton(EN_LANGUAGE));
-
-        ReplyKeyboardMarkup markup =  new ReplyKeyboardMarkup(rows);
+        ReplyKeyboardMarkup markup =  new ReplyKeyboardMarkup(List.of(row));
         markup.setResizeKeyboard(true);
         return markup;
     }
@@ -65,8 +53,9 @@ public class KeyboardUtil {
         return markup;
     }
 
-    public static ReplyKeyboardMarkup sendMarkup(){
-        KeyboardButton button = new KeyboardButton("\uD83D\uDCF1 Telefon raqam");
+    public static ReplyKeyboardMarkup sendMarkup(User telegramUser){
+        ResourceBundle resourceBundle = getResourceBundleUsingTelegramUser(telegramUser);
+        KeyboardButton button = new KeyboardButton(resourceBundle.getString("bot.message.phone.number.button"));
         button.setRequestContact(true);
 
         KeyboardRow row = new KeyboardRow();

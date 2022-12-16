@@ -32,17 +32,15 @@ public class CustomerTelegramResource {
 
         long idBot = Long.parseLong(botId);
         BotTokenDTO botTokenDTO = botTokenService.findByChatId(idBot);
-
-        URI uri = new URI("https://api.telegram.org/bot" + botTokenDTO.getToken());
         SendMessage sendMessage = new SendMessage();
 
-        if(update.hasCallbackQuery())
-            sendMessage = invokerBotCommand.getCallbackQueryCommand(update, uri);
-        else if (update.hasMessage() && ifRequestFromBot(update))
-            sendMessage = invokerBotCommand.getMessageCommand(update, uri);
+        if(update.hasCallbackQuery() && botTokenDTO != null)
+            sendMessage = invokerBotCommand.getCallbackQueryCommand(update, new URI("https://api.telegram.org/bot" + botTokenDTO.getToken()));
+        else if (update.hasMessage() && ifRequestFromBot(update) && botTokenDTO != null)
+            sendMessage = invokerBotCommand.getMessageCommand(update, new URI("https://api.telegram.org/bot" + botTokenDTO.getToken()));
 
         if (sendMessage.getText() != null)
-            customerFeign.sendMessage(uri, sendMessage);
+            customerFeign.sendMessage(new URI("https://api.telegram.org/bot" + botTokenDTO.getToken()), sendMessage);
     }
 
     private Boolean ifRequestFromBot(Update update){

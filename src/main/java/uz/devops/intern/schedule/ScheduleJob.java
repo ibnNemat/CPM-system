@@ -22,7 +22,7 @@ public class ScheduleJob {
     private final CustomerTelegramService customerTelegramService;
     private final Logger log = LoggerFactory.getLogger(ScheduleJob.class);
 
-    @Scheduled(fixedDelay = 1000)
+//    @Scheduled(fixedDelay = 1000)
     public void checkCustomerProfileIsActive() throws InterruptedException {
         log.info("Schedule started working");
         List<CustomerTelegramDTO> customerTelegramDTOS = customerTelegramService.findAll();
@@ -55,6 +55,6 @@ public class ScheduleJob {
             }
         };
 
-        timer.schedule(timerTask, 1000 * 60 * 1);
+        timer.schedule(timerTask, 1000 * 60 * 15);
     }
 }
