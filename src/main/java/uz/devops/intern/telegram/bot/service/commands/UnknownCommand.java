@@ -5,7 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.telegram.bot.service.BotCommandAbs;
 
-@Service
+@Service(value = "unknown-command")
 public class UnknownCommand extends BotCommandAbs {
 
     private final String COMMAND = "/unknown";

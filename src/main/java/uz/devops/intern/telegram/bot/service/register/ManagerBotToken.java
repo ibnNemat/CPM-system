@@ -17,14 +17,14 @@ import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.dto.UserDTO;
 import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
-import uz.devops.intern.telegram.bot.service.CommandHalfImpl;
+import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
 import java.net.URI;
 
 @Service
-@RequiredArgsConstructor
-public class ManagerBotToken extends CommandHalfImpl {
+//@RequiredArgsConstructor
+public class ManagerBotToken extends BotStrategyAbs {
 
     private final String STATE = "MANAGER_NEW_BOT_TOKEN";
     private final Integer STEP = 3;
@@ -34,11 +34,6 @@ public class ManagerBotToken extends CommandHalfImpl {
 
     private final BotTokenService botTokenService;
     private final UserService userService;
-    private  String WEBHOOK_URL;
-    @Autowired
-    private BotTokenService botTokenService;
-    @Autowired
-    private UserService userService;
 
     public ManagerBotToken(BotTokenService botTokenService, UserService userService) {
         this.botTokenService = botTokenService;

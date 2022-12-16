@@ -16,6 +16,7 @@ public class AdminKeyboards {
         "\uD83D\uDCB8 Qarzdorliklarni ko'rish",
         "\uD83D\uDC40 Guruhlarni ko'rish");
 
+
     public static List<String> getMenuButtons(){
         return menuButtons;
     }

@@ -217,9 +217,9 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         if(telegramId == null){
             return ResponseDTO.<CustomerTelegramDTO>builder()
                 .success(false).message("Parameter \"Telegram id\" is null!").build();
-    public CustomerTelegramDTO findByTelegramId(Long telegramId) {
-        if (telegramId == null) {
-            return null;
+//    public CustomerTelegramDTO findByTelegramId(Long telegramId) {
+//        if (telegramId == null) {
+//            return null;
         }
         Optional<CustomerTelegram> customerTelegramOptional =
             customerTelegramRepository.findByTelegramId(telegramId);
@@ -304,8 +304,15 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
 
     @Override
     public ResponseDTO<CustomerTelegramDTO> findByBotTgId(Long botId) {
-        return null;
-    }
+        if(botId == null) {
+            return ResponseDTO.<CustomerTelegramDTO>builder()
+                .success(false).message("Parameter \"Bot id\" is null!").build();
+        }
+        Optional<CustomerTelegram> customerTelegramOptional = customerTelegramRepository.findByBot(botId);
+        if(customerTelegramOptional.isEmpty()){
+            return ResponseDTO.<CustomerTelegramDTO>builder()
+                .success(false).message("Data is not found!").build();
+        }
 
         CustomerTelegramDTO dto = customerTelegramOptional.map(customerTelegramMapper::toDto).get();
         return ResponseDTO.<CustomerTelegramDTO>builder()
@@ -327,7 +334,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             .success(true).message("OK").responseData(customerTelegrams).build();
     }
 
-    private SendMessage whenPressingInlineButton(CallbackQuery callbackQuery) {
+//    private SendMessage whenPressingInlineButton(CallbackQuery callbackQuery) {
     @Override
     public SendMessage commandWithCallbackQuery(CallbackQuery callbackQuery, URI telegramURI) {
         uri = telegramURI;
@@ -461,7 +468,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             customerTelegram.setStep(2);
             customerTelegramRepository.save(customerTelegram);
 
-            return sendMessage(telegramUser.getId(), resourceBundle.getString("bot.message.replenished.balance") +" ✅", backToMenuInlineButton());
+            return sendMessage(telegramUser.getId(), resourceBundle.getString("bot.message.replenished.balance") +" ✅", backToMenuInlineButton(customerTelegram));
         } catch (NumberFormatException e) {
             return sendMessage(telegramUser.getId(), "❌ " + resourceBundle.getString("bot.message.wrong.entered.money"));
         }
@@ -484,7 +491,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         customerTelegram.setStep(2);
         customerTelegramRepository.save(customerTelegram);
 
-        return sendMessage(telegramUser.getId(), resourceBundle.getString("bot.message.changed.name") + " ✅", backToMenuInlineButton());
+        return sendMessage(telegramUser.getId(), resourceBundle.getString("bot.message.changed.name") + " ✅", backToMenuInlineButton(customerTelegram));
     }
 
     private EditMessageTextDTO showCurrentCustomerPayment(User telegramUser, CustomerTelegram customerTelegram, CallbackQuery callbackQuery) {
@@ -500,7 +507,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         buildPaymentHistoryMessage(paymentHistory, builder);
 
         EditMessageTextDTO editMessageTextDTO = createMessageTextDTO(builder.toString(), callbackQuery, telegramUser);
-        editMessageTextDTO.setReplyMarkup(backToMenuInlineButton());
+        editMessageTextDTO.setReplyMarkup(backToMenuInlineButton(customerTelegram));
         return editMessageTextDTO;
     }
 
@@ -509,7 +516,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         editedMessageDTO.setChatId(String.valueOf(telegramUser.getId()));
         editedMessageDTO.setMessageId(callbackQuery.getMessage().getMessageId());
         editedMessageDTO.setInlineMessageId(callbackQuery.getInlineMessageId());
-        editedMessageDTO.setReplyMarkup(backToMenuInlineButton());
+        editedMessageDTO.setReplyMarkup(backToMenuInlineButton(null));
         return editedMessageDTO;
     }
 
@@ -637,20 +644,21 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     }
 
     public SendMessage mainCommand(String buttonMessage, User telegramUser, CustomerTelegram customerTelegram, Message message) {
-        resourceBundle = getResourceBundleUsingCustomerTelegram(customerTelegram);
-
-        String paymentHistoryReplyButton = "\uD83D\uDCC3 " + resourceBundle.getString("bot.message.payment.history.button");
-        String paymentReplyButton = "\uD83D\uDCB0 " + resourceBundle.getString("bot.message.payment.button");
-        String payReplyButton = "\uD83D\uDCB8 " + resourceBundle.getString("bot.message.pay.button");
-        String inlineButtonShowCurrentPayment = "\uD83D\uDC40 " + resourceBundle.getString("bot.message.current.payment.button");
-        String myProfileReplyButton = "\uD83D\uDE4B\u200D♂️" + resourceBundle.getString("bot.message.my.profile.button");
-        String groupReplyButton = "\uD83D\uDCAC " + resourceBundle.getString("bot.message.group.button");
-
-        String groupButton = "\uD83D\uDCAC " + resourceBundle.getString("bot.message.group.button");
-
-        return switch (buttonMessage){
-            case PAY_REPLY_BUTTON -> sendCustomerGroups(telegramUser, customerTelegram);
-        };
+        return null;
+//        resourceBundle = getResourceBundleUsingCustomerTelegram(customerTelegram);
+//
+//        String paymentHistoryReplyButton = "\uD83D\uDCC3 " + resourceBundle.getString("bot.message.payment.history.button");
+//        String paymentReplyButton = "\uD83D\uDCB0 " + resourceBundle.getString("bot.message.payment.button");
+//        String payReplyButton = "\uD83D\uDCB8 " + resourceBundle.getString("bot.message.pay.button");
+//        String inlineButtonShowCurrentPayment = "\uD83D\uDC40 " + resourceBundle.getString("bot.message.current.payment.button");
+//        String myProfileReplyButton = "\uD83D\uDE4B\u200D♂️" + resourceBundle.getString("bot.message.my.profile.button");
+//        String groupReplyButton = "\uD83D\uDCAC " + resourceBundle.getString("bot.message.group.button");
+//
+//        String groupButton = "\uD83D\uDCAC " + resourceBundle.getString("bot.message.group.button");
+//
+//        return switch (buttonMessage){
+//            case PAY_REPLY_BUTTON -> sendCustomerGroups(telegramUser, customerTelegram);
+//        };
 
 //        switch (buttonMessage) {
 //            case "groupReplyButton": return sendCustomerGroups(telegramUser, customerTelegram);

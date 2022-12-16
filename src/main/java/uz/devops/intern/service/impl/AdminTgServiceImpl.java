@@ -64,14 +64,20 @@ public class AdminTgServiceImpl implements AdminTgService {
             customerTelegramService.getCustomerByTelegramId(userId);
 
         if(update.hasMessage()){
-            log.warn("User send message");
+            String languageCode = response.getResponseData() != null?
+                response.getResponseData().getLanguageCode():
+                update.getMessage().getFrom().getLanguageCode();
+
+            ResourceBundle resourceBundle = TelegramsUtil.getResourceBundleByUserLanguageCode(languageCode);
+
             String messageText = update.getMessage().hasText()?
                 update.getMessage().getText():
                 update.getMessage().hasContact()?
                     update.getMessage().getContact().getPhoneNumber(): null;
 
             if(messageText == null){
-                SendMessage sendMessage = TelegramsUtil.sendMessage(userId, "Iltimos xabar yoki kontakt yuboring!");
+                String newMessage = resourceBundle.getString("bot.admin.send.only.message.or.contact");
+                SendMessage sendMessage = TelegramsUtil.sendMessage(userId, newMessage);
                 adminFeign.sendMessage(sendMessage);
                 log.warn("User didn't send Message or Contact! User id: {} | Update: {}", userId, update);
                 return false;
@@ -84,7 +90,8 @@ public class AdminTgServiceImpl implements AdminTgService {
             }
 
             if(!response.getSuccess()){
-                SendMessage sendMessage = TelegramsUtil.sendMessage(userId, "Siz botdan ro'yxatdan o'tmagansiz");
+                String newMessage = resourceBundle.getString("bot.admin.user.is.not.registered");
+                SendMessage sendMessage = TelegramsUtil.sendMessage(userId, newMessage);
                 adminFeign.sendMessage(sendMessage);
                 log.warn("User is not found! User id: {} | Response: {}", userId, response);
                 return false;
