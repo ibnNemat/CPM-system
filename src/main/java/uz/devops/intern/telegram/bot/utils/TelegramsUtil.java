@@ -2,6 +2,7 @@ package uz.devops.intern.telegram.bot.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
@@ -25,17 +26,14 @@ import static uz.devops.intern.telegram.bot.utils.KeyboardUtil.sendMarkup;
 
 public class TelegramsUtil {
     private static final Logger log = LoggerFactory.getLogger(TelegramsUtil.class);
-    private static final String RESOURCE_BUNDLE_NAME = "messages";
-
-//    public static ResourceBundle getResourceBundleByCustomerTgDTO(CustomerTelegramDTO customerTelegramDTO){
-//        Locale locale = new Locale(customerTelegramDTO.getLanguageCode());
-//        LocaleContextHolder.setLocale(locale);
-//        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME);
-//    }
+    private static final String RESOURCE_BUNDLE_NAME = "message";
 
     public static ResourceBundle getResourceBundleByCustomerTgDTO(CustomerTelegramDTO customerTelegramDTO){
-        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, new Locale(customerTelegramDTO.getLanguageCode()));
+        Locale locale = new Locale(customerTelegramDTO.getLanguageCode());
+        LocaleContextHolder.setLocale(locale);
+        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME);
     }
+
 
     public static ResourceBundle getResourceBundleByUserLanguageCode(String languageCode){
         log.info("Language code: {} ", languageCode);
@@ -43,7 +41,7 @@ public class TelegramsUtil {
             languageCode.equals("uz_UZ") || languageCode.equals("uz")? "uz": "en";
         Locale locale = new Locale(languageCode);
         LocaleContextHolder.setLocale(locale);
-        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME);
+        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, LocaleContextHolder.getLocale());
     }
 
     public static SendMessage checkTelegramGroupIfExists(User telegramUser, Chat chat){

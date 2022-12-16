@@ -16,10 +16,6 @@ import static uz.devops.intern.command.enumeration.CommandsName.COMMAND_WITH_CAL
 @Service
 public class CommandWithCallbackQuery implements ExecuteCommand {
 
-    @PostConstruct
-    public void init(){
-        System.out.println(getClass().getName() + " is created!");
-    }
     private final CustomerTelegramService customerTelegramService;
     public CommandWithCallbackQuery(CustomerTelegramService customerTelegramService) {
         this.customerTelegramService = customerTelegramService;

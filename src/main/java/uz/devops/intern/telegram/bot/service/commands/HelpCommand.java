@@ -27,6 +27,7 @@ public class HelpCommand extends BotCommandAbs {
         ResponseDTO<CustomerTelegramDTO> response = customerTelegramService.getCustomerByTelegramId(userId);
         if(!response.getSuccess() && response.getResponseData() == null){
             String languageCode = update.getMessage().getFrom().getLanguageCode();
+
             ResourceBundle resourceBundle = TelegramsUtil.getResourceBundleByUserLanguageCode(languageCode);
             wrongValue(userId, resourceBundle.getString("bot.admin.command.help"));
             log.warn("User is not found! User id: {} | Response: {}", userId, response);
