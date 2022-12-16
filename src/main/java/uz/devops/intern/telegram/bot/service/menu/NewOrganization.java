@@ -11,10 +11,13 @@ import uz.devops.intern.service.UserService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.OrganizationDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.AdminKeyboards;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 import uz.devops.intern.web.rest.utils.WebUtils;
+
+import java.util.ResourceBundle;
 
 
 @Service
@@ -33,6 +36,7 @@ public class NewOrganization extends BotStrategyAbs {
 
     @Override
     public boolean execute(Update update, CustomerTelegramDTO manager) {
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
         ResponseDTO<User> response = userService.getUserByPhoneNumber(manager.getPhoneNumber());
         if(!response.getSuccess() && response.getResponseData() == null){
             log.warn("User is not found! Manager id: {} | Manager phone number: {} | Response: {}",
@@ -52,7 +56,7 @@ public class NewOrganization extends BotStrategyAbs {
             organizationService.getOrganizationByName(messageText);
 
         if(isOrganizationExists != null){
-            wrongValue(message.getFrom().getId(), "Tashkilot avval saqlangan!");
+            wrongValue(message.getFrom().getId(), bundle.getString("bot.admin.error.organization.is.already.exists"));
             log.warn("Organization is already exists, Organization: {}", isOrganizationExists);
             return false;
         }
@@ -62,7 +66,7 @@ public class NewOrganization extends BotStrategyAbs {
         organization = organizationService.save(organization);
 
 
-        String newMessage = "Tashkilot saqlandi";
+        String newMessage = bundle.getString("bot.admin.send.organization.is.saved.successfully");
         ReplyKeyboardMarkup markup = AdminKeyboards.createMenu();
         SendMessage sendMessage = TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage, markup);
         adminFeign.sendMessage(sendMessage);

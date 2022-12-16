@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import uz.devops.intern.service.*;
 import uz.devops.intern.service.dto.*;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 
 import javax.annotation.PostConstruct;
@@ -34,7 +35,10 @@ public class MenuManager extends BotStrategyAbs {
     public void inject(){
         menu = new HashMap<>();
         for(ManagerMenuStrategy m: impls){
-            menu.put(m.getSupportedText(), m);
+            List<String> texts = m.getSupportedTexts();
+            for(String text: texts){
+                menu.put(text, m);
+            }
         }
         log.info("Inner classes are injected, Map size: {} | List: {} | Map: {}",
             menu.size(), impls, menu);
@@ -42,9 +46,10 @@ public class MenuManager extends BotStrategyAbs {
 
     @Override
     public boolean execute(Update update, CustomerTelegramDTO manager) {
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
         if(!update.hasMessage() && !update.getMessage().hasText()){
             Long userId = update.hasCallbackQuery()? update.getCallbackQuery().getFrom().getId() : null;
-            wrongValue(userId, "Noto'g'ri qiymat!");
+            wrongValue(userId, bundle.getString("bot.admin.send.only.message.or.contact"));
             log.warn("User didn't send text! User id: {} | Update: {}", userId, update);
             return false;
         }

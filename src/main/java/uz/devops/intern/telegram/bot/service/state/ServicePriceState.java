@@ -9,7 +9,10 @@ import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.redis.ServicesRedisDTO;
 import uz.devops.intern.redis.ServicesRedisRepository;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
+
+import java.util.ResourceBundle;
 
 @Service
 public class ServicePriceState extends State<ServiceFSM>{
@@ -26,6 +29,7 @@ public class ServicePriceState extends State<ServiceFSM>{
 
     @Override
     boolean doThis(Update update, CustomerTelegramDTO manager) {
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
         boolean firstCheckPoint = checkUpdateInside(update, manager.getTelegramId());
         if(!firstCheckPoint)return firstCheckPoint;
 
@@ -39,25 +43,25 @@ public class ServicePriceState extends State<ServiceFSM>{
             try{
                 integerPrice = Integer.parseInt(messageText);
             }catch (NumberFormatException e){
-                wrongValue(message.getFrom().getId(), "Qiymat noto'g'ri!");
+                wrongValue(message.getFrom().getId(), bundle.getString("bot.admin.error.value.contains.alphabet"));
                 log.warn("Throws NumberFormatException when user send cost of service, Manager id: {} | Value: {}",
                     managerId, messageText);
                 return false;
             }
         }else{
-            wrongValue(message.getFrom().getId(), "Qiymat noto'g'ri!");
+            wrongValue(message.getFrom().getId(), bundle.getString("bot.admin.error.value.contains.alphabet"));
             log.warn("Cost of service is out of range, Manager id: {} | Value: {}",
                 managerId, messageText);
             return false;
         }
 
         if(integerPrice <= 10000){
-            wrongValue(managerId, "Xizmatlarning eng miqdordagi summasi 10 000");
+            wrongValue(managerId, bundle.getString("bot.admin.send.service.min.price"));
             log.warn("Cost of service is below 10 000, Manager id: {} | Cost: {}", managerId, messageText);
             return false;
         }
 
-        String newMessage = "Iltimos xizmatning boshlanadigan kunini kiriting.\n\nFormat: yil.oy.kun Misol: 2022.01.01";
+        String newMessage = bundle.getString("bot.admin.send.service.started.time");
         SendMessage sendMessage = TelegramsUtil.sendMessage(managerId, newMessage);
         adminFeign.sendMessage(sendMessage);
 

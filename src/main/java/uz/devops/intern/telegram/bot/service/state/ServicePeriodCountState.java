@@ -16,12 +16,14 @@ import uz.devops.intern.service.UserService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.GroupsDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.AdminKeyboards;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 import uz.devops.intern.web.rest.utils.WebUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 @Service
 public class ServicePeriodCountState extends State<ServiceFSM>{
@@ -45,6 +47,7 @@ public class ServicePeriodCountState extends State<ServiceFSM>{
 
     @Override
     boolean doThis(Update update, CustomerTelegramDTO managerDTO) {
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(managerDTO.getLanguageCode());
         boolean isThereMessageInUpdate = checkUpdateInside(update, managerDTO.getTelegramId());
         if(!isThereMessageInUpdate) return false;
 
@@ -53,7 +56,7 @@ public class ServicePeriodCountState extends State<ServiceFSM>{
         Long managerId = message.getFrom().getId();
 
         if(messageText.length() > 2){
-            wrongValue(managerId, "Qiymatning uzunligi 2 tadan uzun!");
+            wrongValue(managerId, bundle.getString("bot.admin.error.organization.period.count.invalid"));
             log.warn("User send invalid value, Manager id: {} | Value: {}", managerId, messageText);
             return false;
         }
@@ -62,13 +65,13 @@ public class ServicePeriodCountState extends State<ServiceFSM>{
         try{
             count = Integer.parseInt(messageText);
         }catch (NumberFormatException e){
-            wrongValue(managerId, "Qiymatga harf aralashmasligi kerak!");
+            wrongValue(managerId, bundle.getString("bot.admin.error.value.contains.alphabet"));
             log.warn("There is alphabet in value that manager is send, Manager id: {} | Value: {}",
                 managerId, messageText);
             return false;
         }
         if(count <= 0){
-            wrongValue(managerId, "Qiymat 0 dan past bo'lmasligi kerak!");
+            wrongValue(managerId, bundle.getString("bot.admin.error.value.should.not.below.zero"));
             log.warn("Value is below 0, Manager id: {} | Value: {}", managerId, messageText);
             return false;
         }
@@ -86,17 +89,17 @@ public class ServicePeriodCountState extends State<ServiceFSM>{
         WebUtils.setUserToContextHolder(responseDTO.getResponseData());
         List<GroupsDTO> groups = groupsService.findOnlyManagerGroups();
         if(groups.isEmpty()){
-            wrongValue(managerId, "Sizda tashkilotga qo'shilgan guruhlar mavjud emas");
+            wrongValue(managerId, bundle.getString("bot.admin.error.groups.are.not.attached.to.groups"));
             log.warn("Group is not found, Manager id: {} ", managerId);
-            String newMessage = "Asosiy menyu";
+            String newMessage = bundle.getString("bot.admin.main.menu");
             ReplyKeyboardMarkup markup = AdminKeyboards.createMenu();
             SendMessage sendMessage = TelegramsUtil.sendMessage(managerId, newMessage, markup);
             adminFeign.sendMessage(sendMessage);
             return false;
         }
 
-        String newMessage = "Bu xizmatga qaysi guruhlar qo'shiladi";
-        InlineKeyboardMarkup markup = createGroupButtons(groups);
+        String newMessage = bundle.getString("bot.admin.send.groups.are.added.to.service");
+        InlineKeyboardMarkup markup = createGroupButtons(groups, bundle);
 
         SendMessage sendMessage = TelegramsUtil.sendMessage(managerId, newMessage, markup);
         adminFeign.sendMessage(sendMessage);
@@ -104,7 +107,7 @@ public class ServicePeriodCountState extends State<ServiceFSM>{
         return true;
     }
 
-    public InlineKeyboardMarkup createGroupButtons(List<GroupsDTO> groups){
+    public InlineKeyboardMarkup createGroupButtons(List<GroupsDTO> groups, ResourceBundle bundle){
         List<List<InlineKeyboardButton>> label = new ArrayList<>();
         for(GroupsDTO group: groups){
 
@@ -116,7 +119,7 @@ public class ServicePeriodCountState extends State<ServiceFSM>{
             label.add(row);
         }
 
-        InlineKeyboardButton button = new InlineKeyboardButton("Shularni hammasi");
+        InlineKeyboardButton button = new InlineKeyboardButton(bundle.getString("bot.admin.send.that.is.all"));
         button.setCallbackData("ENOUGH");
 
         List<InlineKeyboardButton> row = new ArrayList<>();

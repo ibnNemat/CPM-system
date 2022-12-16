@@ -16,11 +16,13 @@ import uz.devops.intern.service.dto.BotTokenDTO;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.dto.UserDTO;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
 import java.net.URI;
+import java.util.ResourceBundle;
 
 @Service
 //@RequiredArgsConstructor
@@ -44,7 +46,7 @@ public class ManagerBotToken extends BotStrategyAbs {
     public boolean execute(Update update, CustomerTelegramDTO manager) {
         if(!update.hasMessage() && !update.getMessage().hasText()){
             Long userId = update.hasCallbackQuery()? update.getCallbackQuery().getFrom().getId() : null;
-            messageHasNotText(userId, update);
+            messageHasNotText(manager.getTelegramId(), update);
             log.warn("Manager didn't send text! Manager: {}", manager);
             return false;
         }
@@ -52,10 +54,11 @@ public class ManagerBotToken extends BotStrategyAbs {
         Message message = update.getMessage();
         Long userId = message.getFrom().getId();
         String newBotToken = message.getText();
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
 
         ResponseDTO<BotTokenDTO> responseDTO = botTokenService.findByToken(newBotToken);
         if(responseDTO.getSuccess() && responseDTO.getMessage().equals("OK")){
-            wrongValue(userId, "Bot mavjud!");
+            wrongValue(userId, bundle.getString("bot.admin.bot.is.already.exists"));
             log.warn("Bot is already exists! Bot token: {} | BotTokenDTO: {} | Manager: {}",
                 newBotToken, responseDTO.getResponseData(), manager);
             return false;
@@ -76,7 +79,7 @@ public class ManagerBotToken extends BotStrategyAbs {
         }
 
         if(!telegramResponse.getOk() && telegramResponse.getResult() == null){
-            wrongValue(userId, "Bot token yaroqsiz!♻");
+            wrongValue(userId, bundle.getString("bot.admin.error.bot.token.is.invalid"));
             log.warn("Given bot token is invalid! Bot token: {} | Manager: {} | Response from telegram: {}",
                 newBotToken, manager, telegramResponse);
             return false;
@@ -94,7 +97,7 @@ public class ManagerBotToken extends BotStrategyAbs {
         }
 
         saveBotEntity(bot, manager.getPhoneNumber(), newBotToken);
-        String newMessage = "Tabriklaymiz, botning tokeni muvafaqiyatli saqlandi.Iltimos botni guruhga qo'shing";
+        String newMessage = bundle.getString("bot.admin.bot.successfully.saved");
         SendMessage sendMessage = TelegramsUtil.sendMessage(userId, newMessage);
         adminFeign.sendMessage(sendMessage);
         return true;

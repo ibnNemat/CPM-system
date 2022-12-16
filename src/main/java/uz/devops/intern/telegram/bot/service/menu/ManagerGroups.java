@@ -15,16 +15,22 @@ import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.GroupsDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.dto.TelegramGroupDTO;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
+import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 @Service
 public class ManagerGroups extends ManagerMenuAbs{
 
     private final String SUPPORTED_TEXT = "\uD83D\uDC65 Guruh qo'shish";
 
+    private final List<String> SUPPORTED_TEXTS = new ArrayList<>();
     private final GroupsService groupsService;
 
     public ManagerGroups(AdminFeign adminFeign, CustomerTelegramService customerTelegramService, TelegramGroupService telegramGroupService, UserService userService, GroupsService groupsService) {
@@ -32,9 +38,22 @@ public class ManagerGroups extends ManagerMenuAbs{
         this.groupsService = groupsService;
     }
 
+    @PostConstruct
+    public void fillSupportedTextsList(){
+        List<String> languages = KeyboardUtil.availableLanguages();
+        Map<String, String> languageMap = KeyboardUtil.getLanguages();
+        for(String lang: languages){
+            String languageCode = languageMap.get(lang);
+            ResourceBundle bundle =
+                ResourceBundleUtils.getResourceBundleByUserLanguageCode(languageCode);
+            SUPPORTED_TEXTS.add(bundle.getString("bot.admin.keyboards.menu.add.group"));
+        }
+    }
+
     @Override
     public boolean todo(Update update, CustomerTelegramDTO manager) {
 //            CustomerTelegramDTO manager = customerTelegramService.findByTelegramId(manager.getTelegramId());
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
         ResponseDTO<User> responseDTO = userService.getUserByPhoneNumber(manager.getPhoneNumber());
         if (!responseDTO.getSuccess() && responseDTO.getResponseData() == null) {
             log.warn("Manager is not found from jhi_user! Manager: {} | Response: {}", manager, responseDTO);
@@ -51,17 +70,16 @@ public class ManagerGroups extends ManagerMenuAbs{
         }
 
         if (response.getResponseData().isEmpty()) {
-            wrongValue(manager.getTelegramId(), "Telegram guruhlar mavjud emas!");
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.telegram.group.non"));
             log.warn("Has no telegram group, Manager id: {} ", manager.getTelegramId());
             return false;
         }
         List<TelegramGroupDTO> telegramGroups = response.getResponseData();
-
         log.info("Manager telegram groups, Telegram groups count: {} | Telegram groups: {}", telegramGroups.size(), telegramGroups);
 
         for (TelegramGroupDTO dto : telegramGroups) {
-            String newMessage = createGroupText(dto);
-            InlineKeyboardMarkup markup = createGroupButtons(dto.getChatId());
+            String newMessage = createGroupText(dto, bundle);
+            InlineKeyboardMarkup markup = createGroupButtons(dto.getChatId(), bundle);
             SendMessage sendMessage =
                 TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage, markup);
             adminFeign.sendMessage(sendMessage);
@@ -75,12 +93,19 @@ public class ManagerGroups extends ManagerMenuAbs{
         return SUPPORTED_TEXT;
     }
 
-    private String createGroupText(TelegramGroupDTO groupDTO){
+    @Override
+    public List<String> getSupportedTexts() {
+        return SUPPORTED_TEXTS;
+    }
+
+    private String createGroupText(TelegramGroupDTO groupDTO, ResourceBundle bundle){
         ResponseDTO<List<CustomerTelegramDTO>> response =
             customerTelegramService.getCustomerTgByChatId(groupDTO.getId());
 
         StringBuilder text = new StringBuilder(String.format(
-            "Guruh nomi: %s\nFoydalanuvchilar soni: %d\n=========================\n",
+            "%s %s\n%s %d\n=========================\n",
+            bundle.getString("bot.admin.group.name"),
+            bundle.getString("bot.admin.customers.count"),
             groupDTO.getName(), response.getResponseData().size()
         ));
 
@@ -94,10 +119,10 @@ public class ManagerGroups extends ManagerMenuAbs{
         return text.toString();
     }
 
-    private InlineKeyboardMarkup createGroupButtons(Long chatId){
+    private InlineKeyboardMarkup createGroupButtons(Long chatId, ResourceBundle bundle){
         List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
 
-        InlineKeyboardButton button = new InlineKeyboardButton("Shu guruhni qo'shish");
+        InlineKeyboardButton button = new InlineKeyboardButton(bundle.getString("bot.admin.send.attach.this.group"));
         button.setCallbackData(String.valueOf(chatId));
 
         buttons.add(

@@ -12,11 +12,13 @@ import uz.devops.intern.service.OrganizationService;
 import uz.devops.intern.service.TelegramGroupService;
 import uz.devops.intern.service.UserService;
 import uz.devops.intern.service.dto.*;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.dto.EditMessageTextDTO;
 import uz.devops.intern.web.rest.utils.WebUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 @Service
 public class GroupStates extends State<BotFSM>{
@@ -38,21 +40,22 @@ public class GroupStates extends State<BotFSM>{
 
     @Override
     boolean doThis(Update update, CustomerTelegramDTO manager) {
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
         if(!update.hasCallbackQuery()){
-            wrongValue(manager.getTelegramId(), "Iltimos ko'rsatilganlardan birini tanlang!");
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.message"));
             log.warn("Update: {}", update);
             return false;
         }
 
         CallbackQuery callback = update.getCallbackQuery();
         String callbackText = callback.getMessage().getReplyMarkup().getKeyboard().get(0).get(0).getText();
-        if(!callbackText.equals("Shu guruhni qo'shish"))return false;
+        if(!callbackText.equals(bundle.getString("bot.admin.send.attach.this.group")))return false;
 
         GroupsDTO groupsDTO =
             groupsService.findOneByTelegramId(Long.parseLong(callback.getData()));
 
         if(groupsDTO != null){
-            wrongValue(callback.getFrom().getId(), "Guruh tashkilotga biriktirilgan");
+            wrongValue(callback.getFrom().getId(), bundle.getString("bot.admin.error.group.is.already.attached"));
             log.warn("Group is already exists, Group: {}", groupsDTO);
             return false;
         }
@@ -68,13 +71,13 @@ public class GroupStates extends State<BotFSM>{
         WebUtils.setUserToContextHolder(responseDTO.getResponseData());
         List<OrganizationDTO> organizations = organizationService.getOrganizationsByUserLogin();
         if(organizations.isEmpty()){
-            wrongValue(callback.getFrom().getId(), "Tashkilotlar hozircha mavjud emas!");
+            wrongValue(callback.getFrom().getId(), bundle.getString("bot.admin.error.organization.is.not.found"));
             log.warn("Organization is not found, Manager id: {}", callback.getFrom().getId());
             return false;
         }
 
         InlineKeyboardMarkup markup = createOrganizationButtons(organizations, telegramGroup.getChatId());
-        EditMessageTextDTO dto = createEditMessageText(callback, markup, "\n Iltimos tashkilotni tanlang\uD83D\uDC47");
+        EditMessageTextDTO dto = createEditMessageText(callback, markup, "\n" + bundle.getString("bot.admin.send.choose.organization"));
         adminFeign.editMessageText(dto);
         context.changeState(new GroupOrganizationState(context));
         return true;

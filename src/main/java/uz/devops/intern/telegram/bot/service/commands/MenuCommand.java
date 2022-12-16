@@ -8,6 +8,7 @@ import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.service.CustomerTelegramService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.keyboards.AdminMenuKeys;
 import uz.devops.intern.telegram.bot.service.BotCommandAbs;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
@@ -33,7 +34,7 @@ public class MenuCommand extends BotCommandAbs {
     public boolean executeCommand(Update update, Long userId) {
         ResponseDTO<CustomerTelegramDTO> response = customerTelegramService.findByTelegramId(userId);
         if(!response.getSuccess() && response.getResponseData() == null){
-            ResourceBundle bundle = TelegramsUtil.getResourceBundleByUserLanguageCode(
+            ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(
                 update.getMessage().getFrom().getLanguageCode()
             );
 
@@ -43,7 +44,7 @@ public class MenuCommand extends BotCommandAbs {
         }
 
         CustomerTelegramDTO manager = response.getResponseData();
-        ResourceBundle bundle = TelegramsUtil.getResourceBundleByCustomerTgDTO(manager);
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByCustomerTgDTO(manager);
 
         if(manager.getPhoneNumber() == null){
             wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.command.menu.user.is.not.verified"));

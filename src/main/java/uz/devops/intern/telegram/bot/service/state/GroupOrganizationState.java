@@ -20,6 +20,7 @@ import uz.devops.intern.web.rest.utils.WebUtils;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 @Service
@@ -46,8 +47,9 @@ public class GroupOrganizationState extends State<BotFSM>{
 
     @Override
     boolean doThis(Update update, CustomerTelegramDTO manager) {
+        ResourceBundle bundle = ResourceBundle.getBundle(manager.getLanguageCode());
         if(!update.hasCallbackQuery()){
-            wrongValue(manager.getTelegramId(), "Iltimos ko'rsatilganlardan birini tanlang!");
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.message"));
             log.warn("Update: {}", update);
             return false;
         }
@@ -89,7 +91,7 @@ public class GroupOrganizationState extends State<BotFSM>{
         EditMessageTextDTO dto = createEditMessageText(update.getCallbackQuery(), inlineMarkup, "");
         adminFeign.editMessageText(dto);
 
-        String newMessage = "Asosiy menyu";
+        String newMessage = bundle.getString("bot.admin.main.menu");
         ReplyKeyboardMarkup markup = AdminKeyboards.createMenu();
         SendMessage sendMessage =
             TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage, markup);

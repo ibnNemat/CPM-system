@@ -9,9 +9,12 @@ import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.service.CustomerTelegramService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.service.BotCommandAbs;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
+
+import java.util.ResourceBundle;
 
 @Service
 public class StartCommand extends BotCommandAbs {
@@ -28,9 +31,11 @@ public class StartCommand extends BotCommandAbs {
     @Override
     public boolean executeCommand(Update update, Long userId) {
         if(!update.hasMessage() || !update.getMessage().hasText()){
-            wrongValue(userId, "Iltimos habar yuboring!");
+//            wrongValue(userId, "");
+            log.warn("User didn't send message");
             return false;
         }
+
         Message message = update.getMessage();
         String messageText = message.getText();
 
@@ -38,7 +43,8 @@ public class StartCommand extends BotCommandAbs {
             customerTelegramService.findByTelegramId(message.getFrom().getId());
 
         if(response.getSuccess() && response.getResponseData() != null) {
-            wrongValue(update.getMessage().getFrom().getId(), "Foydalanuvchi ro'yxatdan o'tgan");
+            ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByCustomerTgDTO(response.getResponseData());
+            wrongValue(update.getMessage().getFrom().getId(), bundle.getString("bot.admin.user.is.already.exists"));
             return false;
         }
         startProcess(message, null);
@@ -46,7 +52,15 @@ public class StartCommand extends BotCommandAbs {
     }
 
     void startProcess(Message message, Long userId){
-        String newMessage = "Iltimos tilni tanlang\uD83D\uDC47";
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode("uz");
+        String newMessage = bundle.getString("bot.message.choice.language");
+
+        bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode("ru");
+        newMessage = newMessage + "\n\n" + bundle.getString("bot.message.choice.language");
+
+        bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode("en");
+        newMessage = newMessage + "\n\n" + bundle.getString("bot.message.choice.language");
+
         ReplyKeyboardMarkup markup = KeyboardUtil.language();
         SendMessage sendMessage = TelegramsUtil.sendMessage(message.getFrom().getId(), newMessage, markup);
         Update newUpdate = adminFeign.sendMessage(sendMessage);

@@ -8,6 +8,14 @@ import uz.devops.intern.service.CustomerTelegramService;
 import uz.devops.intern.service.TelegramGroupService;
 import uz.devops.intern.service.UserService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
+import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
+
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.sendMessage;
 
@@ -15,12 +23,28 @@ import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.sendMessage;
 public class Organization extends ManagerMenuAbs{
     private final String SUPPORTED_TEXT = "\uD83C\uDFE2 Yangi tashkilot";
 
+    private final List<String> SUPPORTED_TEXTS = new ArrayList<>();
+
     public Organization(AdminFeign adminFeign, CustomerTelegramService customerTelegramService, TelegramGroupService telegramGroupService, UserService userService) {
         super(adminFeign, customerTelegramService, telegramGroupService, userService);
     }
 
+    @PostConstruct
+    public void fillSupportedTextsList(){
+        List<String> languages = KeyboardUtil.availableLanguages();
+        Map<String, String> languageMap = KeyboardUtil.getLanguages();
+        for(String lang: languages){
+            String languageCode = languageMap.get(lang);
+            ResourceBundle bundle =
+                ResourceBundleUtils.getResourceBundleByUserLanguageCode(languageCode);
+            SUPPORTED_TEXTS.add(bundle.getString("bot.admin.keyboards.menu.add.group"));
+        }
+    }
+
+
     public boolean todo(Update update, CustomerTelegramDTO manager){
-        String newMessage = "Iltimos tashkilot nomini kiriting";
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
+        String newMessage = bundle.getString("bot.admin.send.organization.name");
         SendMessage sendMessage = sendMessage(manager.getTelegramId(), newMessage);
         adminFeign.sendMessage(sendMessage);
         log.info("Admin is creating new organization, Manager id: {} | Message text: {} | Update: {}",
@@ -32,5 +56,10 @@ public class Organization extends ManagerMenuAbs{
     @Override
     public String getSupportedText() {
         return SUPPORTED_TEXT;
+    }
+
+    @Override
+    public List<String> getSupportedTexts() {
+        return SUPPORTED_TEXTS;
     }
 }

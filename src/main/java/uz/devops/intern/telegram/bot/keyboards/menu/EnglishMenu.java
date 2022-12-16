@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
 import javax.annotation.PostConstruct;
@@ -12,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-@Getter
-@Service
+//@Getter
+//@Service
 public class EnglishMenu implements AdminMenu{
     private final String LANGUAGE = "en";
-    private ResourceBundle bundle = TelegramsUtil.getResourceBundleByUserLanguageCode("en");
+    private ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode("en");
 
     private ReplyKeyboardMarkup menuMarkup;
     private final List<String> textsOfButtons = List.of(

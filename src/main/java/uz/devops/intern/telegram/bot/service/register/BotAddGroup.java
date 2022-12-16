@@ -18,12 +18,14 @@ import uz.devops.intern.service.dto.BotTokenDTO;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.dto.TelegramGroupDTO;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.AdminKeyboards;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
 import java.net.URI;
 import java.util.HashSet;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 @Service
@@ -92,8 +94,9 @@ public class BotAddGroup extends BotStrategyAbs {
         CustomerTelegramDTO manager = customerTgResponse.getResponseData();
 
         boolean isNotExistsInGroups = isNotExistsInGroups(manager.getTelegramGroups(), botToken);
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
         if(!isNotExistsInGroups) {
-            wrongValue(manager.getTelegramId(), "Bot guruhda mavjud!");
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.bot.is.already.exists.in.group"));
             return false;
         }
 
@@ -127,8 +130,9 @@ public class BotAddGroup extends BotStrategyAbs {
         CustomerTelegramDTO manager = customerTgResponse.getResponseData();
 
         boolean isNotExistsInGroups = isNotExistsInGroups(manager.getTelegramGroups(), botToken);
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
         if(!isNotExistsInGroups) {
-            wrongValue(manager.getTelegramId(), "Bot guruhda mavjud!");
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.bot.is.already.exists.in.group"));
             return false;
         }
 
@@ -174,7 +178,8 @@ public class BotAddGroup extends BotStrategyAbs {
     }
 
     private void sayThanksToManager(Long botTelegramId, CustomerTelegramDTO manager){
-        String newMessage = "Raxmat☺";
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
+        String newMessage = bundle.getString("bot.admin.bot.say.thanks");
         ReplyKeyboardMarkup menuMarkup = AdminKeyboards.createMenu();
 
         SendMessage sendMessage = TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage, menuMarkup);
@@ -184,9 +189,20 @@ public class BotAddGroup extends BotStrategyAbs {
     }
 
     private void sendInviteLink(User bot, Long groupId){
-        String link = "https://t.me/" + bot.getUserName() + "?start=" + groupId;
-        String newMessage = String.format(
-            "Shu havola orqali botga start bering\uD83D\uDC49 <a href=\"%s\">Bot ga start berish</a>", link);
+        ResourceBundle bundleUz = ResourceBundleUtils.getResourceBundleByUserLanguageCode("uz");
+        ResourceBundle bundleRu = ResourceBundleUtils.getResourceBundleByUserLanguageCode("ru");
+        ResourceBundle bundleEn = ResourceBundleUtils.getResourceBundleByUserLanguageCode("en");
+
+        String href = " <a href=https://t.me/" + bot.getUserName() + "?start" + groupId + ">";
+        String endHref = "</a>\n\n";
+        String newMessage =
+            bundleUz.getString("bot.admin.bot.send.invite.link") + href +
+            bundleUz.getString("bot.admin.send.command.start.to.bot") + endHref +
+            bundleRu.getString("bot.admin.bot.send.invite.link") + href +
+            bundleRu.getString("bot.admin.send.command.start.to.bot") + endHref +
+            bundleEn.getString("bot.admin.bot.send.invite.link") + href +
+            bundleEn.getString("bot.admin.send.command.start.to.bot") + endHref;
+
 
         SendMessage sendMessage = TelegramsUtil.sendMessage(groupId, newMessage);
         BotToken botToken = botTokenRepository.findByTelegramId(bot.getId()).get();

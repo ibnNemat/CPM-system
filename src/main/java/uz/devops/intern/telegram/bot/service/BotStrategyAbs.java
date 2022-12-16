@@ -9,10 +9,12 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.feign.CustomerFeignClient;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ResourceBundle;
 
 @Service
 public abstract class BotStrategyAbs implements BotStrategy {
@@ -36,7 +38,9 @@ public abstract class BotStrategyAbs implements BotStrategy {
     }
 
     public void messageHasNotText(Long chatId, Update update){
-        wrongValue(chatId, "Iltimos xabar yuboring\uD83D\uDE4F");
+        ResourceBundle bundle =
+            ResourceBundleUtils.getResourceBundleByUserLanguageCode(update.getMessage().getFrom().getLanguageCode());
+        wrongValue(chatId, bundle.getString("bot.admin.send.only.message.or.contact"));
         log.warn("User hasn't send text, Chat id: {} | Update: {}", chatId, update);
     }
 

@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.*;
 import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.service.*;
 import uz.devops.intern.service.dto.*;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.service.BotCommand;
 import uz.devops.intern.telegram.bot.service.BotStrategy;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
@@ -64,11 +65,11 @@ public class AdminTgServiceImpl implements AdminTgService {
             customerTelegramService.getCustomerByTelegramId(userId);
 
         if(update.hasMessage()){
-            String languageCode = response.getResponseData() != null?
+            String languageCode = response != null?
                 response.getResponseData().getLanguageCode():
                 update.getMessage().getFrom().getLanguageCode();
 
-            ResourceBundle resourceBundle = TelegramsUtil.getResourceBundleByUserLanguageCode(languageCode);
+            ResourceBundle resourceBundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(languageCode);
 
             String messageText = update.getMessage().hasText()?
                 update.getMessage().getText():

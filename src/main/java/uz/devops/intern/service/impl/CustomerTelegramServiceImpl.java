@@ -201,14 +201,25 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     }
 
     @Override
-    public CustomerTelegramDTO findByTelegramId(Long telegramId) {
-        if (telegramId == null) {
-            return null;
+    public ResponseDTO<CustomerTelegramDTO> findByTelegramId(Long telegramId) {
+        if(telegramId == null){
+            return ResponseDTO.<CustomerTelegramDTO>builder()
+                .success(false).message("Parameter \"Telegram id\" is null!").build();
+//    public CustomerTelegramDTO findByTelegramId(Long telegramId) {
+//        if (telegramId == null) {
+//            return null;
         }
         Optional<CustomerTelegram> customerTelegramOptional =
             customerTelegramRepository.findByTelegramId(telegramId);
 
-        return customerTelegramOptional.map(customerTelegramMapper::toDto).orElse(null);
+        if(customerTelegramOptional.isEmpty()){
+            return ResponseDTO.<CustomerTelegramDTO>builder()
+                .success(false).message("Data is not found!").build();
+        }
+
+        CustomerTelegramDTO  dto = customerTelegramOptional.map(customerTelegramMapper::toDto).orElse(null);
+        return ResponseDTO.<CustomerTelegramDTO>builder()
+            .success(true).message("OK").responseData(dto).build();
     }
 
     @Override
@@ -319,6 +330,21 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             default:
                 return sendMessage(telegramUser.getId(), "❌ " + resourceBundle.getString("bot.message.unknown.command"));
         }
+    }
+
+    @Override
+    public ResponseDTO<List<CustomerTelegramDTO>> getCustomerTgByChatId(Long chatId) {
+        if(chatId == null){
+            return ResponseDTO.<List<CustomerTelegramDTO>>builder()
+                .success(false).message("Parameter \"Chat id\" is null!").build();
+        }
+
+        List<CustomerTelegramDTO> customerTelegrams =
+            customerTelegramRepository.getCustomersByChatId(chatId)
+                .stream().map(customerTelegramMapper::toDto).toList();
+
+        return ResponseDTO.<List<CustomerTelegramDTO>>builder()
+            .success(true).message("OK").responseData(customerTelegrams).build();
     }
 
     private SendMessage changeCustomerProfile(User telegramUser, CustomerTelegram customerTelegram, String dataWithChange) {

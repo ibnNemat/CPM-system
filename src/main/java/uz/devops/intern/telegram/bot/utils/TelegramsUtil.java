@@ -25,7 +25,7 @@ import static uz.devops.intern.telegram.bot.utils.KeyboardUtil.sendMarkup;
 
 public class TelegramsUtil {
     private static final Logger log = LoggerFactory.getLogger(TelegramsUtil.class);
-    private static final String RESOURCE_BUNDLE_NAME = "messages";
+    private static final String RESOURCE_BUNDLE_NAME = "message";
 
 //    public static ResourceBundle getResourceBundleByCustomerTgDTO(CustomerTelegramDTO customerTelegramDTO){
 //        Locale locale = new Locale(customerTelegramDTO.getLanguageCode());
@@ -34,7 +34,9 @@ public class TelegramsUtil {
 //    }
 
     public static ResourceBundle getResourceBundleByCustomerTgDTO(CustomerTelegramDTO customerTelegramDTO){
-        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, new Locale(customerTelegramDTO.getLanguageCode()));
+        Locale locale = new Locale(customerTelegramDTO.getLanguageCode());
+        LocaleContextHolder.setLocale(locale);
+        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, LocaleContextHolder.getLocale());
     }
 
     public static ResourceBundle getResourceBundleByUserLanguageCode(String languageCode){
@@ -43,7 +45,7 @@ public class TelegramsUtil {
             languageCode.equals("uz_UZ") || languageCode.equals("uz")? "uz": "en";
         Locale locale = new Locale(languageCode);
         LocaleContextHolder.setLocale(locale);
-        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME);
+        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, LocaleContextHolder.getLocale());
     }
 
     public static SendMessage checkTelegramGroupIfExists(User telegramUser, Chat chat){

@@ -13,13 +13,21 @@ import uz.devops.intern.service.UserService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.GroupsDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
+import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 @Service
 public class AllGroups extends ManagerMenuAbs{
     private final String SUPPORTED_TEXT = "\uD83D\uDC40 Guruhlarni ko'rish";
+
+    private final List<String> SUPPORTED_TEXTS = new ArrayList<>();
 
     @Autowired
     private GroupsService groupsService;
@@ -28,12 +36,25 @@ public class AllGroups extends ManagerMenuAbs{
         super(adminFeign, customerTelegramService, telegramGroupService, userService);
     }
 
+    @PostConstruct
+    public void fillSupportedTextsList(){
+        List<String> languages = KeyboardUtil.availableLanguages();
+        Map<String, String> languageMap = KeyboardUtil.getLanguages();
+        for(String lang: languages){
+            String languageCode = languageMap.get(lang);
+            ResourceBundle bundle =
+                ResourceBundleUtils.getResourceBundleByUserLanguageCode(languageCode);
+            SUPPORTED_TEXTS.add(bundle.getString("bot.admin.keyboards.menu.add.group"));
+        }
+    }
+
 
     @Override
     public boolean todo(Update update, CustomerTelegramDTO manager) {
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
         ResponseDTO<User> responseDTO = userService.getUserByPhoneNumber(manager.getPhoneNumber());
         if(!responseDTO.getSuccess()){
-            wrongValue(manager.getTelegramId(), responseDTO.getMessage());
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.user.is.not.found"));
             log.warn("{} | Manager id: {} | Response: {}", responseDTO.getMessage(), manager.getTelegramId(), responseDTO);
             return false;
         }
@@ -42,7 +63,7 @@ public class AllGroups extends ManagerMenuAbs{
 
         List<GroupsDTO> groups = groupsService.findOnlyManagerGroups();
         if(groups.isEmpty()){
-            wrongValue(manager.getTelegramId(), "Tashkilotlarga biriktirilgan tashkilotlar hozircha mavjud emas!");
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.groups.are.not.attached.to.groups"));
             log.warn("Manager has not any groups! Manager: {}", manager);
             return false;
         }
@@ -50,9 +71,12 @@ public class AllGroups extends ManagerMenuAbs{
         StringBuilder newMessage = new StringBuilder();
         for(GroupsDTO group: groups){
             newMessage.append(String.format(
-                "Guruh nomi: <b>%s\n</b>" +
-                    "Tashkilot nomi: <b>%s\n</b>" +
-                    "Foydalanuvchilar soni: <b>%d</b>\n\n",
+                "%s <b>%s\n</b>" +
+                    "%s <b>%s\n</b>" +
+                    "%s <b>%d</b>\n\n",
+                bundle.getString("bot.admin.group.name"),
+                bundle.getString("bot.admin.organization.name"),
+                bundle.getString("bot.admin.customers.count"),
                 group.getName(), group.getOrganization().getName(), group.getCustomers().size()
             ));
         }
@@ -66,4 +90,7 @@ public class AllGroups extends ManagerMenuAbs{
     public String getSupportedText() {
         return SUPPORTED_TEXT;
     }
+
+    @Override
+    public List<String> getSupportedTexts(){ return SUPPORTED_TEXTS; }
 }

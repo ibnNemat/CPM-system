@@ -10,9 +10,11 @@ import uz.devops.intern.domain.Authority;
 import uz.devops.intern.service.UserService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.sendMessage;
@@ -29,13 +31,15 @@ public class VerifyManager extends BotStrategyAbs {
     @Override
     public boolean execute(Update update, CustomerTelegramDTO manager) {
         log.info("Verifying user by phone number, Customer: {}", manager);
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
         if(!update.hasMessage()){
-            wrongValue(manager.getTelegramId(), "Iltimos ko'rsatilganlardan birini tanlang!");
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.send.only.message.or.contact"));
             log.warn("No message in update! Update: {} ", update);
             return false;
         }
         if(!update.getMessage().hasContact() && !update.getMessage().hasText()){
-            messageHasNotText(manager.getTelegramId(), update, true);
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.send.only.message.or.contact"));
+            log.warn("No message in update! Update: {} ", update);
             return false;
         }
 
@@ -54,17 +58,18 @@ public class VerifyManager extends BotStrategyAbs {
 
         if(!response.getSuccess()){
             log.warn("{}", response.getMessage());
-            wrongValue(userId, response.getMessage());
+            wrongValue(userId, bundle.getString("bot.admin.user.is.not.found"));
             return false;
         }
 
         boolean isManager = hasUserRoleManager(response.getResponseData());
         if(!isManager){
             log.warn("User hasn't \"ROLE_MANAGER\"! Customer id: {} | Customer: {}", userId, manager);
-            wrongValue(userId, "You have not role \"ROLE_MANAGER\"!");
+            wrongValue(userId, bundle.getString("bot.admin.user.has.not.role.manager"));
             return false;
         }
-        String newMessage = "Iltimos botning tokenini tashlang.";
+
+        String newMessage = bundle.getString("bot.admin.send.new.bot.token");
         ReplyKeyboardRemove removeMarkup = new ReplyKeyboardRemove(true);
         SendMessage sendMessage = sendMessage(userId, newMessage, removeMarkup);
         adminFeign.sendMessage(sendMessage);

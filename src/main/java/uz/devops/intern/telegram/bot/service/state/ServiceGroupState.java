@@ -16,11 +16,13 @@ import uz.devops.intern.service.ServicesService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.GroupsDTO;
 import uz.devops.intern.service.dto.ServicesDTO;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.AdminKeyboards;
 import uz.devops.intern.telegram.bot.dto.EditMessageDTO;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 @Service
@@ -45,8 +47,9 @@ public class ServiceGroupState extends State<ServiceFSM>{
 
     @Override
     boolean doThis(Update update, CustomerTelegramDTO manager) {
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
         if(!update.hasCallbackQuery()){
-            wrongValue(manager.getTelegramId(), "Iltimos ko'rsatilganlardan birini tanlang!");
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.send.organization.is.saved.successfully"));
             return false;
         }
 
@@ -85,7 +88,7 @@ public class ServiceGroupState extends State<ServiceFSM>{
 
             servicesService.save(servicesDTO);
 
-            String newMessage = "Asosiy menyu";
+            String newMessage = bundle.getString("bot.admin.main.menu");
             ReplyKeyboardMarkup markup = AdminKeyboards.createMenu();
             SendMessage sendMessage = TelegramsUtil.sendMessage(managerId, newMessage, markup);
             adminFeign.sendMessage(sendMessage);
