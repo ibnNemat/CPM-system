@@ -9,14 +9,17 @@ import java.util.List;
 public class AdminKeyboards {
 
     private final static List<String> periods = List.of("Yillik", "Oylik", "Haftalik", "Kunlik", "Bir martalik");
+    private final static List<String> menuButtons = List.of(
+        "\uD83C\uDFE2 Yangi tashkilot",
+        "\uD83D\uDC65 Guruh qo'shish",
+        "\uD83E\uDEC2 Xizmat qo'shish",
+        "\uD83D\uDCB8 Qarzdorliklarni ko'rish",
+        "\uD83D\uDC40 Guruhlarni ko'rish");
 
-    public List<KeyboardButton> menuButtons = List.of(
-        new KeyboardButton("\uD83C\uDFE2 Yangi tashkilot"),
-        new KeyboardButton("\uD83D\uDC65 Guruh qo'shish"),
-        new KeyboardButton("\uD83E\uDEC2 Xizmat qo'shish"),
-        new KeyboardButton("\uD83D\uDCB8 Qarzdorliklarni ko'rish"),
-        new KeyboardButton("\uD83D\uDC40 Guruhlarni ko'rish")
-    );
+
+    public static List<String> getMenuButtons(){
+        return menuButtons;
+    }
 
     public static ReplyKeyboardMarkup createMenu(){
         KeyboardRow header = new KeyboardRow();

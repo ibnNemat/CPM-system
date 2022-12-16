@@ -10,7 +10,7 @@ import uz.devops.intern.domain.Authority;
 import uz.devops.intern.service.UserService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
-import uz.devops.intern.telegram.bot.service.CommandHalfImpl;
+import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 
 import java.util.List;
 import java.util.Set;
@@ -19,7 +19,7 @@ import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.sendMessage;
 
 @Service
 @RequiredArgsConstructor
-public class VerifyManager extends CommandHalfImpl {
+public class VerifyManager extends BotStrategyAbs {
 
     private final String STATE = "MANAGER_VERIFICATION";
     private final Integer STEP = 2;
@@ -30,7 +30,12 @@ public class VerifyManager extends CommandHalfImpl {
     public boolean execute(Update update, CustomerTelegramDTO manager) {
         log.info("Verifying user by phone number, Customer: {}", manager);
         if(!update.hasMessage()){
+            wrongValue(manager.getTelegramId(), "Iltimos ko'rsatilganlardan birini tanlang!");
             log.warn("No message in update! Update: {} ", update);
+            return false;
+        }
+        if(!update.getMessage().hasContact() && !update.getMessage().hasText()){
+            messageHasNotText(manager.getTelegramId(), update, true);
             return false;
         }
 
@@ -90,9 +95,7 @@ public class VerifyManager extends CommandHalfImpl {
             return "Phone number length is not equal to 12 or 13! Phone number: " + phoneNumber;
         }
 
-        if(!phoneNumber.startsWith("+998") && !phoneNumber.startsWith("998")){
-            return "Phone number doesn't start with \"+998\" or \"998\", Phone number: " + phoneNumber;
-        }
+        if(!phoneNumber.contains("+"))phoneNumber = "+" + phoneNumber;
 
         List<Integer> numbers = List.of(0,1,2,3,4,5,6,7,8,9);
         char[] elements = phoneNumber.toCharArray();

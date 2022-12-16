@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import uz.devops.intern.domain.TelegramGroup;
 import uz.devops.intern.repository.TelegramGroupRepository;
+import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.dto.TelegramGroupDTO;
 
 /**
@@ -72,4 +73,6 @@ public interface TelegramGroupService {
     TelegramGroupRepository getTelegramGroupRepository();
 
     TelegramGroupDTO getNotRegisteredTelegramGroups(Long managerTelegramId);
+
+    ResponseDTO<List<TelegramGroupDTO>> getTelegramGroupsByCustomer(Long managerTgId);
 }

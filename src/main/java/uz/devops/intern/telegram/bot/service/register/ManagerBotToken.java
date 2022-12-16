@@ -17,27 +17,32 @@ import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.dto.UserDTO;
 import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
-import uz.devops.intern.telegram.bot.service.CommandHalfImpl;
+import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
 import java.net.URI;
 
 @Service
-public class ManagerBotToken extends CommandHalfImpl {
+//@RequiredArgsConstructor
+public class ManagerBotToken extends BotStrategyAbs {
 
     private final String STATE = "MANAGER_NEW_BOT_TOKEN";
     private final Integer STEP = 3;
 
     @Value("${ngrok.url}")
-    private  String WEBHOOK_URL;
-    @Autowired
-    private BotTokenService botTokenService;
-    @Autowired
-    private UserService userService;
+    private String WEBHOOK_URL;
+
+    private final BotTokenService botTokenService;
+    private final UserService userService;
+
+    public ManagerBotToken(BotTokenService botTokenService, UserService userService) {
+        this.botTokenService = botTokenService;
+        this.userService = userService;
+    }
 
     @Override
     public boolean execute(Update update, CustomerTelegramDTO manager) {
-        if(update.hasMessage()){
+        if(!update.hasMessage() && !update.getMessage().hasText()){
             Long userId = update.hasCallbackQuery()? update.getCallbackQuery().getFrom().getId() : null;
             messageHasNotText(userId, update);
             log.warn("Manager didn't send text! Manager: {}", manager);

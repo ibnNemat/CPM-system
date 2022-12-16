@@ -15,9 +15,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 @Service
-public abstract class CommandHalfImpl implements Command{
+public abstract class BotStrategyAbs implements BotStrategy {
 
-    public final Logger log = LoggerFactory.getLogger(CommandHalfImpl.class);
+    public final Logger log = LoggerFactory.getLogger(BotStrategyAbs.class);
     public final String telegramAPI = "https://api.telegram.org/bot";
     @Autowired
     public AdminFeign adminFeign;
@@ -53,4 +53,6 @@ public abstract class CommandHalfImpl implements Command{
             throw new RuntimeException(e);
         }
     }
+
+
 }

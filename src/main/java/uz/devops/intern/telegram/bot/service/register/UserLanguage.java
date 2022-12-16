@@ -6,13 +6,13 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
-import uz.devops.intern.telegram.bot.service.CommandHalfImpl;
+import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
 
 import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.sendMessage;
 
 @Service
-public class UserLanguage extends CommandHalfImpl {
+public class UserLanguage extends BotStrategyAbs {
 
     private final String STATE = "MANAGER_LANGUAGE";
     private final Integer STEP = 1;

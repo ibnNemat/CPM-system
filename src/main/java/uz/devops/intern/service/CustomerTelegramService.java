@@ -17,7 +17,7 @@ import java.util.List;
  */
 public interface CustomerTelegramService {
 
-    CustomerTelegramDTO findByTelegramId(Long telegramId);
+    ResponseDTO<CustomerTelegramDTO> findByTelegramId(Long telegramId);
 
     CustomerTelegram findEntityByTelegramId(Long telegramId);
 
@@ -39,4 +39,6 @@ public interface CustomerTelegramService {
     SendMessage sendForbiddenMessage(Update update, URI telegramUri);
     SendMessage unknownCommand(User telegramUser, URI telegramURI);
     SendMessage commandWithCallbackQuery(CallbackQuery callbackQuery, URI uri);
+
+    ResponseDTO<List<CustomerTelegramDTO>> getCustomerTgByChatId(Long chatId);
 }

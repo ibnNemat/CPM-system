@@ -2,6 +2,7 @@ package uz.devops.intern.telegram.bot.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -10,12 +11,39 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import uz.devops.intern.domain.CustomerTelegram;
+import uz.devops.intern.service.dto.CustomerTelegramDTO;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.Set;
 
 import static uz.devops.intern.telegram.bot.utils.KeyboardUtil.sendMarkup;
 
 
 public class TelegramsUtil {
     private static final Logger log = LoggerFactory.getLogger(TelegramsUtil.class);
+    private static final String RESOURCE_BUNDLE_NAME = "messages";
+
+//    public static ResourceBundle getResourceBundleByCustomerTgDTO(CustomerTelegramDTO customerTelegramDTO){
+//        Locale locale = new Locale(customerTelegramDTO.getLanguageCode());
+//        LocaleContextHolder.setLocale(locale);
+//        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME);
+//    }
+
+    public static ResourceBundle getResourceBundleByCustomerTgDTO(CustomerTelegramDTO customerTelegramDTO){
+        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, new Locale(customerTelegramDTO.getLanguageCode()));
+    }
+
+    public static ResourceBundle getResourceBundleByUserLanguageCode(String languageCode){
+        log.info("Language code: {} ", languageCode);
+        languageCode = languageCode.equals("ru")? "ru_RU":
+            languageCode.equals("uz")? "uz_UZ": "en_US";
+
+        String[] texts = languageCode.split("_");
+        Locale locale = new Locale(texts[0], texts[1]);
+        LocaleContextHolder.setLocale(locale);
+        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME);
+    }
 
     public static SendMessage checkTelegramGroupIfExists(User telegramUser, Chat chat){
         if (telegramUser.getId().equals(chat.getId())){
@@ -38,6 +66,22 @@ public class TelegramsUtil {
             .languageCode(telegramUser.getLanguageCode())
             .step(1)
             .isActive(true);
+    }
+
+    public static CustomerTelegramDTO createCustomerTelegramDTO(User telegramUser, Long userId) {
+        return CustomerTelegramDTO.builder()
+            .id(userId)
+            .isBot(telegramUser.getIsBot())
+            .telegramId(telegramUser.getId())
+            .canJoinGroups(telegramUser.getCanJoinGroups())
+            .firstname(telegramUser.getFirstName())
+            .lastname(telegramUser.getFirstName())
+            .username(telegramUser.getUserName())
+            .languageCode(telegramUser.getLanguageCode())
+            .step(1)
+            .isActive(true)
+            .telegramGroups(Set.of())
+            .build();
     }
 
     /**

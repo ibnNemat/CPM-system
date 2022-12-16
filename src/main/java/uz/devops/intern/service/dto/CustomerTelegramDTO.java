@@ -1,5 +1,10 @@
 package uz.devops.intern.service.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
@@ -8,6 +13,10 @@ import java.util.Set;
 /**
  * A DTO for the {@link uz.devops.intern.domain.CustomerTelegram} entity.
  */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class CustomerTelegramDTO implements Serializable {
 

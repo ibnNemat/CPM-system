@@ -61,4 +61,5 @@ public interface BotTokenService {
     ResponseDTO<BotTokenDTO> findByChatId(Long chatId, Boolean newMethod);
 
     ResponseDTO<BotTokenDTO> findByToken(String token);
+
 }
