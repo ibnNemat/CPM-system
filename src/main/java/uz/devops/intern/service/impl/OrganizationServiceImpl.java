@@ -10,6 +10,7 @@ import uz.devops.intern.domain.Organization;
 import uz.devops.intern.repository.OrganizationRepository;
 import uz.devops.intern.service.OrganizationService;
 import uz.devops.intern.service.dto.OrganizationDTO;
+import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.mapper.OrganizationMapper;
 import uz.devops.intern.service.mapper.OrganizationsMapper;
 import uz.devops.intern.service.utils.ContextHolderUtil;
@@ -116,12 +117,21 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public OrganizationDTO getOrganizationByName(String name) {
-        if(name == null || name.trim().isEmpty())return null;
+    public ResponseDTO<OrganizationDTO> getOrganizationByName(String name) {
+        if(name == null || name.trim().isEmpty()){
+            return ResponseDTO.<OrganizationDTO>builder()
+                .success(false).message("Parameter \"Name\" is null or empty!").build();
+        }
 
         Optional<Organization> organizationOptional =
             organizationRepository.findByName(name);
-        return organizationOptional.map(organizationMapper::toDto).orElse(null);
+        if(organizationOptional.isEmpty()){
+            return ResponseDTO.<OrganizationDTO>builder()
+                .success(false).message("Data is not found!").build();
+        }
+        OrganizationDTO dto = organizationOptional.map(organizationMapper::toDto).get();
+        return ResponseDTO.<OrganizationDTO>builder()
+            .success(true).message("OK").responseData(dto).build();
     }
 
     @Override

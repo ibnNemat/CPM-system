@@ -10,6 +10,7 @@ import uz.devops.intern.command.invoker.InvokerBotCommand;
 import uz.devops.intern.feign.CustomerFeign;
 import uz.devops.intern.service.BotTokenService;
 import uz.devops.intern.service.dto.BotTokenDTO;
+import uz.devops.intern.telegram.bot.service.register.BotAddGroup;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,6 +27,8 @@ public class CustomerTelegramResource {
     private final BotTokenService botTokenService;
     private final InvokerBotCommand invokerBotCommand;
 
+    private final BotAddGroup botAddGroup;
+
     @PostMapping("/new-message/{botId}")
     public void sendMessage(@RequestBody Update update, @PathVariable String botId) throws URISyntaxException {
         log.info("[REST] Bot id: {} | Update: {}", botId, update);
@@ -38,7 +41,9 @@ public class CustomerTelegramResource {
             sendMessage = invokerBotCommand.getCallbackQueryCommand(update, new URI("https://api.telegram.org/bot" + botTokenDTO.getToken()));
         else if (update.hasMessage() && ifRequestFromBot(update) && botTokenDTO != null)
             sendMessage = invokerBotCommand.getMessageCommand(update, new URI("https://api.telegram.org/bot" + botTokenDTO.getToken()));
-
+        else if(update.hasMessage()){
+            botAddGroup.execute(update, botId);
+        }
         if (sendMessage.getText() != null)
             customerFeign.sendMessage(new URI("https://api.telegram.org/bot" + botTokenDTO.getToken()), sendMessage);
     }

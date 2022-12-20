@@ -1,5 +1,10 @@
 package uz.devops.intern.service.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
@@ -10,6 +15,10 @@ import javax.validation.constraints.*;
  * A DTO for the {@link uz.devops.intern.domain.Groups} entity.
  */
 @SuppressWarnings("common-java:DuplicatedBlocks")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class GroupsDTO implements Serializable {
 
     private Long id;

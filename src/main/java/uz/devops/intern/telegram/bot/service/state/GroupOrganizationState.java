@@ -13,8 +13,10 @@ import uz.devops.intern.domain.User;
 import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.service.*;
 import uz.devops.intern.service.dto.*;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.AdminKeyboards;
 import uz.devops.intern.telegram.bot.dto.EditMessageTextDTO;
+import uz.devops.intern.telegram.bot.keyboards.AdminMenuKeys;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 import uz.devops.intern.web.rest.utils.WebUtils;
 
@@ -34,6 +36,7 @@ public class GroupOrganizationState extends State<BotFSM>{
     private CustomerTelegramService customerTelegramService;
     private GroupsService groupsService;
     private AdminFeign adminFeign;
+    private AdminMenuKeys adminMenuKeys;
 
     public GroupOrganizationState(BotFSM context) {
         super(context, context.getAdminFeign());
@@ -43,11 +46,12 @@ public class GroupOrganizationState extends State<BotFSM>{
         this.customerTelegramService = context.getCustomerTelegramService();
         this.groupsService = context.getGroupsService();
         this.adminFeign = context.getAdminFeign();
+        this.adminMenuKeys = context.getAdminMenuKeys();
     }
 
     @Override
     boolean doThis(Update update, CustomerTelegramDTO manager) {
-        ResourceBundle bundle = ResourceBundle.getBundle(manager.getLanguageCode());
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
         if(!update.hasCallbackQuery()){
             wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.message"));
             log.warn("Update: {}", update);
@@ -92,12 +96,13 @@ public class GroupOrganizationState extends State<BotFSM>{
         adminFeign.editMessageText(dto);
 
         String newMessage = bundle.getString("bot.admin.main.menu");
-        ReplyKeyboardMarkup markup = AdminKeyboards.createMenu();
+        ReplyKeyboardMarkup markup = adminMenuKeys.createMenu(manager.getLanguageCode());
         SendMessage sendMessage =
             TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage, markup);
         adminFeign.sendMessage(sendMessage);
         context.changeState(new GroupStates(context));
         manager.setStep(4);
+        customerTelegramService.update(manager);
         return true;
     }
 //

@@ -21,11 +21,11 @@ logging:
     uz.devops.intern: INFO
 
 telegram:
-  username: "@NTfoundBot"
-  token: 5156167848:AAHnrLe0T8FnbF8vK-3LiR8bAjUrGxnTzR4
+  username: "@UzExpo_centre_bot"
+  token: 5225793240:AAEDojpbQM780zRMWIvmJXCIGeEBXWoY6RM
 
 ngrok:
-  url: https://0a47-83-221-180-161.in.ngrok.io
+  url: https://8b8d-188-113-228-80.in.ngrok.io
 
 spring:
   devtools:
@@ -39,7 +39,7 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://localhost:5432/cpm_system
+    url: jdbc:postgresql://localhost:5432/cpm_bot
     username: postgres
     password:
     hikari:
@@ -48,7 +48,7 @@ spring:
   jpa:
     database-platform: tech.jhipster.domain.util.FixedPostgreSQL10Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
   liquibase:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
     contexts: dev, faker
@@ -69,7 +69,7 @@ spring:
     cache: false
 
 server:
-  port: 80
+  port: 8443
 
 # ===================================================================
 # JHipster specific properties

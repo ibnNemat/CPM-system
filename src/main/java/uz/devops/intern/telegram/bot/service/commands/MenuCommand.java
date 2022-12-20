@@ -20,13 +20,11 @@ public class MenuCommand extends BotCommandAbs {
 
     private final String COMMAND = "/menu";
 
-    private final CustomerTelegramService customerTelegramService;
     private final AdminMenuKeys adminMenuKeys;
 
 
-    protected MenuCommand(AdminFeign adminFeign, CustomerTelegramService customerTelegramService, AdminMenuKeys adminMenuKeys) {
+    protected MenuCommand(AdminFeign adminFeign, AdminMenuKeys adminMenuKeys) {
         super(adminFeign);
-        this.customerTelegramService = customerTelegramService;
         this.adminMenuKeys = adminMenuKeys;
     }
 
@@ -52,7 +50,7 @@ public class MenuCommand extends BotCommandAbs {
             return false;
         }
 
-        manager.setStep(4);
+        manager.setStep(7);
         customerTelegramService.update(manager);
 
         ReplyKeyboardMarkup markup = adminMenuKeys.createMenu(manager.getLanguageCode());

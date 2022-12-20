@@ -1,6 +1,5 @@
 package uz.devops.intern.telegram.bot.service.state;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -12,10 +11,11 @@ import uz.devops.intern.redis.ServicesRedisDTO;
 import uz.devops.intern.redis.ServicesRedisRepository;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
-import uz.devops.intern.telegram.bot.AdminKeyboards;
+import uz.devops.intern.telegram.bot.keyboards.ServicePeriodsKeys;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 @Service
@@ -25,11 +25,15 @@ public class ServicePeriodTypeState extends State<ServiceFSM>{
     private ServicesRedisRepository servicesRedisRepository;
 //    @Autowired
     private AdminFeign adminFeign;
+    private ServicePeriodsKeys servicePeriodsKeys;
+    private final ServicePeriodCountState servicePeriodCountState;
 
-    public ServicePeriodTypeState(ServiceFSM context) {
+    public ServicePeriodTypeState(ServiceFSM context, ServicePeriodCountState servicePeriodCountState) {
         super(context, context.getAdminFeign());
         this.servicesRedisRepository = context.getServicesRedisRepository();
         this.adminFeign = context.getAdminFeign();
+        this.servicePeriodsKeys = context.getServicePeriodsKeys();
+        this.servicePeriodCountState = servicePeriodCountState;
     }
 
     @Override
@@ -42,7 +46,7 @@ public class ServicePeriodTypeState extends State<ServiceFSM>{
         String messageText = message.getText();
         Long managerId = message.getFrom().getId();
 
-        List<String> periods = AdminKeyboards.getPeriods();
+        List<String> periods = servicePeriodsKeys.getTextsOfButtons(manager.getLanguageCode());
         boolean isPeriodExists = false;
         for(String p: periods){
             isPeriodExists = p.equals(messageText);
@@ -57,24 +61,27 @@ public class ServicePeriodTypeState extends State<ServiceFSM>{
         }
 
         ServicesRedisDTO redisDTO = servicesRedisRepository.findById(managerId).get();
-        redisDTO.getServicesDTO().setPeriodType(getPeriodType(messageText));
+        redisDTO.getServicesDTO().setPeriodType(getPeriodType(bundle, messageText));
         servicesRedisRepository.save(redisDTO);
 
         String newMessage = bundle.getString("bot.admin.send.service.how.long");
         SendMessage sendMessage =
             TelegramsUtil.sendMessage(managerId, newMessage, new ReplyKeyboardRemove(true));
         adminFeign.sendMessage(sendMessage);
-        context.changeState(new ServicePeriodCountState(context));
+        context.changeState(servicePeriodCountState);
         return true;
     }
 
-    private PeriodType getPeriodType(String period){
-        if(period.equals("Yillik")) return PeriodType.YEAR;
-        if(period.equals("Oylik")) return PeriodType.MONTH;
-        if(period.equals("Haftalik")) return PeriodType.WEEK;
-        if(period.equals("Kunlik")) return PeriodType.DAY;
-        if(period.equals("Bir martalik")) return PeriodType.ONETIME;
-        return PeriodType.MONTH;
+    private PeriodType getPeriodType(ResourceBundle bundle, String period){
+        Map<String, PeriodType> periodsEnum = Map.of(
+            bundle.getString("bot.admin.keyboards.service.period.year"), PeriodType.YEAR,
+            bundle.getString("bot.admin.keyboards.service.period.month"), PeriodType.MONTH,
+            bundle.getString("bot.admin.keyboards.service.period.week"), PeriodType.WEEK,
+            bundle.getString("bot.admin.keyboards.service.period.day"), PeriodType.DAY,
+            bundle.getString("bot.admin.keyboards.service.period.one.time"), PeriodType.ONETIME
+        );
+
+        return periodsEnum.getOrDefault(period, PeriodType.MONTH);
     }
 
 }

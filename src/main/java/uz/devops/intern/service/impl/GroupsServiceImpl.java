@@ -10,6 +10,7 @@ import uz.devops.intern.domain.Groups;
 import uz.devops.intern.repository.GroupsRepository;
 import uz.devops.intern.service.GroupsService;
 import uz.devops.intern.service.dto.GroupsDTO;
+import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.mapper.GroupMapper;
 import uz.devops.intern.service.mapper.GroupsMapper;
 import uz.devops.intern.service.utils.ContextHolderUtil;
@@ -44,7 +45,6 @@ public class GroupsServiceImpl implements GroupsService {
             return null;
         }
         List<Groups> groupsList = groupsRepository.findAllByGroupOwnerName(ownerName);
-
         return groupsList.stream()
             .map(GroupMapper::toDto)
             .toList();
@@ -62,6 +62,24 @@ public class GroupsServiceImpl implements GroupsService {
         Optional<Groups> groupsOptional = groupsRepository.findByTelegramId(telegramId);
 
         return groupsOptional.map(groupsMapper::toDto).orElse(null);
+    }
+
+    @Override
+    public ResponseDTO<GroupsDTO> findByName(String name) {
+        if(name == null || name.trim().isEmpty()){
+            return ResponseDTO.<GroupsDTO>builder()
+                .success(false).message("Parameter \"Name\" is null or empty!").build();
+        }
+
+        Optional<Groups> groupsOptional = groupsRepository.findByName(name);
+        if(groupsOptional.isEmpty()){
+            return ResponseDTO.<GroupsDTO>builder()
+                .success(false).message("Data is not found!").build();
+        }
+
+        GroupsDTO group = groupsOptional.map(groupsMapper::toDto).get();
+        return ResponseDTO.<GroupsDTO>builder()
+            .success(true).message("OK").responseData(group).build();
     }
 
     @Override

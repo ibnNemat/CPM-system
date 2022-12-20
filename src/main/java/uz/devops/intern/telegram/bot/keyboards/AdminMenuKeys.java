@@ -8,21 +8,28 @@ import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.ResourceBundle;
 
 @Component
 public class AdminMenuKeys {
 
+    private final String KEY = "bot.admin.keyboards.menu.";
+
     public List<String> getTextsOfButtons(String languageCode){
         ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(languageCode);
-        return List.of(
-            bundle.getString("bot.admin.keyboards.menu.new.organization"),
-            bundle.getString("bot.admin.keyboards.menu.add.group"),
-            bundle.getString("bot.admin.keyboards.menu.add.services"),
-            bundle.getString("bot.admin.keyboards.menu.show.payments"),
-            bundle.getString("bot.admin.keyboards.menu.show.groups")
-        );
+
+        List<String> menuTexts = new ArrayList<>();
+        Enumeration<String> keysEnumeration = bundle.getKeys();
+        while (keysEnumeration.hasMoreElements()){
+            String key = keysEnumeration.nextElement();
+            if(!key.contains(KEY))continue;
+            menuTexts.add(
+                bundle.getString(key)
+            );
+        }
+        return menuTexts;
     }
 
     public ReplyKeyboardMarkup createMenu(String languageCode){
@@ -43,7 +50,7 @@ public class AdminMenuKeys {
 
         if(rows.size() > 0){ rows.add(row); }
         menuMarkup.setKeyboard(rows);
-        return null;
+        return menuMarkup;
     }
 
 }

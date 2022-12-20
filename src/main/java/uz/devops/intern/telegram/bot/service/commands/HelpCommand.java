@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import uz.devops.intern.feign.AdminFeign;
-import uz.devops.intern.service.CustomerTelegramService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
@@ -17,10 +16,9 @@ import java.util.ResourceBundle;
 public class HelpCommand extends BotCommandAbs {
 
     private final String COMMAND = "/help";
-    private final CustomerTelegramService customerTelegramService;
-    protected HelpCommand(AdminFeign adminFeign, CustomerTelegramService customerTelegramService) {
+
+    protected HelpCommand(AdminFeign adminFeign) {
         super(adminFeign);
-        this.customerTelegramService = customerTelegramService;
     }
 
     @Override

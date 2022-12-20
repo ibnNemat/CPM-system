@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import uz.devops.intern.domain.User;
 import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.service.CustomerTelegramService;
@@ -22,12 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-
 @Service
 public class AllGroups extends ManagerMenuAbs{
     private final String SUPPORTED_TEXT = "\uD83D\uDC40 Guruhlarni ko'rish";
 
     private final List<String> SUPPORTED_TEXTS = new ArrayList<>();
+
+    private final Integer NEXT_STEP = 9;
 
     @Autowired
     private GroupsService groupsService;
@@ -44,7 +48,7 @@ public class AllGroups extends ManagerMenuAbs{
             String languageCode = languageMap.get(lang);
             ResourceBundle bundle =
                 ResourceBundleUtils.getResourceBundleByUserLanguageCode(languageCode);
-            SUPPORTED_TEXTS.add(bundle.getString("bot.admin.keyboards.menu.add.group"));
+            SUPPORTED_TEXTS.add(bundle.getString("bot.admin.keyboards.menu.show.groups"));
         }
     }
 
@@ -67,23 +71,46 @@ public class AllGroups extends ManagerMenuAbs{
             log.warn("Manager has not any groups! Manager: {}", manager);
             return false;
         }
-
-        StringBuilder newMessage = new StringBuilder();
-        for(GroupsDTO group: groups){
-            newMessage.append(String.format(
-                "%s <b>%s\n</b>" +
-                    "%s <b>%s\n</b>" +
-                    "%s <b>%d</b>\n\n",
-                bundle.getString("bot.admin.group.name"),
-                bundle.getString("bot.admin.organization.name"),
-                bundle.getString("bot.admin.customers.count"),
-                group.getName(), group.getOrganization().getName(), group.getCustomers().size()
-            ));
-        }
-
-        SendMessage sendMessage = TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage.toString());
-        adminFeign.sendMessage(sendMessage);
+        removeMenuButtons(manager, bundle, update.getMessage().getText());
+        basicFunction(manager, bundle, groups);
         return true;
+    }
+
+    private boolean removeMenuButtons(CustomerTelegramDTO manager, ResourceBundle bundle, String messageText){
+        String newMessage = bundle.getString("bot.admin.send.all.groups.text");
+        ReplyKeyboardRemove removeMarkup = new ReplyKeyboardRemove(true);
+        SendMessage sendMessage = TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage, removeMarkup);
+        adminFeign.sendMessage(sendMessage);
+        log.info("User wants to see all groups. Menu buttons are removed! Manager id: {} | Message: {}",
+            manager.getTelegramId(), messageText);
+        return true;
+    }
+
+    public void basicFunction(CustomerTelegramDTO manager, ResourceBundle bundle, List<GroupsDTO> groups){
+        String newMessage = bundle.getString("bot.admin.send.choose.one.from.your.groups");
+        InlineKeyboardMarkup markup = createGroupsButton(groups, bundle);
+        SendMessage sendMessage = TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage, markup);
+        adminFeign.sendMessage(sendMessage);
+        log.info("List of groups is send as message, Manager id: {}", manager.getTelegramId());
+        manager.setStep(NEXT_STEP);
+        customerTelegramService.update(manager);
+    }
+
+    private InlineKeyboardMarkup createGroupsButton(List<GroupsDTO> groups, ResourceBundle bundle){
+        String buttonForBack = bundle.getString("bot.admin.keyboard.for.back");
+        String callbackData = "BACK";
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        for(GroupsDTO group: groups){
+            rows.add(
+                List.of(
+                    InlineKeyboardButton.builder().text(group.getName()).callbackData(String.valueOf(group.getId())).build()
+                )
+            );
+        }
+        rows.add(
+            List.of(InlineKeyboardButton.builder().text(buttonForBack).callbackData(callbackData).build())
+        );
+        return new InlineKeyboardMarkup(rows);
     }
 
     @Override

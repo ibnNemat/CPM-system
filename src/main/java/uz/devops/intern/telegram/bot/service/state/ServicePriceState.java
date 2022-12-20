@@ -19,7 +19,8 @@ public class ServicePriceState extends State<ServiceFSM>{
 
 //    @Autowired
     private ServicesRedisRepository servicesRedisRepository;
-//    @Autowired
+    @Autowired
+    private ServiceStartedTimeState serviceStartedTimeState;
     private AdminFeign adminFeign;
     public ServicePriceState(ServiceFSM context) {
         super(context, context.getAdminFeign());
@@ -68,7 +69,7 @@ public class ServicePriceState extends State<ServiceFSM>{
         ServicesRedisDTO redisDTO = servicesRedisRepository.findById(managerId).get();
         redisDTO.getServicesDTO().setPrice(Double.parseDouble(String.valueOf(integerPrice)));
         servicesRedisRepository.save(redisDTO);
-        context.changeState(new ServiceStartedTimeState(context));
+        context.changeState(serviceStartedTimeState);
         return true;
     }
 }

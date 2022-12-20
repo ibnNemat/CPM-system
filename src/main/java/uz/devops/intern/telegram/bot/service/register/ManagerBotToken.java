@@ -30,6 +30,7 @@ public class ManagerBotToken extends BotStrategyAbs {
 
     private final String STATE = "MANAGER_NEW_BOT_TOKEN";
     private final Integer STEP = 3;
+    private final Integer NEXT_STEP = 4;
 
     @Value("${ngrok.url}")
     private String WEBHOOK_URL;
@@ -44,8 +45,8 @@ public class ManagerBotToken extends BotStrategyAbs {
 
     @Override
     public boolean execute(Update update, CustomerTelegramDTO manager) {
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
         if(!update.hasMessage() && !update.getMessage().hasText()){
-            Long userId = update.hasCallbackQuery()? update.getCallbackQuery().getFrom().getId() : null;
             messageHasNotText(manager.getTelegramId(), update);
             log.warn("Manager didn't send text! Manager: {}", manager);
             return false;
@@ -54,7 +55,6 @@ public class ManagerBotToken extends BotStrategyAbs {
         Message message = update.getMessage();
         Long userId = message.getFrom().getId();
         String newBotToken = message.getText();
-        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
 
         ResponseDTO<BotTokenDTO> responseDTO = botTokenService.findByToken(newBotToken);
         if(responseDTO.getSuccess() && responseDTO.getMessage().equals("OK")){
@@ -66,6 +66,8 @@ public class ManagerBotToken extends BotStrategyAbs {
 
         URI uri = createCustomerURI(newBotToken);
         if(uri == null){
+            wrongValue(userId, bundle.getString("bot.admin.error.bot.token.is.invalid"));
+            log.warn("Bot token is invalid! User id: {} | Token: {}", manager.getTelegramId(), newBotToken);
             return false;
         }
 
@@ -73,6 +75,7 @@ public class ManagerBotToken extends BotStrategyAbs {
         try{
             telegramResponse = customerFeign.getMe(uri);
         } catch (FeignException e){
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.bot.token.is.invalid"));
             log.error("Error while sending request to server, Bot token: {} | API: {} | Exc. message: {} | Exc. cause: {}",
                 newBotToken, telegramAPI + newBotToken + "/getMe", e.getMessage(), e.getCause());
             return false;
@@ -97,10 +100,16 @@ public class ManagerBotToken extends BotStrategyAbs {
         }
 
         saveBotEntity(bot, manager.getPhoneNumber(), newBotToken);
-        String newMessage = bundle.getString("bot.admin.bot.successfully.saved");
-        SendMessage sendMessage = TelegramsUtil.sendMessage(userId, newMessage);
-        adminFeign.sendMessage(sendMessage);
+        basicFunction(manager, bundle);
         return true;
+    }
+
+    public void basicFunction(CustomerTelegramDTO manager, ResourceBundle bundle){
+        String newMessage = bundle.getString("bot.admin.bot.successfully.saved");
+        newMessage = newMessage + "\n" + bundle.getString("bot.admin.send.organization.name");
+        SendMessage sendMessage = TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage);
+        adminFeign.sendMessage(sendMessage);
+        manager.setStep(NEXT_STEP);
     }
 
     @Override
@@ -116,7 +125,7 @@ public class ManagerBotToken extends BotStrategyAbs {
     private WebhookResponseDTO setWebhookToNewBot(String token, Long botId){
         URI uri = createCustomerURI(token);
         log.info("URI: {}", uri);
-        String webhookAPI = WEBHOOK_URL + "/api/new-message" + botId;
+        String webhookAPI = WEBHOOK_URL + "/api/new-message/" + botId;
         WebhookResponseDTO webhookResponseDTO = customerFeign.setWebhook(uri, webhookAPI);
         log.info("Response from telegram server: {}", webhookResponseDTO);
         return webhookResponseDTO;
@@ -136,9 +145,13 @@ public class ManagerBotToken extends BotStrategyAbs {
     }
 
     private void saveBotEntity(User bot, String phoneNumber, String newBotToken){
-        UserDTO userDTO = userService.getUserByCreatedBy(phoneNumber);
+        ResponseDTO<uz.devops.intern.domain.User> response = userService.getUserByCreatedBy(phoneNumber, true);
+        UserDTO dto = new UserDTO();
+        dto.setId(response.getResponseData().getId());
+        dto.setLogin(response.getResponseData().getLogin());
+
         BotTokenDTO botTokenDTO = BotTokenDTO.builder()
-            .username(bot.getUserName()).telegramId(bot.getId()).token(newBotToken).createdBy(userDTO).build();
+            .username(bot.getUserName()).telegramId(bot.getId()).token(newBotToken).createdBy(dto).build();
         botTokenService.save(botTokenDTO);
     }
 

@@ -1,5 +1,10 @@
 package uz.devops.intern.service.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
@@ -8,6 +13,10 @@ import javax.validation.constraints.*;
 /**
  * A DTO for the {@link uz.devops.intern.domain.Organization} entity.
  */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class OrganizationDTO implements Serializable {
 

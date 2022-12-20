@@ -1,5 +1,6 @@
 package uz.devops.intern.telegram.bot.service.state;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -28,6 +29,9 @@ public class GroupStates extends State<BotFSM>{
     private final UserService userService;
     private final OrganizationService organizationService;
     private final AdminFeign adminFeign;
+
+    @Autowired
+    private GroupOrganizationState groupOrganizationState;
 
     public GroupStates(BotFSM context) {
         super(context, context.getAdminFeign());

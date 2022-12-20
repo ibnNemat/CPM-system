@@ -1,6 +1,8 @@
 package uz.devops.intern.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.ToString;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,6 +14,7 @@ import javax.validation.constraints.*;
  */
 @Entity
 @Table(name = "groups")
+@ToString
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Groups implements Serializable {
 

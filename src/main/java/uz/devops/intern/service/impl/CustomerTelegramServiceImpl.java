@@ -132,9 +132,8 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
                 return sendMessageIfNotExistsBotGroup(telegramUser);
             }
 
-            Optional<CustomerTelegram> customerTelegramOptional = customerTelegramRepository.findByTelegramId(telegramUser.getId());
-            if (customerTelegramOptional.isPresent()) startCommand(telegramUser, customerTelegramOptional.get());
-            else startCommand(telegramUser);
+            SendMessage sendMessage = new SendMessage();
+            startCommand(telegramUser, sendMessage);
         } catch (NumberFormatException numberFormatException) {
             log.error("Error parsing chatId to Long when bot started");
             return sendMessage(telegramUser.getId(), "❌ " + resourceBundle.getString("bot.message.invalid.chat.number"));
@@ -200,16 +199,24 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     }
 
     @Override
-    public CustomerTelegramDTO findByTelegramId(Long telegramId) {
-        if (telegramId == null) {
-            return null;
+    public ResponseDTO<CustomerTelegramDTO> findByTelegramId(Long telegramId) {
+        if(telegramId == null){
+            return ResponseDTO.<CustomerTelegramDTO>builder()
+                .success(false).message("Parameter \"Telegram id\" is null!").build();
         }
-
         Optional<CustomerTelegram> customerTelegramOptional =
             customerTelegramRepository.findByTelegramId(telegramId);
 
-        return customerTelegramOptional.map(customerTelegramMapper::toDto).orElse(null);
+        if(customerTelegramOptional.isEmpty()){
+            return ResponseDTO.<CustomerTelegramDTO>builder()
+                .success(false).message("Data is not found!").build();
+        }
+        CustomerTelegramDTO  dto = customerTelegramOptional.map(customerTelegramMapper::toDto).orElse(null);
+        return ResponseDTO.<CustomerTelegramDTO>builder()
+            .success(true).message("OK").responseData(dto).build();
     }
+
+
 
     @Override
     public CustomerTelegram findEntityByTelegramId(Long telegramId) {
@@ -271,17 +278,39 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
 
     @Override
     public ResponseDTO<CustomerTelegramDTO> getCustomerByTelegramId(Long telegramId) {
-        return null;
+        log.info("request to get customerTelegram by telegramId: {}", telegramId);
+        Optional<CustomerTelegram> customerTelegramOptional = customerTelegramRepository.findByTelegramId(telegramId);
+        if (customerTelegramOptional.isEmpty()) return ResponseDTO.<CustomerTelegramDTO>builder().code(0).message(ResponseMessage.NOT_FOUND).build();
+        return ResponseDTO.<CustomerTelegramDTO>builder()
+            .code(0)
+            .message(ResponseMessage.OK)
+            .success(true)
+            .responseData(customerTelegramMapper.toDto(customerTelegramOptional.get()))
+            .build();
     }
-
     @Override
     public ResponseDTO<CustomerTelegramDTO> update(CustomerTelegramDTO dto) {
-        return null;
+        log.info("request to change customerTelegram with param CustomerTelegramDTO: {}", dto);
+        CustomerTelegram customerTelegram = customerTelegramMapper.toEntity(dto);
+        customerTelegram = customerTelegramRepository.save(customerTelegram);
+        return ResponseDTO.<CustomerTelegramDTO>builder()
+            .code(0)
+            .message(ResponseMessage.OK)
+            .success(true)
+            .responseData(customerTelegramMapper.toDto(customerTelegram))
+            .build();
     }
-
     @Override
     public ResponseDTO<CustomerTelegramDTO> findByBotTgId(Long botId) {
-        return null;
+        log.info("request to get customerTelegram by telegram botId: {}", botId);
+        Optional<CustomerTelegram> customerTelegramOptional = customerTelegramRepository.findByBot(botId);
+        if (customerTelegramOptional.isEmpty()) return ResponseDTO.<CustomerTelegramDTO>builder().code(0).message(ResponseMessage.NOT_FOUND).build();
+        return ResponseDTO.<CustomerTelegramDTO>builder()
+            .code(0)
+            .message(ResponseMessage.OK)
+            .success(true)
+            .responseData(customerTelegramMapper.toDto(customerTelegramOptional.get()))
+            .build();
     }
 
     @Override
@@ -319,6 +348,26 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             default:
                 return sendMessage(telegramUser.getId(), "❌ " + resourceBundle.getString("bot.message.unknown.command"));
         }
+    }
+
+    @Override
+    public ResponseDTO<List<CustomerTelegramDTO>> getCustomerTgByChatId(Long chatId) {
+        if(chatId == null){
+            return ResponseDTO.<List<CustomerTelegramDTO>>builder()
+                .success(false).message("Parameter \"Chat id\" is null!").build();
+        }
+
+        List<CustomerTelegramDTO> customerTelegrams =
+            customerTelegramRepository.getCustomersByChatId(chatId)
+                .stream().map(customerTelegramMapper::toDto).toList();
+
+        if(customerTelegrams.isEmpty()){
+            return ResponseDTO.<List<CustomerTelegramDTO>>builder()
+                .success(false).message("List is empty!").responseData(customerTelegrams).build();
+        }
+
+        return ResponseDTO.<List<CustomerTelegramDTO>>builder()
+            .success(true).message("OK").responseData(customerTelegrams).build();
     }
 
     private SendMessage changeCustomerProfile(User telegramUser, CustomerTelegram customerTelegram, String dataWithChange) {

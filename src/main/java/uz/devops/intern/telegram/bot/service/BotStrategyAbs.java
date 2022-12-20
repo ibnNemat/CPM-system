@@ -54,7 +54,7 @@ public abstract class BotStrategyAbs implements BotStrategy {
             return new URI(telegramAPI + token);
         } catch (URISyntaxException e) {
             log.error("{} | {}", e.getMessage(), e.getCause());
-            throw new RuntimeException(e);
+            return null;
         }
     }
 

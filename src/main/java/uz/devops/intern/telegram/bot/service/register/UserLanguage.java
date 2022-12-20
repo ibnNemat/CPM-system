@@ -41,6 +41,7 @@ public class UserLanguage extends BotStrategyAbs {
         }
 
         String languageCode = KeyboardUtil.getLanguages().get(messageText);
+        bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(languageCode);
         manager.setLanguageCode(languageCode);
         manager.setStep(2);
 

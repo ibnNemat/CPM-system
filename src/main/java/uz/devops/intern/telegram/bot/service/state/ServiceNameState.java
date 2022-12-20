@@ -27,6 +27,8 @@ public class ServiceNameState extends State<ServiceFSM> {
 
     //    @Autowired
     private ServicesRedisRepository servicesRedisRepository;
+    @Autowired
+    private ServicePriceState servicePriceState;
 
     public ServiceNameState(ServiceFSM context) {
         super(context, context.getAdminFeign());
@@ -54,7 +56,7 @@ public class ServiceNameState extends State<ServiceFSM> {
 
         ServicesRedisDTO redisDTO = new ServicesRedisDTO(managerId, dto);
         servicesRedisRepository.save(redisDTO);
-        context.changeState(new ServicePriceState(context));
+        context.changeState(servicePriceState);
         return true;
     }
 

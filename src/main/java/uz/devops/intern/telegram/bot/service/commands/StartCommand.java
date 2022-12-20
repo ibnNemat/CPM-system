@@ -21,17 +21,15 @@ public class StartCommand extends BotCommandAbs {
 
     private final String COMMAND = "/start";
 
-    private final CustomerTelegramService customerTelegramService;
+    private final Integer SUPPORTED_STEP = 1;
 
-    protected StartCommand(AdminFeign adminFeign, CustomerTelegramService customerTelegramService) {
+    protected StartCommand(AdminFeign adminFeign) {
         super(adminFeign);
-        this.customerTelegramService = customerTelegramService;
     }
 
     @Override
     public boolean executeCommand(Update update, Long userId) {
         if(!update.hasMessage() || !update.getMessage().hasText()){
-//            wrongValue(userId, "");
             log.warn("User didn't send message");
             return false;
         }
@@ -43,8 +41,6 @@ public class StartCommand extends BotCommandAbs {
             customerTelegramService.findByTelegramId(message.getFrom().getId());
 
         if(response.getSuccess() && response.getResponseData() != null) {
-            ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByCustomerTgDTO(response.getResponseData());
-            wrongValue(update.getMessage().getFrom().getId(), bundle.getString("bot.admin.user.is.already.exists"));
             return false;
         }
         startProcess(message, null);
@@ -53,13 +49,16 @@ public class StartCommand extends BotCommandAbs {
 
     void startProcess(Message message, Long userId){
         ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode("uz");
-        String newMessage = bundle.getString("bot.message.choice.language");
+        String newMessage = bundle.getString("bot.admin.send.greeting.message") + "\n" +
+            bundle.getString("bot.message.choice.language");
 
         bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode("ru");
-        newMessage = newMessage + "\n\n" + bundle.getString("bot.message.choice.language");
+        newMessage = newMessage + "\n" + bundle.getString("bot.admin.send.greeting.message") + "\n"
+            + bundle.getString("bot.message.choice.language");
 
         bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode("en");
-        newMessage = newMessage + "\n\n" + bundle.getString("bot.message.choice.language");
+        newMessage = newMessage + "\n" + bundle.getString("bot.admin.send.greeting.message") + "\n" +
+            bundle.getString("bot.message.choice.language");
 
         ReplyKeyboardMarkup markup = KeyboardUtil.language();
         SendMessage sendMessage = TelegramsUtil.sendMessage(message.getFrom().getId(), newMessage, markup);
@@ -73,5 +72,10 @@ public class StartCommand extends BotCommandAbs {
     @Override
     public String getCommand() {
         return COMMAND;
+    }
+
+    @Override
+    public Integer getSupportedStep(){
+        return SUPPORTED_STEP;
     }
 }

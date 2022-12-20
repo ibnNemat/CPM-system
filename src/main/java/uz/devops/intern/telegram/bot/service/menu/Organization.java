@@ -19,7 +19,8 @@ import java.util.ResourceBundle;
 
 import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.sendMessage;
 
-@Service
+//@Service
+@Deprecated
 public class Organization extends ManagerMenuAbs{
     private final String SUPPORTED_TEXT = "\uD83C\uDFE2 Yangi tashkilot";
 
@@ -37,14 +38,14 @@ public class Organization extends ManagerMenuAbs{
             String languageCode = languageMap.get(lang);
             ResourceBundle bundle =
                 ResourceBundleUtils.getResourceBundleByUserLanguageCode(languageCode);
-            SUPPORTED_TEXTS.add(bundle.getString("bot.admin.keyboards.menu.add.group"));
+            SUPPORTED_TEXTS.add(bundle.getString("bot.admin.keyboards.menu.new.organization"));
         }
     }
 
 
     public boolean todo(Update update, CustomerTelegramDTO manager){
         ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
-        String newMessage = bundle.getString("bot.admin.send.organization.name");
+        String newMessage = bundle.getString("bot.admin.send.organization.name.second");
         SendMessage sendMessage = sendMessage(manager.getTelegramId(), newMessage);
         adminFeign.sendMessage(sendMessage);
         log.info("Admin is creating new organization, Manager id: {} | Message text: {} | Update: {}",

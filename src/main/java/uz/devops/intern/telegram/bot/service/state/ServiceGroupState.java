@@ -1,6 +1,5 @@
 package uz.devops.intern.telegram.bot.service.state;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -17,8 +16,8 @@ import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.GroupsDTO;
 import uz.devops.intern.service.dto.ServicesDTO;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
-import uz.devops.intern.telegram.bot.AdminKeyboards;
 import uz.devops.intern.telegram.bot.dto.EditMessageDTO;
+import uz.devops.intern.telegram.bot.keyboards.AdminMenuKeys;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
 import java.util.List;
@@ -27,15 +26,11 @@ import java.util.Set;
 
 @Service
 public class ServiceGroupState extends State<ServiceFSM>{
-
-//    @Autowired
     private ServicesRedisRepository servicesRedisRepository;
-//    @Autowired
     private ServicesService servicesService;
-//    @Autowired
     private GroupsService groupsService;
-//    @Autowired
     private AdminFeign adminFeign;
+    private AdminMenuKeys adminMenuKeys;
 
     public ServiceGroupState(ServiceFSM context) {
         super(context, context.getAdminFeign());
@@ -43,6 +38,7 @@ public class ServiceGroupState extends State<ServiceFSM>{
         this.servicesService = context.getServicesService();
         this.adminFeign = context.getAdminFeign();
         this.groupsService = context.getGroupsService();
+        this.adminMenuKeys = context.getAdminMenuKeys();
     }
 
     @Override
@@ -61,7 +57,7 @@ public class ServiceGroupState extends State<ServiceFSM>{
 
             buttons.forEach(l -> l.forEach(k -> {
                 if (k.getCallbackData().equals(callbackData)) {
-                    k.setText(k.getText() + ": ✅");
+                    k.setText(k.getText() + " ✅");
 //                    k.setCallbackData(k.getCallbackData() + ": true");
                 }
             }));
@@ -73,11 +69,11 @@ public class ServiceGroupState extends State<ServiceFSM>{
             groups.add(group);
             servicesRedisRepository.save(redisDTO);
 
-            EditMessageDTO editMessageDTO = new EditMessageDTO();
-            editMessageDTO.setReplyMarkup(new InlineKeyboardMarkup(buttons));
-            editMessageDTO.setInlineMessageId(callback.getInlineMessageId());
-            editMessageDTO.setMessageId(callback.getMessage().getMessageId());
-            editMessageDTO.setChatId(String.valueOf(callback.getFrom().getId()));
+            EditMessageDTO editMessageDTO = new EditMessageDTO(
+                String.valueOf(callback.getFrom().getId()),
+                callback.getMessage().getMessageId(),
+                callback.getInlineMessageId(),
+                new InlineKeyboardMarkup());
 
             adminFeign.editMessageReplyMarkup(editMessageDTO);
 
@@ -85,11 +81,13 @@ public class ServiceGroupState extends State<ServiceFSM>{
         }else{
             ServicesRedisDTO redisDTO = servicesRedisRepository.findById(managerId).get();
             ServicesDTO servicesDTO = redisDTO.getServicesDTO();
-
+            if(servicesDTO.getGroups().isEmpty()){
+                return false;
+            }
             servicesService.save(servicesDTO);
 
             String newMessage = bundle.getString("bot.admin.main.menu");
-            ReplyKeyboardMarkup markup = AdminKeyboards.createMenu();
+            ReplyKeyboardMarkup markup = adminMenuKeys.createMenu(manager.getLanguageCode());
             SendMessage sendMessage = TelegramsUtil.sendMessage(managerId, newMessage, markup);
             adminFeign.sendMessage(sendMessage);
             context.changeState(new ServiceNameState(context));

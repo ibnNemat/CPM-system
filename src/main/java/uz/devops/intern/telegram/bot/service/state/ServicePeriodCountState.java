@@ -11,13 +11,14 @@ import uz.devops.intern.domain.User;
 import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.redis.ServicesRedisDTO;
 import uz.devops.intern.redis.ServicesRedisRepository;
+import uz.devops.intern.service.CustomerTelegramService;
 import uz.devops.intern.service.GroupsService;
 import uz.devops.intern.service.UserService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.GroupsDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
-import uz.devops.intern.telegram.bot.AdminKeyboards;
+import uz.devops.intern.telegram.bot.keyboards.AdminMenuKeys;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 import uz.devops.intern.web.rest.utils.WebUtils;
 
@@ -32,17 +33,24 @@ public class ServicePeriodCountState extends State<ServiceFSM>{
     private ServicesRedisRepository servicesRedisRepository;
 //    @Autowired
     private UserService userService;
+    private CustomerTelegramService customerTelegramService;
 //    @Autowired
     private GroupsService groupsService;
 //    @Autowired
     private AdminFeign adminFeign;
+    private AdminMenuKeys adminMenuKeys;
 
-    public ServicePeriodCountState(ServiceFSM context) {
+    private final ServiceGroupState serviceGroupState;
+
+    public ServicePeriodCountState(ServiceFSM context, ServiceGroupState serviceGroupState) {
         super(context, context.getAdminFeign());
         this.servicesRedisRepository = context.getServicesRedisRepository();
         this.userService = context.getUserService();
         this.groupsService = context.getGroupsService();
         this.adminFeign = context.getAdminFeign();
+        this.adminMenuKeys = context.getAdminMenuKeys();
+        this.customerTelegramService = context.getCustomerTelegramService();
+        this.serviceGroupState = serviceGroupState;
     }
 
     @Override
@@ -56,7 +64,7 @@ public class ServicePeriodCountState extends State<ServiceFSM>{
         Long managerId = message.getFrom().getId();
 
         if(messageText.length() > 2){
-            wrongValue(managerId, bundle.getString("bot.admin.error.organization.period.count.invalid"));
+            wrongValue(managerId, bundle.getString("bot.admin.error.service.period.count.invalid"));
             log.warn("User send invalid value, Manager id: {} | Value: {}", managerId, messageText);
             return false;
         }
@@ -92,9 +100,11 @@ public class ServicePeriodCountState extends State<ServiceFSM>{
             wrongValue(managerId, bundle.getString("bot.admin.error.groups.are.not.attached.to.groups"));
             log.warn("Group is not found, Manager id: {} ", managerId);
             String newMessage = bundle.getString("bot.admin.main.menu");
-            ReplyKeyboardMarkup markup = AdminKeyboards.createMenu();
+            ReplyKeyboardMarkup markup = adminMenuKeys.createMenu(managerDTO.getLanguageCode());
             SendMessage sendMessage = TelegramsUtil.sendMessage(managerId, newMessage, markup);
             adminFeign.sendMessage(sendMessage);
+            managerDTO.setStep(4);
+            customerTelegramService.update(managerDTO);
             return false;
         }
 
@@ -103,7 +113,7 @@ public class ServicePeriodCountState extends State<ServiceFSM>{
 
         SendMessage sendMessage = TelegramsUtil.sendMessage(managerId, newMessage, markup);
         adminFeign.sendMessage(sendMessage);
-        context.changeState(new ServiceGroupState(context));
+        context.changeState(serviceGroupState);
         return true;
     }
 
