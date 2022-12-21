@@ -1,36 +1,56 @@
 package uz.devops.intern.telegram.bot.keyboards;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import uz.devops.intern.telegram.bot.keyboards.menu.AdminMenu;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
+import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
-import javax.annotation.PostConstruct;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.ResourceBundle;
 
 @Component
 public class AdminMenuKeys {
 
-    private final HashMap<String, ReplyKeyboardMarkup> markups = new HashMap<>();
-    private final List<AdminMenu> adminMenus;
+    private final String KEY = "bot.admin.keyboards.menu.";
 
-    public AdminMenuKeys(List<AdminMenu> adminMenus) {
-        this.adminMenus = adminMenus;
-    }
+    public List<String> getTextsOfButtons(String languageCode){
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(languageCode);
 
-    @PostConstruct
-    public HashMap<String, ReplyKeyboardMarkup> createMarkupsMap(){
-        for(AdminMenu menu: adminMenus){
-            markups.put(menu.getLanguageCode(), menu.getMarkup());
+        List<String> menuTexts = new ArrayList<>();
+        Enumeration<String> keysEnumeration = bundle.getKeys();
+        while (keysEnumeration.hasMoreElements()){
+            String key = keysEnumeration.nextElement();
+            if(!key.contains(KEY))continue;
+            menuTexts.add(
+                bundle.getString(key)
+            );
         }
-
-        return markups;
+        return menuTexts;
     }
 
     public ReplyKeyboardMarkup createMenu(String languageCode){
-        return markups.getOrDefault(languageCode, null);
+        ReplyKeyboardMarkup menuMarkup = new ReplyKeyboardMarkup();
+        menuMarkup.setResizeKeyboard(true);
+
+        List<KeyboardRow> rows = new ArrayList<>();
+        KeyboardRow row = new KeyboardRow();
+
+        List<String> textsOfButtons = getTextsOfButtons(languageCode);
+        for(String text: textsOfButtons){
+            row.add(new KeyboardButton(text));
+            if(row.size() == 2){
+                rows.add(row);
+                row = new KeyboardRow();
+            }
+        }
+
+        if(rows.size() > 0){ rows.add(row); }
+        menuMarkup.setKeyboard(rows);
+        return menuMarkup;
     }
 
 }

@@ -42,7 +42,7 @@ public abstract class State<T> {
         }
 
         if(!update.getMessage().hasText()) {
-            messageHasNotText(update.getMessage().getFrom().getId(), update);
+            messageHasNotText(managerId, update);
             return false;
         }
 

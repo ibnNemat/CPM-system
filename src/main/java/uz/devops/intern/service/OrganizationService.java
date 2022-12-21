@@ -3,6 +3,7 @@ package uz.devops.intern.service;
 import java.util.List;
 import java.util.Optional;
 import uz.devops.intern.service.dto.OrganizationDTO;
+import uz.devops.intern.service.dto.ResponseDTO;
 
 /**
  * Service Interface for managing {@link uz.devops.intern.domain.Organization}.
@@ -57,5 +58,5 @@ public interface OrganizationService {
 
     List<OrganizationDTO> getOrganizationsByUserLogin();
 
-    OrganizationDTO getOrganizationByName(String name);
+    ResponseDTO<OrganizationDTO> getOrganizationByName(String name);
 }

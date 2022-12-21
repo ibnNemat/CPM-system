@@ -19,8 +19,6 @@ public class ControllerTelegramGroupManager extends TelegramLongPollingBot {
     @Value("${telegram.token}")
     private String BOT_TOKEN;
     @Autowired
-    private AdminFeign adminFeign;
-    @Autowired
     private AdminTgService adminService;
     @Override
     public String getBotUsername(){

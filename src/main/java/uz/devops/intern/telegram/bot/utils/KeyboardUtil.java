@@ -4,6 +4,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 
 import java.util.*;
 
@@ -42,8 +43,9 @@ public class KeyboardUtil {
         return markup;
     }
 
-    public static ReplyKeyboardMarkup phoneNumber(){
-        KeyboardButton button = new KeyboardButton("\uD83D\uDCF2 Telefon raqamni jo'natish");
+    public static ReplyKeyboardMarkup phoneNumber(String languageCode){
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(languageCode);
+        KeyboardButton button = new KeyboardButton(bundle.getString("bot.message.phone.number.button"));
         button.setRequestContact(true);
 
         KeyboardRow row = new KeyboardRow();

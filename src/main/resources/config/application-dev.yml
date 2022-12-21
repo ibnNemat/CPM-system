@@ -21,12 +21,14 @@ logging:
     uz.devops.intern: INFO
 
 telegram:
-  username: "@NTfoundBot"
-  token: 5156167848:AAHnrLe0T8FnbF8vK-3LiR8bAjUrGxnTzR4
+  username: "@UzExpo_centre_bot"
+  token: 5225793240:AAEDojpbQM780zRMWIvmJXCIGeEBXWoY6RM
+  bot-username: "@NTfoundBot"
+  customer-token: 5156167848:AAHnrLe0T8FnbF8vK-3LiR8bAjUrGxnTzR4
   api: https://api.telegram.org/bot
 
 ngrok:
-  url: https://0a47-83-221-180-161.in.ngrok.io
+  url: https://8b8d-188-113-228-80.in.ngrok.io
 
 spring:
   devtools:

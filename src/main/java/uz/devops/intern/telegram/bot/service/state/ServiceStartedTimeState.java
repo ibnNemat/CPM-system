@@ -10,29 +10,34 @@ import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.redis.ServicesRedisDTO;
 import uz.devops.intern.redis.ServicesRedisRepository;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
-import uz.devops.intern.telegram.bot.AdminKeyboards;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
+import uz.devops.intern.telegram.bot.keyboards.ServicePeriodsKeys;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
+import java.util.ResourceBundle;
 
 @Service
 public class ServiceStartedTimeState extends State<ServiceFSM>{
 
 //    @Autowired
-    private ServicesRedisRepository servicesRedisRepository;
+    private final ServicesRedisRepository servicesRedisRepository;
 //    @Autowired
     private AdminFeign adminFeign;
+    private ServicePeriodsKeys servicePeriodsKeys;
+    private final ServicePeriodTypeState servicePeriodTypeState;
 
-    public ServiceStartedTimeState(ServiceFSM context) {
+    public ServiceStartedTimeState(ServiceFSM context, ServicePeriodTypeState servicePeriodTypeState) {
         super(context, context.getAdminFeign());
         this.servicesRedisRepository = context.getServicesRedisRepository();
         this.adminFeign = context.getAdminFeign();
+        this.servicePeriodsKeys = context.getServicePeriodsKeys();
+        this.servicePeriodTypeState = servicePeriodTypeState;
     }
 
     @Override
     boolean doThis(Update update, CustomerTelegramDTO manager) {
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
         boolean isThereMessageInUpdate = checkUpdateInside(update, manager.getTelegramId());
         if(!isThereMessageInUpdate)return false;
 
@@ -41,45 +46,61 @@ public class ServiceStartedTimeState extends State<ServiceFSM>{
         String messageText = message.getText();
         Long managerId = message.getFrom().getId();
 
-        if(messageText.length() != 10)return false;
-
-        boolean isTextExists = false;
-        List<Integer> numbers = List.of(1,2,3,4,5,6,7,8,9,0);
+        if(messageText.length() > 10){
+            wrongValue(managerId, bundle.getString("bot.admin.error.start.time.is.invalid"));
+            log.warn("User send invalid date! User id: {} | Message: {}", managerId, messageText);
+            return false;
+        }
 
         char[] elements = messageText.toCharArray();
         for(Character c: elements){
             if(c == '.')continue;
-            boolean isNumber = numbers.contains(Integer.parseInt(c + ""));
-            if(!isNumber){
-                isTextExists = true;
-                break;
+            try {
+                Integer.parseInt(c + "");
+            }catch (NumberFormatException e) {
+                wrongValue(managerId, bundle.getString("bot.admin.error.value.contains.only.numbers.or.dot"));
+                log.warn("There is alphabet in value that manager is send, Manager id: {} | Value: {}", managerId, messageText);
+                return false;
             }
         }
 
-        if(isTextExists) {
-            wrongValue(managerId, "Faqat sonlar va \".\" qatnashishi mumkun!");
-            log.warn("There is alphabet in value that manager is send, Manager id: {} | Value: {}", managerId, messageText);
+        String[] partsOfText = messageText.split("\\.");
+        if(partsOfText.length != 3){
+            wrongValue(managerId, bundle.getString("bot.admin.error.start.time.is.invalid"));
+            log.warn("Date is splited with \".\" but arrays length is not equal to 3! User id: {} | Message: {} | Arrays length: {}",
+                managerId, messageText, partsOfText.length);
             return false;
         }
-        String[] partsOfText = messageText.split("\\.");
 
         int year = Integer.parseInt(partsOfText[0]);
         int month = Integer.parseInt(partsOfText[1]);
         int day = Integer.parseInt(partsOfText[2]);
 
-        if(partsOfText[0].length() != 4 || year < new Date().getYear())return false;
-        if(partsOfText[1].length() != 2 || !(month >= 1 && month <= 12))return false;
-        if(partsOfText[2].length() != 2 || !(day >= 1 && day <= 31)) return false;
+        if(year < LocalDate.now().getYear()){
+            wrongValue(managerId, bundle.getString("bot.admin.error.start.time.is.invalid.year"));
+            log.warn("Date's year is invalid! User id: {} | Year: {}", managerId, year);
+            return false;
+        }
+        if(!(month >= 1 && month <= 12)){
+            wrongValue(managerId, bundle.getString("bot.admin.error.start.time.is.invalid.month"));
+            log.warn("Date's month is invalid! User id: {} | Month: {}", managerId, month);
+            return false;
+        }
+        if(!(day >= 1 && day <= 31)){
+            wrongValue(managerId, bundle.getString("bot.admin.error.start.time.is.invalid.day"));
+            log.warn("Date's day in invalid! User id: {} | Day: {}", managerId, day);
+            return false;
+        }
 
         ServicesRedisDTO redisDTO = servicesRedisRepository.findById(managerId).get();
         redisDTO.getServicesDTO().setStartedPeriod(LocalDate.of(year, month, day));
         servicesRedisRepository.save(redisDTO);
 
-        String newMessage = "To'lov qilinish periyudini tanlang";
-        ReplyKeyboardMarkup markup = AdminKeyboards.getPeriodTypeButtons();
+        String newMessage = bundle.getString("bot.admin.send.service.period");
+        ReplyKeyboardMarkup markup = servicePeriodsKeys.createReplyKeyboardMarkup(manager.getLanguageCode(), 2);
         SendMessage sendMessage = TelegramsUtil.sendMessage(managerId, newMessage, markup);
         adminFeign.sendMessage(sendMessage);
-        context.changeState(new ServicePeriodTypeState(context));
+        context.changeState(servicePeriodTypeState);
         return true;
     }
 }

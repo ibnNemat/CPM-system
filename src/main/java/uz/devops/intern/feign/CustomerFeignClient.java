@@ -29,4 +29,7 @@ public interface CustomerFeignClient {
 
     @GetMapping("/setWebhook")
     WebhookResponseDTO setWebhook(URI uri, @RequestParam("url") String url);
+
+    @GetMapping("/deleteWebhook")
+    WebhookResponseDTO deleteWebhook(URI uri, @RequestParam("drop_pending_updates") Boolean drop_pending_updates);
 }

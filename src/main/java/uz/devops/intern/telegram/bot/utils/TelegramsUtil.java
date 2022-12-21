@@ -28,10 +28,16 @@ public class TelegramsUtil {
     private static final Logger log = LoggerFactory.getLogger(TelegramsUtil.class);
     private static final String RESOURCE_BUNDLE_NAME = "message";
 
+//    public static ResourceBundle getResourceBundleByCustomerTgDTO(CustomerTelegramDTO customerTelegramDTO){
+//        Locale locale = new Locale(customerTelegramDTO.getLanguageCode());
+//        LocaleContextHolder.setLocale(locale);
+//        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME);
+//    }
+
     public static ResourceBundle getResourceBundleByCustomerTgDTO(CustomerTelegramDTO customerTelegramDTO){
         Locale locale = new Locale(customerTelegramDTO.getLanguageCode());
         LocaleContextHolder.setLocale(locale);
-        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME);
+        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, LocaleContextHolder.getLocale());
     }
 
 

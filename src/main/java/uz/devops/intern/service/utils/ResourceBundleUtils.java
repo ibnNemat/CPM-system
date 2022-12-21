@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.telegram.telegrambots.meta.api.objects.User;
 import uz.devops.intern.domain.CustomerTelegram;
-import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
+import uz.devops.intern.service.dto.CustomerTelegramDTO;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -29,6 +29,21 @@ public class ResourceBundleUtils {
 
     public static ResourceBundle getResourceBundleUsingCustomerTelegram(CustomerTelegram customerTelegram){
         Locale locale = new Locale(customerTelegram.getLanguageCode());
+        LocaleContextHolder.setLocale(locale);
+        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME,LocaleContextHolder.getLocale());
+    }
+
+    public static ResourceBundle getResourceBundleByCustomerTgDTO(CustomerTelegramDTO customerTelegramDTO){
+        Locale locale = new Locale(customerTelegramDTO.getLanguageCode());
+        LocaleContextHolder.setLocale(locale);
+        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, LocaleContextHolder.getLocale());
+    }
+
+    public static ResourceBundle getResourceBundleByUserLanguageCode(String languageCode){
+//        log.info("Language code: {} ", languageCode);
+        languageCode = languageCode.equals("ru_RU") || languageCode.equals("ru")? "ru":
+            languageCode.equals("uz_UZ") || languageCode.equals("uz")? "uz": "en";
+        Locale locale = new Locale(languageCode);
         LocaleContextHolder.setLocale(locale);
         return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME,LocaleContextHolder.getLocale());
     }

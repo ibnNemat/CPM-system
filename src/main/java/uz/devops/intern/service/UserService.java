@@ -20,10 +20,8 @@ import uz.devops.intern.domain.User;
 import uz.devops.intern.repository.AuthorityRepository;
 import uz.devops.intern.repository.CustomersRepository;
 import uz.devops.intern.repository.UserRepository;
-import uz.devops.intern.security.AuthoritiesConstants;
 import uz.devops.intern.security.SecurityUtils;
 import uz.devops.intern.service.dto.AdminUserDTO;
-import uz.devops.intern.service.dto.CustomersDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.dto.UserDTO;
 import uz.devops.intern.service.mapper.UserMapper;
@@ -43,12 +41,14 @@ public class UserService {
 
     private final AuthorityRepository authorityRepository;
     private final CustomersRepository customersRepository;
+    private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CustomersRepository customersRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CustomersRepository customersRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.customersRepository = customersRepository;
+        this.userMapper = userMapper;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -345,15 +345,28 @@ public class UserService {
     }
 
     public UserDTO getUserByCreatedBy(String phoneNumber){
-        if(phoneNumber == null || phoneNumber.equals(" ") || phoneNumber.isEmpty())return null;
-        Optional<User> userOptional = userRepository.findByCreatedBy(phoneNumber);
-        if(userOptional.isEmpty())return null;
-        User user = userOptional.get();
-        UserDTO dto = new UserDTO();
-        dto.setId(user.getId());
-        dto.setLogin(user.getLogin());
+        if(phoneNumber == null || phoneNumber.trim().isEmpty()){
+            return null;
+        }
 
-        return dto;
+        Optional<User> userOptional = userRepository.findByCreatedBy(phoneNumber);
+        return userOptional.map(userMapper::userToUserDTO).orElse(null);
+    }
+
+    public ResponseDTO<User> getUserByCreatedBy(String phoneNumber, Boolean isNewMethod){
+        if(phoneNumber == null || phoneNumber.trim().isEmpty()){
+            return ResponseDTO.<User>builder()
+                .success(false).message("Parameter \"Phone number\" is null or empty!").build();
+        }
+
+        Optional<User> userOptional = userRepository.findByCreatedBy(phoneNumber);
+        if(userOptional.isEmpty()){
+            return ResponseDTO.<User>builder()
+                .success(false).message("Data is not found!").build();
+        }
+
+        return ResponseDTO.<User>builder()
+            .success(true).message("OK").responseData(userOptional.get()).build();
     }
 
     public ResponseDTO<User> getUserByPhoneNumber(String phoneNumber){

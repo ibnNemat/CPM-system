@@ -9,6 +9,8 @@ import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.redis.ServicesRedisRepository;
 import uz.devops.intern.service.*;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
+import uz.devops.intern.telegram.bot.keyboards.AdminMenuKeys;
+import uz.devops.intern.telegram.bot.keyboards.ServicePeriodsKeys;
 
 @Service
 @Getter
@@ -26,8 +28,10 @@ public class ServiceFSM {
 
     private final ServicesRedisRepository servicesRedisRepository;
     private final ServicesService servicesService;
+    private final AdminMenuKeys adminMenuKeys;
+    private final ServicePeriodsKeys servicePeriodsKeys;
 
-    public ServiceFSM(GroupsService groupsService, TelegramGroupService telegramGroupService, UserService userService, OrganizationService organizationService, AdminFeign adminFeign, CustomerTelegramService customerTelegramService, ServicesRedisRepository servicesRedisRepository, ServicesService servicesService) {
+    public ServiceFSM(GroupsService groupsService, TelegramGroupService telegramGroupService, UserService userService, OrganizationService organizationService, AdminFeign adminFeign, CustomerTelegramService customerTelegramService, ServicesRedisRepository servicesRedisRepository, ServicesService servicesService, AdminMenuKeys adminMenuKeys, ServicePeriodsKeys servicePeriodsKeys) {
         this.groupsService = groupsService;
         this.telegramGroupService = telegramGroupService;
         this.userService = userService;
@@ -36,6 +40,8 @@ public class ServiceFSM {
         this.customerTelegramService = customerTelegramService;
         this.servicesRedisRepository = servicesRedisRepository;
         this.servicesService = servicesService;
+        this.adminMenuKeys = adminMenuKeys;
+        this.servicePeriodsKeys = servicePeriodsKeys;
         this.state = new ServiceNameState(this);
     }
 

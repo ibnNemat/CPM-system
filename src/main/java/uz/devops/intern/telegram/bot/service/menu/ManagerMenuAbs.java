@@ -15,8 +15,10 @@ import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.service.CustomerTelegramService;
 import uz.devops.intern.service.TelegramGroupService;
 import uz.devops.intern.service.UserService;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -56,14 +58,15 @@ public abstract class ManagerMenuAbs implements ManagerMenuStrategy {
             chatId, message, update);
     }
 
-    public void messageHasNotText(Long chatId, Update update){
-        wrongValue(chatId, "Iltimos xabar yuboring\uD83D\uDE4F");
-        log.warn("User hasn't send text, Chat id: {} | Update: {}", chatId, update);
-    }
-
-    public void messageHasNotText(Long chatId, Update update, Boolean contact){
-        wrongValue(chatId, "Iltimos xabar yoki kontakt yuboring\uD83D\uDE4F");
-        log.warn("User hasn't send text, Chat id: {} | Update: {}", chatId, update);
-    }
+//    public void messageHasNotText(Long chatId, Update update){
+//        ResourceBundleUtils.getResourceBundleByUserLanguageCode("ru");
+//        wrongValue(chatId, "Iltimos xabar yuboring\uD83D\uDE4F");
+//        log.warn("User hasn't send text, Chat id: {} | Update: {}", chatId, update);
+//    }
+//
+//    public void messageHasNotText(Long chatId, Update update, Boolean contact){
+//        wrongValue(chatId, "Iltimos xabar yoki kontakt yuboring\uD83D\uDE4F");
+//        log.warn("User hasn't send text, Chat id: {} | Update: {}", chatId, update);
+//    }
 
 }

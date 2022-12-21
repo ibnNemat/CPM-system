@@ -13,13 +13,16 @@ import uz.devops.intern.domain.User;
 import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.service.*;
 import uz.devops.intern.service.dto.*;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.AdminKeyboards;
 import uz.devops.intern.telegram.bot.dto.EditMessageTextDTO;
+import uz.devops.intern.telegram.bot.keyboards.AdminMenuKeys;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 import uz.devops.intern.web.rest.utils.WebUtils;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 @Service
@@ -33,6 +36,7 @@ public class GroupOrganizationState extends State<BotFSM>{
     private CustomerTelegramService customerTelegramService;
     private GroupsService groupsService;
     private AdminFeign adminFeign;
+    private AdminMenuKeys adminMenuKeys;
 
     public GroupOrganizationState(BotFSM context) {
         super(context, context.getAdminFeign());
@@ -42,12 +46,14 @@ public class GroupOrganizationState extends State<BotFSM>{
         this.customerTelegramService = context.getCustomerTelegramService();
         this.groupsService = context.getGroupsService();
         this.adminFeign = context.getAdminFeign();
+        this.adminMenuKeys = context.getAdminMenuKeys();
     }
 
     @Override
     boolean doThis(Update update, CustomerTelegramDTO manager) {
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
         if(!update.hasCallbackQuery()){
-            wrongValue(manager.getTelegramId(), "Iltimos ko'rsatilganlardan birini tanlang!");
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.message"));
             log.warn("Update: {}", update);
             return false;
         }
@@ -89,13 +95,14 @@ public class GroupOrganizationState extends State<BotFSM>{
         EditMessageTextDTO dto = createEditMessageText(update.getCallbackQuery(), inlineMarkup, "");
         adminFeign.editMessageText(dto);
 
-        String newMessage = "Asosiy menyu";
-        ReplyKeyboardMarkup markup = AdminKeyboards.createMenu();
+        String newMessage = bundle.getString("bot.admin.main.menu");
+        ReplyKeyboardMarkup markup = adminMenuKeys.createMenu(manager.getLanguageCode());
         SendMessage sendMessage =
             TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage, markup);
         adminFeign.sendMessage(sendMessage);
         context.changeState(new GroupStates(context));
         manager.setStep(4);
+        customerTelegramService.update(manager);
         return true;
     }
 //

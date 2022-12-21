@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.service.*;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
+import uz.devops.intern.telegram.bot.keyboards.AdminMenuKeys;
 
 @Service
 @Getter
@@ -21,14 +22,16 @@ public class BotFSM {
     private final OrganizationService organizationService;
     private final AdminFeign adminFeign;
     private final CustomerTelegramService customerTelegramService;
+    private final AdminMenuKeys adminMenuKeys;
 
-    public BotFSM(GroupsService groupsService, TelegramGroupService telegramGroupService, UserService userService, OrganizationService organizationService, AdminFeign adminFeign, CustomerTelegramService customerTelegramService) {
+    public BotFSM(GroupsService groupsService, TelegramGroupService telegramGroupService, UserService userService, OrganizationService organizationService, AdminFeign adminFeign, CustomerTelegramService customerTelegramService, AdminMenuKeys adminMenuKeys) {
         this.groupsService = groupsService;
         this.telegramGroupService = telegramGroupService;
         this.userService = userService;
         this.organizationService = organizationService;
         this.adminFeign = adminFeign;
         this.customerTelegramService = customerTelegramService;
+        this.adminMenuKeys = adminMenuKeys;
         this.state = new GroupStates(this);
     }
 

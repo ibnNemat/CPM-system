@@ -35,4 +35,6 @@ public interface GroupsRepository extends GroupsRepositoryWithBagRelationships, 
 
     @Query("SELECT g FROM Groups g WHERE g.name = (SELECT tg.name FROM TelegramGroup tg WHERE tg.chatId = :telegramId)")
     Optional<Groups> findByTelegramId(@Param("telegramId") Long telegramId);
+
+    Optional<Groups> findByName(String name);
 }

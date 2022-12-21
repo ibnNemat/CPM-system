@@ -12,7 +12,10 @@ import uz.devops.intern.redis.ServicesRedisDTO;
 import uz.devops.intern.redis.ServicesRedisRepository;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.ServicesDTO;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
+
+import java.util.ResourceBundle;
 
 @Service
 public class ServiceNameState extends State<ServiceFSM> {
@@ -24,6 +27,8 @@ public class ServiceNameState extends State<ServiceFSM> {
 
     //    @Autowired
     private ServicesRedisRepository servicesRedisRepository;
+    @Autowired
+    private ServicePriceState servicePriceState;
 
     public ServiceNameState(ServiceFSM context) {
         super(context, context.getAdminFeign());
@@ -33,6 +38,7 @@ public class ServiceNameState extends State<ServiceFSM> {
 
     @Override
     boolean doThis(Update update, CustomerTelegramDTO manager) {
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
         boolean isThereMessageInUpdate = checkUpdateInside(update, manager.getTelegramId());
         if (!isThereMessageInUpdate) return isThereMessageInUpdate;
 
@@ -40,7 +46,7 @@ public class ServiceNameState extends State<ServiceFSM> {
         String messageText = message.getText();
         Long managerId = message.getFrom().getId();
 
-        String newMessage = "Iltimos xizmat narxini kiriting.";
+        String newMessage = bundle.getString("bot.admin.send.organization.price");
         SendMessage sendMessage = TelegramsUtil.sendMessage(managerId, newMessage);
 
         adminFeign.sendMessage(sendMessage);
@@ -50,7 +56,7 @@ public class ServiceNameState extends State<ServiceFSM> {
 
         ServicesRedisDTO redisDTO = new ServicesRedisDTO(managerId, dto);
         servicesRedisRepository.save(redisDTO);
-        context.changeState(new ServicePriceState(context));
+        context.changeState(servicePriceState);
         return true;
     }
 

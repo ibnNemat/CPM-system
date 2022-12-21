@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import uz.devops.intern.domain.Groups;
 import uz.devops.intern.service.dto.GroupsDTO;
+import uz.devops.intern.service.dto.ResponseDTO;
 
 /**
  * Service Interface for managing {@link uz.devops.intern.domain.Groups}.
@@ -71,4 +72,5 @@ public interface GroupsService {
 
     GroupsDTO findOneByTelegramId(Long telegramId);
 
+    ResponseDTO<GroupsDTO> findByName(String name);
 }

@@ -6,8 +6,12 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
+import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
+
+import java.util.ResourceBundle;
 
 import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.sendMessage;
 
@@ -29,17 +33,20 @@ public class UserLanguage extends BotStrategyAbs {
         Long userId = message.getFrom().getId();
         String messageText = message.getText();
 
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
         if(!KeyboardUtil.availableLanguages().contains(messageText)){
-            wrongValue(userId, "Iltimos ko'rsatilganlaridan birini tanlang");
+            wrongValue(userId, bundle.getString("bot.admin.error.message"));
             log.warn("User choose not shown language, User id: {} | Message: {}", userId, message);
             return false;
         }
 
-        manager.setLanguageCode(message.getFrom().getLanguageCode().equals("en")? "uz": "ru");
+        String languageCode = KeyboardUtil.getLanguages().get(messageText);
+        bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(languageCode);
+        manager.setLanguageCode(languageCode);
         manager.setStep(2);
 
-        String newMessage = "Iltimos telefon raqamingizni jo'nating\uD83D\uDC47";
-        ReplyKeyboardMarkup markup = KeyboardUtil.phoneNumber();
+        String newMessage = bundle.getString("bot.admin.send.contact");
+        ReplyKeyboardMarkup markup = KeyboardUtil.phoneNumber(manager.getLanguageCode());
         SendMessage sendMessage = sendMessage(userId, newMessage, markup);
         Update response = adminFeign.sendMessage(sendMessage);
         log.info("Message send successfully! User id: {} | Message text: {} | Update: {}",
