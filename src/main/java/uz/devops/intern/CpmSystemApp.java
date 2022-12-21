@@ -20,7 +20,7 @@ import tech.jhipster.config.JHipsterConstants;
 import uz.devops.intern.config.ApplicationProperties;
 import uz.devops.intern.config.CRLFLogConverter;
 
-@SpringBootApplication
+@SpringBootApplication()
 @EnableConfigurationProperties({ LiquibaseProperties.class, ApplicationProperties.class })
 @EnableFeignClients
 public class CpmSystemApp {

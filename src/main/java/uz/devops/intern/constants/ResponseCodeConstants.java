@@ -1,6 +1,6 @@
-package uz.devops.intern.service.dto;
+package uz.devops.intern.constants;
 
-public class ResponseCode {
+public class ResponseCodeConstants {
     public static final Integer NOT_FOUND = -4;
     public static final Integer NULL_VALUE = -3;
     public static final Integer OK = 0;

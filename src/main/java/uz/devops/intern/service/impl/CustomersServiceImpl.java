@@ -10,17 +10,14 @@ import uz.devops.intern.domain.Customers;
 import uz.devops.intern.repository.CustomersRepository;
 import uz.devops.intern.service.CustomersService;
 import uz.devops.intern.service.dto.CustomersDTO;
-import uz.devops.intern.service.dto.ResponseCode;
 import uz.devops.intern.service.dto.ResponseDTO;
-import uz.devops.intern.service.dto.ResponseMessage;
 import uz.devops.intern.service.mapper.CustomerMapper;
 import uz.devops.intern.service.mapper.CustomersMapper;
 import uz.devops.intern.service.utils.ContextHolderUtil;
 import uz.devops.intern.web.rest.errors.BadRequestAlertException;
 
-import static uz.devops.intern.service.dto.ResponseCode.OK;
-import static uz.devops.intern.service.dto.ResponseMessage.*;
-import static uz.devops.intern.service.dto.ResponseCode.*;
+import static uz.devops.intern.constants.ResponseCodeConstants.OK;
+import static uz.devops.intern.constants.ResponseMessageConstants.*;
 
 import java.util.Optional;
 

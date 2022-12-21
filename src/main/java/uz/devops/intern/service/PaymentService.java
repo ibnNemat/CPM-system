@@ -1,11 +1,14 @@
 package uz.devops.intern.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import uz.devops.intern.domain.Customers;
+import uz.devops.intern.domain.Groups;
 import uz.devops.intern.domain.Payment;
+import uz.devops.intern.domain.Services;
 import uz.devops.intern.service.dto.PaymentDTO;
 import uz.devops.intern.service.dto.PaymentHistoryDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
@@ -14,6 +17,7 @@ import uz.devops.intern.service.dto.ResponseDTO;
  * Service Interface for managing {@link uz.devops.intern.domain.Payment}.
  */
 public interface PaymentService {
+    List<PaymentDTO> findAllByCustomerAndGroupAndServiceAndStartedPeriodAndIsPaidFalse(Customers customers, Services service, Groups group, LocalDate startedPeriod);
     List<PaymentDTO> getAllCustomerPaymentsPayedIsFalse(Customers customer);
     ResponseDTO<List<PaymentDTO>> getAllCustomerPayments();
     List<PaymentDTO> getAllPaymentsCreatedByGroupManager();

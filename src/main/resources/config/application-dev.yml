@@ -23,6 +23,7 @@ logging:
 telegram:
   username: "@NTfoundBot"
   token: 5156167848:AAHnrLe0T8FnbF8vK-3LiR8bAjUrGxnTzR4
+  api: https://api.telegram.org/bot
 
 ngrok:
   url: https://0a47-83-221-180-161.in.ngrok.io

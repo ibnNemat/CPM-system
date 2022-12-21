@@ -1,4 +1,4 @@
-package uz.devops.intern.command;
+package uz.devops.intern.telegram.bot.customer.command;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;

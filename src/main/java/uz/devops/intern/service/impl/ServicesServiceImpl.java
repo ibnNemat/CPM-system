@@ -16,9 +16,9 @@ import uz.devops.intern.service.CustomersService;
 import uz.devops.intern.service.GroupsService;
 import uz.devops.intern.service.PaymentService;
 import uz.devops.intern.service.ServicesService;
-import uz.devops.intern.service.dto.ResponseCode;
+import uz.devops.intern.constants.ResponseCodeConstants;
 import uz.devops.intern.service.dto.ResponseDTO;
-import uz.devops.intern.service.dto.ResponseMessage;
+import uz.devops.intern.constants.ResponseMessageConstants;
 import uz.devops.intern.service.dto.ServicesDTO;
 import uz.devops.intern.service.mapper.ServiceMapper;
 import uz.devops.intern.service.mapper.ServicesMapper;
@@ -29,8 +29,8 @@ import uz.devops.intern.web.rest.errors.BadRequestAlertException;
 import java.time.LocalDate;
 import java.util.*;
 
-import static uz.devops.intern.service.dto.ResponseMessage.*;
-import static uz.devops.intern.service.dto.ResponseCode.OK;
+import static uz.devops.intern.constants.ResponseMessageConstants.*;
+import static uz.devops.intern.constants.ResponseCodeConstants.OK;
 
 /**
  * Service Implementation for managing {@link Services}.
@@ -60,7 +60,7 @@ public class ServicesServiceImpl implements ServicesService {
     public ResponseDTO<ServicesDTO> save(ServicesDTO servicesDTO) {
         log.debug("Request to save Services : {}", servicesDTO);
         if (servicesDTO.getGroups().size() == 0){
-            return new ResponseDTO<ServicesDTO>(ResponseCode.NOT_FOUND, "group not found", false, null);
+            return new ResponseDTO<ServicesDTO>(ResponseCodeConstants.NOT_FOUND, "group not found", false, null);
         }
 
         Services services = ServiceMapper.toEntity(servicesDTO);
@@ -90,7 +90,7 @@ public class ServicesServiceImpl implements ServicesService {
         }
         List<Groups> groupsIncludeToPayment = groupService.getGroupsIncludeToPayment(ids);
         if (groupsIncludeToPayment.size() == 0)
-            return new ResponseDTO<ServicesDTO>(ResponseCode.NOT_FOUND, "group not fond", false, null);
+            return new ResponseDTO<ServicesDTO>(ResponseCodeConstants.NOT_FOUND, "group not fond", false, null);
 
         for (Groups group: groupsIncludeToPayment) {
             if (group.getCustomers() != null) {
@@ -113,7 +113,7 @@ public class ServicesServiceImpl implements ServicesService {
         }
         paymentService.saveAll(paymentList);
 
-        return new ResponseDTO<ServicesDTO>(OK, ResponseMessage.OK, true, null);
+        return new ResponseDTO<ServicesDTO>(OK, ResponseMessageConstants.OK, true, null);
     }
 
     @Override
@@ -165,7 +165,7 @@ public class ServicesServiceImpl implements ServicesService {
             .stream()
             .map(ServiceMapper::toDtoForGetting)
             .toList();
-        return new ResponseDTO<>(OK, ResponseMessage.OK, true, servicesDTOList);
+        return new ResponseDTO<>(OK, ResponseMessageConstants.OK, true, servicesDTOList);
     }
 
     @Override
