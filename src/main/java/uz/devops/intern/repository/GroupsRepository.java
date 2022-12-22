@@ -37,4 +37,5 @@ public interface GroupsRepository extends GroupsRepositoryWithBagRelationships, 
     Optional<Groups> findByTelegramId(@Param("telegramId") Long telegramId);
 
     Optional<Groups> findByName(String name);
+
 }

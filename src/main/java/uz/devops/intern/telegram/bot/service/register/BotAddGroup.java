@@ -141,7 +141,6 @@ public class BotAddGroup extends BotStrategyAbs {
     }
 
     public void execute(Update update, String botId){
-
         if(update.getMessage().getNewChatMembers().size() > 0){
             log.info("New bot, Bot id: {}", botId);
             checkIsBotInGroup(update.getMessage().getNewChatMembers().get(0), update.getMessage().getChat(), botId);

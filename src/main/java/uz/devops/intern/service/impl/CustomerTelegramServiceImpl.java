@@ -125,7 +125,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     public ResponseDTO<CustomerTelegramDTO> getCustomerByTelegramId(Long telegramId) {
         log.info("request to get customerTelegram by telegramId: {}", telegramId);
         Optional<CustomerTelegram> customerTelegramOptional = customerTelegramRepository.findByTelegramId(telegramId);
-        if (customerTelegramOptional.isEmpty()) return ResponseDTO.<CustomerTelegramDTO>builder().code(NOT_FOUND).message(ResponseMessageConstants.NOT_FOUND).build();
+        if (customerTelegramOptional.isEmpty()) return ResponseDTO.<CustomerTelegramDTO>builder().code(NOT_FOUND).success(false).message(ResponseMessageConstants.NOT_FOUND).build();
         return ResponseDTO.<CustomerTelegramDTO>builder()
             .code(OK)
             .message(ResponseMessageConstants.OK)
@@ -146,13 +146,11 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             .responseData(customerTelegramMapper.toDto(customerTelegram))
             .build();
     }
-
-
     @Override
     public ResponseDTO<CustomerTelegramDTO> findByBotTgId(Long botId) {
         log.info("request to get customerTelegram by telegram botId: {}", botId);
         Optional<CustomerTelegram> customerTelegramOptional = customerTelegramRepository.findByBot(botId);
-        if (customerTelegramOptional.isEmpty()) return ResponseDTO.<CustomerTelegramDTO>builder().code(NOT_FOUND).message(ResponseMessageConstants.NOT_FOUND).build();
+        if (customerTelegramOptional.isEmpty()) return ResponseDTO.<CustomerTelegramDTO>builder().code(NOT_FOUND).success(false).message(ResponseMessageConstants.NOT_FOUND).build();
         return ResponseDTO.<CustomerTelegramDTO>builder()
             .code(OK)
             .message(ResponseMessageConstants.OK)

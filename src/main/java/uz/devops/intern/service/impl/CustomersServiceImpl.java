@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.devops.intern.domain.Customers;
+import uz.devops.intern.domain.User;
 import uz.devops.intern.repository.CustomersRepository;
 import uz.devops.intern.service.CustomersService;
 import uz.devops.intern.service.dto.CustomersDTO;
@@ -77,6 +78,11 @@ public class CustomersServiceImpl implements CustomersService {
         return new ResponseDTO<>(OK, SAVED, true, responseCustomersDTO);
     }
 
+    @Override
+    public Boolean existsByUser(User user){
+        log.info("request to check customer exists by user: {}", user);
+        return customersRepository.existsByUser(user);
+    }
     @Override
     public Optional<CustomersDTO> partialUpdate(CustomersDTO customersDTO) {
         log.debug("Request to partially update Customers : {}", customersDTO);

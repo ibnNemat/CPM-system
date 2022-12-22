@@ -53,7 +53,7 @@ public class StartCommandWithChatId implements ExecuteCommand {
         if (sendMessage.getText()!= null)
             return sendMessage;
 
-        return customerUpdateWithMessageService.commandWithUpdateMessage(update, uri);
+        return customerUpdateWithMessageService.responseFromStartCommandWithChatId(update, uri, stringMessage);
     }
 
     private void setBotCommandsAndSendToBotCommands(URI uri){

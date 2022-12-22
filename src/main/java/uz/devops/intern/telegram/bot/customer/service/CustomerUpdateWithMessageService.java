@@ -29,7 +29,7 @@ public interface CustomerUpdateWithMessageService {
      * @return
      */
     SendMessage commandWithUpdateMessage(Update update, URI telegramUri);
-
+    SendMessage responseFromStartCommandWithChatId(Update update, URI telegramURI, String chatId);
     SendMessage registerCustomerClientAndShowCustomerMenu(String requestMessage, User telegramUser, CustomerTelegram customerTelegram);
     SendMessage sendCustomerGroups(User telegramUser, CustomerTelegram customerTelegram);
     SendMessage sendCustomerPayments(User telegramUser, CustomerTelegram customerTelegram, Message message);
@@ -41,4 +41,5 @@ public interface CustomerUpdateWithMessageService {
     SendMessage changeEmail(String email, User telegramUser, CustomerTelegram customerTelegram);
     SendMessage changeFullName(String fullName, User telegramUser, CustomerTelegram customerTelegram);
     SendMessage changePhoneNumber(String phoneNumber, User telegramUser, CustomerTelegram customerTelegram);
+    SendMessage forbiddenMessage(User telegramUser);
 }

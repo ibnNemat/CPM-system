@@ -97,7 +97,6 @@ public class AdminTgServiceImpl implements AdminTgService {
                 return false;
             }
             return logic(update, response);
-
         }
         else if(update.hasCallbackQuery() && response.getSuccess()){
             return logic(update, response);

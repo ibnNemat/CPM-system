@@ -59,7 +59,7 @@ public class CustomerUpdateWithMessageServiceImpl implements CustomerUpdateWithM
     private static final String DATA_INLINE_CHANGE_EMAIL_BUTTON = "change email";
     private static final String DATA_INLINE_REPLENISH_BALANCE_BUTTON = "change the balance";
     private static final String DATA_BACK_TO_HOME = "back to menu";
-    private static Long botIdCreatedByManager;
+    private static Long chatIdCreatedByManager;
     private final Logger log = LoggerFactory.getLogger(CustomerTelegramServiceImpl.class);
     private final CustomerTelegramRepository customerTelegramRepository;
     private final CustomerTelegramRedisRepository customerTelegramRedisRepository;
@@ -77,14 +77,16 @@ public class CustomerUpdateWithMessageServiceImpl implements CustomerUpdateWithM
     private static ResourceBundle resourceBundle;
 
     @Override
+    public SendMessage responseFromStartCommandWithChatId(Update update, URI telegramURI, String chatId){
+        log.info("response from startCommandWithChatId. Params update: {} | telegramURI: {} | chatId: {}", update, telegramURI, chatId);
+        String botId = chatId.substring(7);
+        chatIdCreatedByManager = Long.parseLong(botId);
+        return commandWithUpdateMessage(update, telegramURI);
+    }
+    @Override
     public SendMessage commandWithUpdateMessage(Update update, URI telegramUri) {
         log.info("Started working method commandWithUpdateMessage. Params update: {} | telegramURI: {}", update, telegramUri);
         uri = telegramUri;
-        String path = uri.toString();
-        String splitPath = path.split(telegramAPI)[1];
-        String botId = splitPath.split(":")[0];
-
-        botIdCreatedByManager = Long.parseLong(botId);
         Message message = update.getMessage();
         User telegramUser = message.getFrom();
         String requestMessage = message.getText();
@@ -101,16 +103,19 @@ public class CustomerUpdateWithMessageServiceImpl implements CustomerUpdateWithM
     public SendMessage executeCommandStepByStep(User telegramUser, String requestMessage, Update update) {
         log.info("Started working method executeCommandStepByStep. Params requestMessage: {}, telegramUser: {}, update: {}",
             requestMessage, telegramUser, update);
-        Optional<CustomerTelegram> customerTelegramOptional = customerTelegramRepository.findByTelegramId(telegramUser.getId());
-        if (customerTelegramOptional.isPresent()) {
-            CustomerTelegram customerTelegram = customerTelegramOptional.get();
+        Optional<CustomerTelegram> optional = customerTelegramRepository.findByTelegramId(telegramUser.getId());
+        if (optional.isPresent() && optional.get().getCustomer() == null){
+            log.warn("Send forbidden message. Not found 'Customer' role for CustomerTelegram: {}", optional.get());
+            return forbiddenMessage(telegramUser);
+        }
+
+        if (optional.isPresent()) {
+            CustomerTelegram customerTelegram = optional.get();
             customerTelegram.setIsActive(true);
             resourceBundle = getResourceBundleUsingCustomerTelegram(customerTelegram);
+            setCustomerTelegramStep(customerTelegram, requestMessage);
 
-            Integer step = customerTelegram.getStep();
-            if (requestMessage.startsWith("/start ")) step = 1;
-
-            return switch (step) {
+            return switch (customerTelegram.getStep()) {
                 case 1 -> registerCustomerClientAndShowCustomerMenu(requestMessage, telegramUser, customerTelegram);
                 case 2 -> mainCommand(requestMessage, telegramUser, customerTelegram, update.getMessage());
                 case 3 -> payRequestForService(requestMessage, telegramUser, customerTelegram);
@@ -136,7 +141,7 @@ public class CustomerUpdateWithMessageServiceImpl implements CustomerUpdateWithM
         customerTelegram.setLanguageCode(getLanguages().get(requestMessage));
 
         entityManager.detach(customerTelegram);
-        Optional<TelegramGroup> telegramGroupOptional = telegramGroupService.findByChatId(botIdCreatedByManager);
+        Optional<TelegramGroup> telegramGroupOptional = telegramGroupService.findByChatId(chatIdCreatedByManager);
 
         if (telegramGroupOptional.isPresent()) {
             TelegramGroup telegramGroup = new TelegramGroup();
@@ -146,6 +151,10 @@ public class CustomerUpdateWithMessageServiceImpl implements CustomerUpdateWithM
 
         customerTelegramRepository.save(customerTelegram);
         return registerCustomerClientAndShowCustomerMenu(requestMessage, telegramUser, customerTelegram);
+    }
+
+    private void setCustomerTelegramStep(CustomerTelegram customerTelegram, String requestMessage){
+        if (requestMessage.startsWith("/start ")) customerTelegram.setStep(1);
     }
 
     private SendMessage sendMessageIfPhoneNumberIsNull(User telegramUser, String message) {
@@ -179,12 +188,12 @@ public class CustomerUpdateWithMessageServiceImpl implements CustomerUpdateWithM
             return sendMessageIfPhoneNumberIsNull(telegramUser, requestMessage);
         }
         // when customer entered from another telegram bot
-        if (customerTelegram.getPhoneNumber() != null && botIdCreatedByManager != null) {
+        if (customerTelegram.getPhoneNumber() != null && chatIdCreatedByManager != null) {
             resourceBundle = getResourceBundleUsingCustomerTelegram(customerTelegram);
             Set<TelegramGroup> customerTelegramGroups = customerTelegram.getTelegramGroups();
             entityManager.detach(customerTelegram);
 
-            Optional<TelegramGroup> telegramGroupOptional = telegramGroupService.findByChatId(botIdCreatedByManager);
+            Optional<TelegramGroup> telegramGroupOptional = telegramGroupService.findByChatId(chatIdCreatedByManager);
 
             if (telegramGroupOptional.isPresent()) {
                 Set<TelegramGroup> newCustomerTelegramGroups = new HashSet<>(customerTelegramGroups);
@@ -199,21 +208,15 @@ public class CustomerUpdateWithMessageServiceImpl implements CustomerUpdateWithM
         }
 
         Customers customer = checkCustomerPhoneNumber(requestMessage);
-        Authority customerAuthority = new Authority();
-        customerAuthority.setName("ROLE_CUSTOMER");
         if (customer == null) {
             String sendStringMessage = resourceBundle.getString(BOT_CUSTOMER_NOT_REGISTERED);
             sendMessage = sendMessage(telegramUser.getId(), sendStringMessage, sendMarkup(telegramUser));
             log.warn("send message customer not registered yet User id: {} | Message text: {}", telegramUser, sendMessage);
             return sendMessage;
         }
-        if (customer.getUser() == null || !customer.getUser().getAuthorities().contains(customerAuthority)) {
-            String sendStringMessage = "\uD83D\uDEAB " + resourceBundle.getString( BOT_AUTHORITY_NOT_EXISTS);
 
-            sendMessage = sendMessage(telegramUser.getId(), sendStringMessage, sendMarkup(telegramUser));
-            log.info("Message send successfully! User id: {} | Message text: {}", telegramUser, sendMessage);
-            return sendMessage;
-        }
+        if (checkRoleTelegramCustomer(customer)) return forbiddenMessage(telegramUser);
+
         customerTelegram.customer(customer);
         customerTelegramRepository.save(customerTelegram);
 
@@ -235,6 +238,20 @@ public class CustomerUpdateWithMessageServiceImpl implements CustomerUpdateWithM
         }
         sendMessage = callbackQueryService.sendCustomerMenu(telegramUser, customerTelegram);
         log.info("successfully send customerMenu. SendMessage: {}", sendMessage);
+        return sendMessage;
+    }
+
+    public Boolean checkRoleTelegramCustomer(Customers customer){
+        Authority customerAuthority = new Authority();
+        customerAuthority.setName("ROLE_CUSTOMER");
+        return customer.getUser() == null || !customer.getUser().getAuthorities().contains(customerAuthority);
+    }
+
+    @Override
+    public SendMessage forbiddenMessage(User telegramUser){
+        String sendStringMessage = "\uD83D\uDEAB " + resourceBundle.getString( BOT_AUTHORITY_NOT_EXISTS);
+        SendMessage sendMessage = sendMessage(telegramUser.getId(), sendStringMessage, sendMarkup(telegramUser));
+        log.info("Message send successfully! User id: {} | Message text: {}", telegramUser, sendMessage);
         return sendMessage;
     }
 

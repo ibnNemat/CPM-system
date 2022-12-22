@@ -3,7 +3,6 @@ package uz.devops.intern.service.utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uz.devops.intern.domain.Customers;
-import uz.devops.intern.domain.User;
 import uz.devops.intern.repository.CustomersRepository;
 import uz.devops.intern.security.SecurityUtils;
 
