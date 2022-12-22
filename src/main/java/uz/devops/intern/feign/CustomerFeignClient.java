@@ -7,10 +7,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 import uz.devops.intern.domain.ResponseFromTelegram;
+import uz.devops.intern.telegram.bot.dto.PinMessageDTO;
 import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
 
 import java.net.URI;
@@ -19,7 +21,7 @@ import java.net.URI;
 public interface CustomerFeignClient {
 
     @PostMapping("/sendMessage")
-    Update sendMessage(URI uri, @RequestBody SendMessage sendMessage);
+    ResponseFromTelegram<Message> sendMessage(URI uri, @RequestBody SendMessage sendMessage);
 
     @GetMapping("/getMe")
     ResponseFromTelegram<User> getMe(URI uri);
@@ -32,4 +34,7 @@ public interface CustomerFeignClient {
 
     @GetMapping("/deleteWebhook")
     WebhookResponseDTO deleteWebhook(URI uri, @RequestParam("drop_pending_updates") Boolean drop_pending_updates);
+
+    @GetMapping("/pinChatMessage")
+    WebhookResponseDTO pinMessage(URI uri, @RequestBody PinMessageDTO pinMessageDTO);
 }

@@ -70,17 +70,17 @@ public class RefactorGroup extends BotStrategyAbs {
         }
 
         GroupsDTO group = groupOptional.get();
-        String newMessage =
-            bundle.getString("bot.admin.group.name") + " " + group.getName() + "\n" +
-            bundle.getString("bot.admin.customers.count") + " " + group.getCustomers().size();
+        StringBuilder newMessage =
+            new StringBuilder(bundle.getString("bot.admin.group.name") + " " + group.getName() + "\n" +
+                bundle.getString("bot.admin.customers.count") + " " + group.getCustomers().size());
 
         int i = 1;
         for(CustomersDTO customer: group.getCustomers()){
 //            if(){}
-            newMessage += String.format("\n %d. %s", i++, customer.getUsername());
+            newMessage.append(String.format("\n %d. %s", i++, customer.getUsername()));
         }
 
-        boolean result = basicFunction(manager, update.getCallbackQuery(), newMessage);
+        boolean result = basicFunction(manager, update.getCallbackQuery(), newMessage.toString());
         if(!result){
             wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.please.connect.to.developer"));
             return false;

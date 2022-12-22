@@ -22,4 +22,7 @@ public interface BotTokenRepository extends JpaRepository<BotToken, Long> {
     Boolean existsByToken(String token);
 
     Optional<BotToken> findByToken(String token);
+
+    @Query(value = "SELECT b FROM BotToken b WHERE b.createdBy = (SELECT u FROM User u WHERE u.createdBy = (SELECT ct.phoneNumber FROM CustomerTelegram ct WHERE ct.telegramId = :managerId))")
+    Optional<BotToken> findByManagerId(@Param("managerId") Long managerId);
 }

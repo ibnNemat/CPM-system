@@ -59,9 +59,11 @@ public class GroupsServiceImpl implements GroupsService {
     @Override
     public GroupsDTO findOneByTelegramId(Long telegramId) {
         if(telegramId == null)return null;
-        Optional<Groups> groupsOptional = groupsRepository.findByTelegramId(telegramId);
+        Optional<Groups> groupsOptional = groupsRepository.findById(telegramId);
 
-        return groupsOptional.map(groupsMapper::toDto).orElse(null);
+        if(groupsOptional.isEmpty())return null;
+
+        return groupsOptional.map(GroupMapper::toDto).get();
     }
 
     @Override
@@ -77,7 +79,24 @@ public class GroupsServiceImpl implements GroupsService {
                 .success(false).message("Data is not found!").build();
         }
 
-        GroupsDTO group = groupsOptional.map(groupsMapper::toDto).get();
+        GroupsDTO group = groupsOptional.map(GroupMapper::toDto).get();
+        return ResponseDTO.<GroupsDTO>builder()
+            .success(true).message("OK").responseData(group).build();
+    }
+
+    @Override
+    public ResponseDTO<GroupsDTO> findByCustomerId(Long customerId) {
+        if(customerId == null){
+            return ResponseDTO.<GroupsDTO>builder()
+                .success(false).message("Parameter \"Customer id\" is null or empty!").build();
+        }
+
+        Optional<Groups> groupsOptional = groupsRepository.findByCustomerId(customerId);
+        if(groupsOptional.isEmpty()){
+            return ResponseDTO.<GroupsDTO>builder()
+                .success(false).message("Data is not found!").build();
+        }
+        GroupsDTO group = groupsOptional.map(GroupMapper::toDto).get();
         return ResponseDTO.<GroupsDTO>builder()
             .success(true).message("OK").responseData(group).build();
     }

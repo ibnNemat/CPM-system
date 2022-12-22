@@ -65,4 +65,6 @@ public interface PaymentService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    ResponseDTO<PaymentDTO> getByCustomerId(Long customerId);
 }

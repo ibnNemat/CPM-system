@@ -297,4 +297,22 @@ public class PaymentServiceImpl implements PaymentService {
         log.debug("Request to delete PaymentDTO : {}", id);
         paymentRepository.deleteById(id);
     }
+
+    @Override
+    public ResponseDTO<PaymentDTO> getByCustomerId(Long customerId) {
+        if(customerId == null){
+            return ResponseDTO.<PaymentDTO>builder()
+                .success(false).message("Parameter \"Customer id\" is null!").build();
+        }
+
+        Optional<Payment> paymentOptional = paymentRepository.findByCustomerId(customerId);
+        if(paymentOptional.isEmpty()){
+            return ResponseDTO.<PaymentDTO>builder()
+                .success(false).message("Data is not found!").build();
+        }
+
+        PaymentDTO dto = paymentOptional.map(PaymentsMapper::toDto).get();
+        return ResponseDTO.<PaymentDTO>builder()
+            .success(true).message("OK").responseData(dto).build();
+    }
 }

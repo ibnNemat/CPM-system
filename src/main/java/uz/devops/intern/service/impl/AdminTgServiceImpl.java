@@ -61,12 +61,17 @@ public class AdminTgServiceImpl implements AdminTgService {
             return false;
         }
 
+
         ResponseDTO<CustomerTelegramDTO> response =
             customerTelegramService.getCustomerByTelegramId(userId);
 
         if(update.hasMessage()){
+            if(!update.getMessage().getChatId().equals(update.getMessage().getFrom().getId())){
+                return false;
+            }
+
             String languageCode =
-                update.getMessage().getFrom().getLanguageCode();
+            update.getMessage().getFrom().getLanguageCode();
 
             ResourceBundle resourceBundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(languageCode);
 
@@ -85,6 +90,12 @@ public class AdminTgServiceImpl implements AdminTgService {
 
             else if(messageText.contains("/")){
                 log.info("\"/\" contains in Message!");
+//                if(response.getResponseData().getStep() == 5){
+//                    ResourceBundle bundle = ResourceBundleUtils.getResourceBundleUsingLanguageCode(response.getResponseData().getLanguageCode());
+//                    SendMessage sendMessage = TelegramsUtil.sendMessage(response.getResponseData().getTelegramId(), bundle.getString("bot.admin.error.commands.does.not.works.on.adding.groups"));
+//                    adminFeign.sendMessage(sendMessage);
+//                    log.warn("Manager send command while adding bot to group! Manager id: {} | Command: {}", response.getResponseData().getTelegramId(), messageText);
+//                }
                 BotCommand command = commandsMap.getOrDefault(messageText, commandsMap.get("/unknown"));
                 return command.executeCommand(update, userId);
             }
@@ -100,6 +111,9 @@ public class AdminTgServiceImpl implements AdminTgService {
 
         }
         else if(update.hasCallbackQuery() && response.getSuccess()){
+            if(!update.getCallbackQuery().getMessage().getChatId().equals(update.getCallbackQuery().getFrom().getId())){
+                return false;
+            }
             return logic(update, response);
         }
 

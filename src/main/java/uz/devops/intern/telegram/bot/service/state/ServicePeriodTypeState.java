@@ -4,13 +4,16 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import uz.devops.intern.domain.enumeration.PeriodType;
 import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.redis.ServicesRedisDTO;
 import uz.devops.intern.redis.ServicesRedisRepository;
+import uz.devops.intern.service.CustomerTelegramService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
+import uz.devops.intern.telegram.bot.keyboards.AdminMenuKeys;
 import uz.devops.intern.telegram.bot.keyboards.ServicePeriodsKeys;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
@@ -27,6 +30,8 @@ public class ServicePeriodTypeState extends State<ServiceFSM>{
     private AdminFeign adminFeign;
     private ServicePeriodsKeys servicePeriodsKeys;
     private final ServicePeriodCountState servicePeriodCountState;
+    private final AdminMenuKeys adminMenuKeys;
+    private CustomerTelegramService customerTelegramService;
 
     public ServicePeriodTypeState(ServiceFSM context, ServicePeriodCountState servicePeriodCountState) {
         super(context, context.getAdminFeign());
@@ -34,6 +39,8 @@ public class ServicePeriodTypeState extends State<ServiceFSM>{
         this.adminFeign = context.getAdminFeign();
         this.servicePeriodsKeys = context.getServicePeriodsKeys();
         this.servicePeriodCountState = servicePeriodCountState;
+        this.adminMenuKeys = context.getAdminMenuKeys();
+        this.customerTelegramService = context.getCustomerTelegramService();
     }
 
     @Override
@@ -42,6 +49,17 @@ public class ServicePeriodTypeState extends State<ServiceFSM>{
         boolean isThereMessageInUpdate = checkUpdateInside(update, manager.getTelegramId());
         if(!isThereMessageInUpdate) return false;
 
+        boolean isTrue = isManagerPressCancelButton(update, manager);
+        if(isTrue){
+            ReplyKeyboardMarkup menuMarkup = adminMenuKeys.createMenu(manager.getLanguageCode());
+            String newMessage = bundle.getString("bot.admin.service.process.is.canceled");
+            SendMessage sendMessage = TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage, menuMarkup);
+            adminFeign.sendMessage(sendMessage);
+            manager.setStep(7);
+            customerTelegramService.update(manager);
+            context.changeState(new ServiceNameState(context));
+            return false;
+        }
         Message message = update.getMessage();
         String messageText = message.getText();
         Long managerId = message.getFrom().getId();
@@ -64,9 +82,10 @@ public class ServicePeriodTypeState extends State<ServiceFSM>{
         redisDTO.getServicesDTO().setPeriodType(getPeriodType(bundle, messageText));
         servicesRedisRepository.save(redisDTO);
 
+        ReplyKeyboardMarkup markup = TelegramsUtil.createCancelButton(bundle);
         String newMessage = bundle.getString("bot.admin.send.service.how.long");
         SendMessage sendMessage =
-            TelegramsUtil.sendMessage(managerId, newMessage, new ReplyKeyboardRemove(true));
+            TelegramsUtil.sendMessage(managerId, newMessage, markup);
         adminFeign.sendMessage(sendMessage);
         context.changeState(servicePeriodCountState);
         return true;

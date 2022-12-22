@@ -2,6 +2,7 @@ package uz.devops.intern.telegram.bot.service.register;
 
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import org.glassfish.jersey.server.Uri;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ import java.util.ResourceBundle;
 @Service
 //@RequiredArgsConstructor
 public class ManagerBotToken extends BotStrategyAbs {
-
+    private final String telegramAPI = "https://api.telegram.org/bot";
     private final String STATE = "MANAGER_NEW_BOT_TOKEN";
     private final Integer STEP = 3;
     private final Integer NEXT_STEP = 4;
@@ -87,7 +88,11 @@ public class ManagerBotToken extends BotStrategyAbs {
                 newBotToken, manager, telegramResponse);
             return false;
         }
-
+        boolean isDeletedWebhook = deleteWebhook(newBotToken);
+        if(!isDeletedWebhook){
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.please.connect.to.developer"));
+            return false;
+        }
         User bot = telegramResponse.getResult();
         WebhookResponseDTO webhookResponse = setWebhookToNewBot(newBotToken, bot.getId());
         String result = checkWebhookResponse(webhookResponse);
@@ -155,5 +160,15 @@ public class ManagerBotToken extends BotStrategyAbs {
         botTokenService.save(botTokenDTO);
     }
 
-
+    private boolean deleteWebhook(String token){
+        URI uri = createCustomerURI(token);
+        try {
+            WebhookResponseDTO response = customerFeign.deleteWebhook(uri, true);
+            log.info("Webhook is deleted! Bot token: {} | Response: {}", token, response);
+            return true;
+        }catch (FeignException e){
+            log.error("Error while deleting webhook! Token: {} | Exception: {}", token, e.getMessage());
+            return false;
+        }
+    }
 }

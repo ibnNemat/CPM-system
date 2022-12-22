@@ -2,6 +2,7 @@ package uz.devops.intern.feign;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.repository.query.Param;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,6 +17,7 @@ import uz.devops.intern.domain.ResponseFromTelegram;
 import uz.devops.intern.telegram.bot.dto.BotCommandsMenuDTO;
 import uz.devops.intern.telegram.bot.dto.EditMessageDTO;
 import uz.devops.intern.telegram.bot.dto.EditMessageTextDTO;
+import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
 
 import java.util.List;
 
@@ -37,4 +39,7 @@ public interface AdminFeign {
 
     @PostMapping("/deleteMyCommands")
     ResponseFromTelegram<Boolean> deleteMyCommands();
+
+    @GetMapping("/leaveChat")
+    WebhookResponseDTO leaveChat(@RequestParam("chat_id") String chat_id);
 }

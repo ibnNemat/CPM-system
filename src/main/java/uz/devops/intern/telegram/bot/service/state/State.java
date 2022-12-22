@@ -7,7 +7,11 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
+import uz.devops.intern.telegram.bot.keyboards.AdminMenuKeys;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
+
+import java.util.ResourceBundle;
 
 public abstract class State<T> {
 
@@ -46,6 +50,19 @@ public abstract class State<T> {
             return false;
         }
 
+        return true;
+    }
+
+    public boolean isManagerPressCancelButton(Update update, CustomerTelegramDTO manager){
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
+        if(!update.hasMessage() || !update.getMessage().hasText()){
+            return false;
+        }
+
+        String messageText = update.getMessage().getText();
+        if(!bundle.getString("bot.admin.keyboard.cancel.process").equals(messageText)){
+            return false;
+        }
         return true;
     }
 }

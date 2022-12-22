@@ -44,7 +44,7 @@ public class TelegramBotStrategyConfig {
     }
 
     private void setBotCommandsWithRest(List<BotCommandAbs> commands){
-        List<String> ignoreCommands = List.of("/start", "/unknown");
+        List<String> ignoreCommands = List.of("/start", "/unknown", "/menu");
         List<BotCommandDTO> commandList = new ArrayList<>();
         for(BotCommand command: commands){
             if(ignoreCommands.contains(command.getCommand())){

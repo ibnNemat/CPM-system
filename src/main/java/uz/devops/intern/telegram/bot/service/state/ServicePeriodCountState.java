@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import uz.devops.intern.domain.User;
 import uz.devops.intern.feign.AdminFeign;
@@ -59,6 +60,18 @@ public class ServicePeriodCountState extends State<ServiceFSM>{
         boolean isThereMessageInUpdate = checkUpdateInside(update, managerDTO.getTelegramId());
         if(!isThereMessageInUpdate) return false;
 
+        boolean isTrue = isManagerPressCancelButton(update, managerDTO);
+        if(isTrue){
+            ReplyKeyboardMarkup menuMarkup = adminMenuKeys.createMenu(managerDTO.getLanguageCode());
+            String newMessage = bundle.getString("bot.admin.service.process.is.canceled");
+            SendMessage sendMessage = TelegramsUtil.sendMessage(managerDTO.getTelegramId(), newMessage, menuMarkup);
+            adminFeign.sendMessage(sendMessage);
+
+            managerDTO.setStep(7);
+            customerTelegramService.update(managerDTO);
+            context.changeState(new ServiceNameState(context));
+            return false;
+        }
         Message message = update.getMessage();
         String messageText = message.getText();
         Long managerId = message.getFrom().getId();
@@ -103,10 +116,11 @@ public class ServicePeriodCountState extends State<ServiceFSM>{
             ReplyKeyboardMarkup markup = adminMenuKeys.createMenu(managerDTO.getLanguageCode());
             SendMessage sendMessage = TelegramsUtil.sendMessage(managerId, newMessage, markup);
             adminFeign.sendMessage(sendMessage);
-            managerDTO.setStep(4);
+            managerDTO.setStep(7);
             customerTelegramService.update(managerDTO);
             return false;
         }
+        removeReplyCancelButton(managerDTO);
 
         String newMessage = bundle.getString("bot.admin.send.groups.are.added.to.service");
         InlineKeyboardMarkup markup = createGroupButtons(groups, bundle);
@@ -129,8 +143,8 @@ public class ServicePeriodCountState extends State<ServiceFSM>{
             label.add(row);
         }
 
-        InlineKeyboardButton button = new InlineKeyboardButton(bundle.getString("bot.admin.send.that.is.all"));
-        button.setCallbackData("ENOUGH");
+        InlineKeyboardButton button = new InlineKeyboardButton(bundle.getString("bot.admin.keyboard.cancel.process"));
+        button.setCallbackData("CANCEL");
 
         List<InlineKeyboardButton> row = new ArrayList<>();
         row.add(button);
@@ -142,5 +156,11 @@ public class ServicePeriodCountState extends State<ServiceFSM>{
         return markup;
     }
 
+    private void removeReplyCancelButton(CustomerTelegramDTO manager){
 
+        String messageForRemoveButton = "\uD83D\uDC65";
+        ReplyKeyboardRemove removeMarkup = new ReplyKeyboardRemove(true);
+        SendMessage sendMessage = TelegramsUtil.sendMessage(manager.getTelegramId(), messageForRemoveButton, removeMarkup);
+        adminFeign.sendMessage(sendMessage);
+    }
 }

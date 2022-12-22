@@ -2,9 +2,11 @@ package uz.devops.intern.telegram.bot.service.register;
 
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
@@ -23,6 +25,7 @@ import uz.devops.intern.service.*;
 import uz.devops.intern.service.dto.*;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.AdminKeyboards;
+import uz.devops.intern.telegram.bot.dto.PinMessageDTO;
 import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
 import uz.devops.intern.telegram.bot.keyboards.AdminMenuKeys;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
@@ -35,7 +38,6 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class BotAddGroup extends BotStrategyAbs {
-
     private final String STATE = "MANAGER_BOT_ADD_GROUP";
     private final Integer STEP = 5;
     private final Integer NEXT_STEP = 6;
@@ -46,6 +48,8 @@ public class BotAddGroup extends BotStrategyAbs {
     private final TelegramGroupService telegramGroupService;
     private final CustomerTelegramService customerTelegramService;
     private final OrganizationService organizationService;
+    @Value("${telegram.token}")
+    private String BOT_TOKEN;
 
     @Override
     public String getState() {
@@ -152,10 +156,10 @@ public class BotAddGroup extends BotStrategyAbs {
     }
 
     public boolean botIsLeft(User bot){
-        adminFeign.sendMessage(
-            SendMessage.builder()
-                .chatId("736527480")
-                .text("New bot is add! Bot: " + bot.getId() + " " + bot.getUserName()).build());
+//        adminFeign.sendMessage(
+//            SendMessage.builder()
+//                .chatId("736527480")
+//                .text("New bot is add! Bot: " + bot.getId() + " " + bot.getUserName()).build());
         ResponseDTO<BotTokenDTO> responseDTO = botTokenService.findByChatId(bot.getId(), true);
         if(!responseDTO.getSuccess()){
             log.warn("Bot is not found! Bot telegram id: {} | User: {} ", bot.getId(), bot);
@@ -171,6 +175,14 @@ public class BotAddGroup extends BotStrategyAbs {
         boolean isBot = user.getIsBot();
         if(!isBot){
             log.warn("New user is not bot! Bot id: {} | New user: {}", botId, user);
+            return false;
+        }
+
+        String myBotTgId = BOT_TOKEN.split(":")[0];
+        if(String.valueOf(user.getId()).equals(myBotTgId)){
+            log.warn("Manager add to group not that bot! Bot id: {}", botId);
+            WebhookResponseDTO response = adminFeign.leaveChat(String.valueOf(chat.getId()));
+            log.info("Bot is removed from group! Response: {} ", response);
             return false;
         }
 
@@ -243,10 +255,14 @@ public class BotAddGroup extends BotStrategyAbs {
             log.warn("User is not found while saving new group! User phone number: {}", phoneNumber);
             return null;
         }
+
         WebUtils.setUserToContextHolder(responseDTO.getResponseData());
         GroupsDTO group = GroupsDTO.builder()
-            .name(groupName).groupOwnerName(responseDTO.getResponseData().getFirstName()).build();
-        return groupsService.save(group);
+            .name(groupName).build();
+
+        group = groupsService.save(group);
+        log.info("Group is saved successfully!");
+        return group;
     }
 
     private void sendInviteLink(User bot, Long groupId){
@@ -268,9 +284,15 @@ public class BotAddGroup extends BotStrategyAbs {
         ResponseDTO<BotTokenDTO> response =
             botTokenService.findByChatId(bot.getId(), true);
 
+        if(!response.getSuccess() || response.getResponseData() == null){
+            log.warn("Bot is not found! Bot id: {} | Group id: {}", bot.getId(), groupId);
+            return;
+        }
+
         URI uri = createCustomerURI(response.getResponseData().getToken());
         try {
-            customerFeign.sendMessage(uri, sendMessage);
+            ResponseFromTelegram<Message> responseMessage = customerFeign.sendMessage(uri, sendMessage);
+            pinMessage(response.getResponseData(), groupId, responseMessage.getResult().getMessageId());
             log.info("Link is send successfully, Bot id: {} | Groupd id: {} | Uri: {}",
                 bot.getId(), groupId, uri);
         }catch (FeignException e){
@@ -278,6 +300,19 @@ public class BotAddGroup extends BotStrategyAbs {
             adminFeign.sendMessage(
                 SendMessage.builder().chatId("736527480").text(e.getMessage().toString()).build()
             );
+        }
+    }
+
+    private void pinMessage(BotTokenDTO bot, Long groupId, Integer messageId){
+        URI uri = createCustomerURI(bot.getToken());
+        PinMessageDTO pinMessageDTO = PinMessageDTO.builder()
+            .chatId(String.valueOf(groupId)).messageId(messageId).build();
+        try {
+            WebhookResponseDTO response = customerFeign.pinMessage(uri, pinMessageDTO);
+            log.info("Message is pinned, Message id: {} | Bot token: {} | Response: {}", messageId, bot.getToken(), response);
+        }catch (FeignException e){
+            log.error("Error while pinning message! Message id: {} | Bot token: {} | Exception: {}",
+                messageId, bot.getToken(), e.getMessage());
         }
     }
 }

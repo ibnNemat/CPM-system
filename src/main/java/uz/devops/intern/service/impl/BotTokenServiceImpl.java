@@ -131,5 +131,23 @@ public class BotTokenServiceImpl implements BotTokenService {
             .success(true).message("OK").responseData(dto).build();
     }
 
+    @Override
+    public ResponseDTO<BotTokenDTO> findByManagerId(Long managerTgId) {
+        if(managerTgId == null){
+            return ResponseDTO.<BotTokenDTO>builder()
+                .success(false).message("Parameter \"Manager telegram id\" is null!").build();
+        }
+
+        Optional<BotToken> botTokenOptional = botTokenRepository.findByManagerId(managerTgId);
+        if(botTokenOptional.isEmpty()){
+            return ResponseDTO.<BotTokenDTO>builder()
+                .success(false).message("Data is not found!").build();
+        }
+
+        BotTokenDTO dto = botTokenOptional.map(botTokenMapper::toDto).get();
+        return ResponseDTO.<BotTokenDTO>builder()
+            .success(true).message("OK").responseData(dto).build();
+    }
+
 
 }

@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.redis.ServicesRedisDTO;
 import uz.devops.intern.redis.ServicesRedisRepository;
@@ -42,12 +45,14 @@ public class ServiceNameState extends State<ServiceFSM> {
         boolean isThereMessageInUpdate = checkUpdateInside(update, manager.getTelegramId());
         if (!isThereMessageInUpdate) return isThereMessageInUpdate;
 
+
         Message message = update.getMessage();
         String messageText = message.getText();
         Long managerId = message.getFrom().getId();
 
+        ReplyKeyboardMarkup markup = TelegramsUtil.createCancelButton(bundle);
         String newMessage = bundle.getString("bot.admin.send.organization.price");
-        SendMessage sendMessage = TelegramsUtil.sendMessage(managerId, newMessage);
+        SendMessage sendMessage = TelegramsUtil.sendMessage(managerId, newMessage, markup);
 
         adminFeign.sendMessage(sendMessage);
 

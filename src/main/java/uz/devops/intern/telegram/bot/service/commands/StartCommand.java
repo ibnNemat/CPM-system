@@ -41,6 +41,7 @@ public class StartCommand extends BotCommandAbs {
             customerTelegramService.findByTelegramId(message.getFrom().getId());
 
         if(response.getSuccess() && response.getResponseData() != null) {
+            // Todo if exists return something
             return false;
         }
         startProcess(message, null);

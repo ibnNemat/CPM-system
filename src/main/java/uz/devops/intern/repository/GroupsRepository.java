@@ -37,4 +37,8 @@ public interface GroupsRepository extends GroupsRepositoryWithBagRelationships, 
     Optional<Groups> findByTelegramId(@Param("telegramId") Long telegramId);
 
     Optional<Groups> findByName(String name);
+
+    @Query(value = "SELECT * FROM Groups g WHERE id = (SELECT groups_id FROM rel_groups__customers WHERE customers_id = :customerId)"
+        ,nativeQuery = true)
+    Optional<Groups> findByCustomerId(@Param("customerId") Long customerId);
 }

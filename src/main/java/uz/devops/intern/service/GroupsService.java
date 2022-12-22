@@ -73,4 +73,6 @@ public interface GroupsService {
     GroupsDTO findOneByTelegramId(Long telegramId);
 
     ResponseDTO<GroupsDTO> findByName(String name);
+
+    ResponseDTO<GroupsDTO> findByCustomerId(Long customerId);
 }

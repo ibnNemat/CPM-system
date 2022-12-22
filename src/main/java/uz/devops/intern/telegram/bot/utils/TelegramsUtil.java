@@ -11,12 +11,15 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import uz.devops.intern.domain.CustomerTelegram;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -150,5 +153,18 @@ public class TelegramsUtil {
         sendMessage.setReplyMarkup(replyKeyboardRemove);
         sendMessage.enableHtml(true);
         return sendMessage;
+    }
+
+    public static ReplyKeyboardMarkup createCancelButton(ResourceBundle bundle){
+        String buttonText = bundle.getString("bot.admin.keyboard.cancel.process");
+        ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup();
+        markup.setResizeKeyboard(true);
+        KeyboardRow row = new KeyboardRow();
+        row.add(
+            new KeyboardButton(buttonText)
+        );
+
+        markup.setKeyboard(List.of(row));
+        return markup;
     }
 }

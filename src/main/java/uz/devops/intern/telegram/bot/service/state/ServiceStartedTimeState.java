@@ -9,8 +9,10 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.redis.ServicesRedisDTO;
 import uz.devops.intern.redis.ServicesRedisRepository;
+import uz.devops.intern.service.CustomerTelegramService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
+import uz.devops.intern.telegram.bot.keyboards.AdminMenuKeys;
 import uz.devops.intern.telegram.bot.keyboards.ServicePeriodsKeys;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
@@ -26,6 +28,8 @@ public class ServiceStartedTimeState extends State<ServiceFSM>{
     private AdminFeign adminFeign;
     private ServicePeriodsKeys servicePeriodsKeys;
     private final ServicePeriodTypeState servicePeriodTypeState;
+    private final AdminMenuKeys adminMenuKeys;
+    private CustomerTelegramService customerTelegramService;
 
     public ServiceStartedTimeState(ServiceFSM context, ServicePeriodTypeState servicePeriodTypeState) {
         super(context, context.getAdminFeign());
@@ -33,6 +37,8 @@ public class ServiceStartedTimeState extends State<ServiceFSM>{
         this.adminFeign = context.getAdminFeign();
         this.servicePeriodsKeys = context.getServicePeriodsKeys();
         this.servicePeriodTypeState = servicePeriodTypeState;
+        this.adminMenuKeys = context.getAdminMenuKeys();
+        this.customerTelegramService = context.getCustomerTelegramService();
     }
 
     @Override
@@ -41,6 +47,18 @@ public class ServiceStartedTimeState extends State<ServiceFSM>{
         boolean isThereMessageInUpdate = checkUpdateInside(update, manager.getTelegramId());
         if(!isThereMessageInUpdate)return false;
 
+        boolean isTrue = isManagerPressCancelButton(update, manager);
+        if(isTrue){
+            ReplyKeyboardMarkup menuMarkup = adminMenuKeys.createMenu(manager.getLanguageCode());
+            String newMessage = bundle.getString("bot.admin.service.process.is.canceled");
+            SendMessage sendMessage = TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage, menuMarkup);
+            adminFeign.sendMessage(sendMessage);
+
+            manager.setStep(7);
+            customerTelegramService.update(manager);
+            context.changeState(new ServiceNameState(context));
+            return false;
+        }
         Message message = update.getMessage();
 
         String messageText = message.getText();
@@ -98,6 +116,7 @@ public class ServiceStartedTimeState extends State<ServiceFSM>{
 
         String newMessage = bundle.getString("bot.admin.send.service.period");
         ReplyKeyboardMarkup markup = servicePeriodsKeys.createReplyKeyboardMarkup(manager.getLanguageCode(), 2);
+
         SendMessage sendMessage = TelegramsUtil.sendMessage(managerId, newMessage, markup);
         adminFeign.sendMessage(sendMessage);
         context.changeState(servicePeriodTypeState);

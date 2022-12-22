@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import uz.devops.intern.redis.GroupRedisDTO;
 import uz.devops.intern.redis.GroupRedisRepository;
 import uz.devops.intern.service.GroupsService;
@@ -17,6 +18,7 @@ import uz.devops.intern.telegram.bot.dto.EditMessageDTO;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -56,7 +58,10 @@ public class RenameGroup extends BotStrategyAbs {
         if(callbackData.equals("BACK")){
 //            toBack(update.getCallbackQuery(), manager.getLanguageCode());
 //            manager.setStep(PREV_STEP);
-            update.getCallbackQuery().setData(callbackData);
+//            InlineKeyboardButton button =
+//                update.getCallbackQuery().getMessage().getReplyMarkup().getKeyboard().get(0).get(0);
+//            System.out.println(button.getCallbackData());
+            update.getCallbackQuery().setData(update.getCallbackQuery().getData());
             refactorGroup.execute(update, manager);
             return true;
         }

@@ -25,7 +25,7 @@ telegram:
   token: 5225793240:AAEDojpbQM780zRMWIvmJXCIGeEBXWoY6RM
 
 ngrok:
-  url: https://8b8d-188-113-228-80.in.ngrok.io
+  url: https://771f-83-221-180-161.in.ngrok.io
 
 spring:
   devtools:

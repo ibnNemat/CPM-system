@@ -62,4 +62,11 @@ public class GroupMapper {
         groups.setId(g.getId());
         return groups;
     }
+
+    public static GroupsDTO toDtoForSavingGroup(Groups group){
+        return GroupsDTO.builder()
+            .id(group.getId())
+            .name(group.getName())
+            .build();
+    }
 }

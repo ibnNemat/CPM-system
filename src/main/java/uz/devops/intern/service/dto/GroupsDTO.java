@@ -1,9 +1,6 @@
 package uz.devops.intern.service.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -15,7 +12,9 @@ import javax.validation.constraints.*;
  * A DTO for the {@link uz.devops.intern.domain.Groups} entity.
  */
 @SuppressWarnings("common-java:DuplicatedBlocks")
-@Data
+//@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

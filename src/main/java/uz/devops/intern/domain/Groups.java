@@ -14,7 +14,7 @@ import javax.validation.constraints.*;
  */
 @Entity
 @Table(name = "groups")
-@ToString
+//@ToString
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Groups implements Serializable {
 
