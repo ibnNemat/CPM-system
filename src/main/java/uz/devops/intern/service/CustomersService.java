@@ -4,6 +4,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import uz.devops.intern.domain.Customers;
+import uz.devops.intern.domain.User;
 import uz.devops.intern.service.dto.CustomersDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 
@@ -68,4 +69,5 @@ public interface CustomersService {
     void replenishCustomerBalance(Double money, Long customerId);
 
     void updateCustomerPhoneNumber(String phoneNumber, Long customerId);
+    Boolean existsByUser(User user);
 }

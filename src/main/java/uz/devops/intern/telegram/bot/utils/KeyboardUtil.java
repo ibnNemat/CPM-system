@@ -8,6 +8,7 @@ import uz.devops.intern.service.utils.ResourceBundleUtils;
 
 import java.util.*;
 
+import static uz.devops.intern.constants.ResourceBundleConstants.BOT_PHONE_NUMBER_BUTTON;
 import static uz.devops.intern.service.utils.ResourceBundleUtils.getResourceBundleUsingTelegramUser;
 
 public class KeyboardUtil {
@@ -57,7 +58,7 @@ public class KeyboardUtil {
 
     public static ReplyKeyboardMarkup sendMarkup(User telegramUser){
         ResourceBundle resourceBundle = getResourceBundleUsingTelegramUser(telegramUser);
-        KeyboardButton button = new KeyboardButton(resourceBundle.getString("bot.message.phone.number.button"));
+        KeyboardButton button = new KeyboardButton(resourceBundle.getString(BOT_PHONE_NUMBER_BUTTON));
         button.setRequestContact(true);
 
         KeyboardRow row = new KeyboardRow();

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uz.devops.intern.constants.ResponseMessageConstants;
 import uz.devops.intern.domain.*;
 import uz.devops.intern.repository.PaymentRepository;
 import uz.devops.intern.repository.ServicesRepository;
@@ -26,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static uz.devops.intern.service.dto.ResponseCode.*;
+import static uz.devops.intern.constants.ResponseCodeConstants.*;
 
 /**
  * Service Implementation for managing {@link uz.devops.intern.domain.Payment}.
@@ -97,7 +98,7 @@ public class PaymentServiceImpl implements PaymentService {
         Optional<Services> servicesOptional = servicesRepository.findById(service.getId());
 
         if (servicesOptional.isEmpty() || customerPayer == null) {
-            return new ResponseDTO<>(NOT_FOUND, ResponseMessage.NOT_FOUND, false, null);
+            return new ResponseDTO<>(NOT_FOUND, ResponseMessageConstants.NOT_FOUND, false, null);
         }
 
         requestPayment.setCustomer(customerPayer);
@@ -200,13 +201,13 @@ public class PaymentServiceImpl implements PaymentService {
         Optional<CustomersDTO> customerInDataBaseOptional = customersService.findOne(customer.getId());
 
         if (customerInDataBaseOptional.isEmpty()) {
-            return new ResponseDTO<>(NOT_FOUND, ResponseMessage.NOT_FOUND, false, null);
+            return new ResponseDTO<>(NOT_FOUND, ResponseMessageConstants.NOT_FOUND, false, null);
         }
 
         CustomersDTO customerInDataBase = customerInDataBaseOptional.get();
         Double customerAccount = customerInDataBase.getBalance();
         if (customerAccount < payment.getPaidMoney()) {
-            return new ResponseDTO<>(NOT_ENOUGH, ResponseMessage.NOT_ENOUGH, false, null);
+            return new ResponseDTO<>(NOT_ENOUGH, ResponseMessageConstants.NOT_ENOUGH, false, null);
         }
         return new ResponseDTO<>(null, "", true, customerAccount);
     }
@@ -254,6 +255,15 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    public List<PaymentDTO> findAllByCustomerAndGroupAndServiceAndStartedPeriodAndIsPaidFalse(Customers customers, Services service, Groups group, LocalDate startedPeriod) {
+        log.debug("Request to get all customer Payments paid is false");
+        List<Payment> paymentList = paymentRepository.findAllByCustomerAndGroupAndServiceAndStartedPeriodAndIsPaidFalse(customers, group, service, startedPeriod);
+        if (paymentList.size() == 0) return null;
+
+        return PaymentsMapper.paymentDTOList(paymentList);
+    }
+
+    @Override
     public List<PaymentDTO> getAllCustomerPaymentsPayedIsFalse(Customers customer) {
         log.debug("Request to get all customer Payments which payment is false");
         List<Payment> paymentList = paymentRepository.findAllByCustomerAndIsPaidFalseOrderByStartedPeriod(customer);
@@ -273,13 +283,14 @@ public class PaymentServiceImpl implements PaymentService {
         List<PaymentDTO> paymentDTOList = customerPayments.stream()
             .map(PaymentsMapper::toDto)
             .toList();
-        return new ResponseDTO<>(OK, ResponseMessage.OK, true, paymentDTOList);
+        return new ResponseDTO<>(OK, ResponseMessageConstants.OK, true, paymentDTOList);
     }
 
 
 
     @Override
     public List<PaymentDTO> getAllPaymentsCreatedByGroupManager(){
+        log.debug("Request to get all payments created by group manager");
         String managerName = ContextHolderUtil.getUsernameFromContextHolder();
         List<Payment> paymentList = paymentRepository.findAllByGroupOwnerName(managerName);
         return PaymentsMapper.paymentDTOList(paymentList);

@@ -56,7 +56,7 @@ public class CustomerTelegram implements Serializable {
     private Long chatId;
 
     @JsonIgnoreProperties(value = { "user", "groups" }, allowSetters = true)
-    @OneToOne
+    @OneToOne()
     @JoinColumn(unique = true)
     private Customers customer;
 

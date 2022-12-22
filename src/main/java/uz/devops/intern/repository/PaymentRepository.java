@@ -21,6 +21,10 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
         Customers customer, Groups group, Services service, LocalDate startedDate
     );
 
+    List<Payment> findAllByCustomerAndGroupAndServiceAndStartedPeriodAndIsPaidFalse(
+        Customers customer, Groups group, Services service, LocalDate startedDate
+    );
+
     @Modifying
     @Query("update Payment p set p.paidMoney = p.paidMoney + ?1 " +
         "where p.customer.id = ?2 and p.group.id = ?3 and p.service.id = ?4 and p.startedPeriod = ?5")

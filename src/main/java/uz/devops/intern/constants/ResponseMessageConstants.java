@@ -1,6 +1,6 @@
-package uz.devops.intern.service.dto;
+package uz.devops.intern.constants;
 
-public class ResponseMessage {
+public class ResponseMessageConstants {
     public static final String NOT_UNIQUE = "Field is ambiguous";
     public static final String VALIDATOR_MESSAGE = "Error in validating";
     public static final String SAVED = "Successfully saved!";

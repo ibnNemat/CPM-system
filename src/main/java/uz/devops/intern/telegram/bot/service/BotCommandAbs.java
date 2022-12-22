@@ -16,7 +16,6 @@ import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 public abstract class BotCommandAbs implements BotCommand {
 
     protected final Logger log = LoggerFactory.getLogger(BotCommandAbs.class);
-
     protected final AdminFeign adminFeign;
 
     @Autowired

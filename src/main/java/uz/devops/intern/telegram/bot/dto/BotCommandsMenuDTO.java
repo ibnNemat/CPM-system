@@ -13,17 +13,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({
-    "commands", "language_code"
-})
+@JsonPropertyOrder({"commands", "language_code"})
 public class BotCommandsMenuDTO {
-
     @JsonProperty("commands")
     private List<BotCommandDTO> commands;
-
-//    @JsonProperty("scope")
-//    private BotCommandScope scope;
-
-//    @JsonProperty("language_code")
-//    private String languageCode = "en_US";
 }

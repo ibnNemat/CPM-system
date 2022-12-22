@@ -1,43 +1,59 @@
 package uz.devops.intern.schedule;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
-import uz.devops.intern.domain.Customers;
-import uz.devops.intern.domain.Groups;
-import uz.devops.intern.domain.Payment;
-import uz.devops.intern.domain.Services;
-import uz.devops.intern.repository.PaymentRepository;
+import uz.devops.intern.domain.*;
+import uz.devops.intern.file.io.ConvertExcelToPDF;
+import uz.devops.intern.service.CustomerTelegramService;
+import uz.devops.intern.service.MailServiceHelper;
+import uz.devops.intern.service.PaymentService;
+import uz.devops.intern.service.dto.PaymentDTO;
 
 import java.time.LocalDate;
-import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
+
+import static uz.devops.intern.constants.ResourceBundleConstants.*;
+import static uz.devops.intern.constants.StringFormatConstants.STRING_FORMAT_MAIL_SEND_DESCRIPTION;
+import static uz.devops.intern.service.utils.ResourceBundleUtils.getResourceBundleUsingCustomerTelegram;
+import static uz.devops.intern.telegram.bot.utils.TelegramCustomerUtils.buildCustomerPayments;
 
 @Component
 @EnableScheduling
+@RequiredArgsConstructor
+@Slf4j
 public class TimerTaskToSendMessage {
-    private final PaymentRepository paymentRepository;
-    public TimerTaskToSendMessage(PaymentRepository paymentRepository) {
-        this.paymentRepository = paymentRepository;
-    }
+    private final MailServiceHelper mailServiceHelper;
+    private final PaymentService paymentService;
+    private final CustomerTelegramService customerTelegramService;
+    private final ConvertExcelToPDF excelToPDF;
+    private static ResourceBundle resourceBundle = ResourceBundle.getBundle("message", new Locale("uz"));
+
     public void sendNotificationIfCustomerNotPaidForService(
         Customers customer, Groups group, Services service, LocalDate startedPeriod, LocalDate endPeriod){
         Timer timer = new Timer();
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                Optional<Payment> paymentOptional = paymentRepository
-                    .findByCustomerAndGroupAndServiceAndStartedPeriodAndIsPaidFalse(
-                    customer, group, service, startedPeriod);
+                List<PaymentDTO> paymentList = paymentService
+                    .findAllByCustomerAndGroupAndServiceAndStartedPeriodAndIsPaidFalse(
+                    customer,  service, group, startedPeriod);
 
-                if (paymentOptional.isPresent()){
-                    Payment payment = paymentOptional.get();
-                    System.out.println("============= Qarzdorlik ==============");
-                    System.out.println(payment);
+                Optional<CustomerTelegram> optionalCustomerTelegram = customerTelegramService.findByCustomer(customer);
+                optionalCustomerTelegram.ifPresent(customerTelegram -> resourceBundle = getResourceBundleUsingCustomerTelegram(customerTelegram));
+
+                if (paymentList != null){
+                    log.info("customer of debts: " + paymentList);
+                    String text = String.format(STRING_FORMAT_MAIL_SEND_DESCRIPTION, resourceBundle.getString(MAIL_SAY_HELLO_CUSTOMER), customer.getUsername(), resourceBundle.getString(MAIL_MESSAGE_DEBTS_DESCRIPTION), resourceBundle.getString(MAIL_MESSAGE_DEBTS));
+
+                    excelToPDF.convertToPDFFromExcel(paymentList, resourceBundle);
+                    mailServiceHelper.sendMessageWithPDF(customer.getUser().getEmail(), resourceBundle.getString(MAIL_MESSAGE_NOTIFICATION_DEBT), text);
+                    log.info("Successfully send message to email customer");
                 }
             }
         };
 
-        timer.scheduleAtFixedRate(timerTask, startedPeriod.toEpochDay(), 5000);
+        timer.scheduleAtFixedRate(timerTask, startedPeriod.toEpochDay(), 1000 * 60);
     }
 }

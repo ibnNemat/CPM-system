@@ -48,13 +48,15 @@ public class NewService extends ManagerMenuAbs{
     @Override
     public boolean todo(Update update, CustomerTelegramDTO manager) {
         ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
-        ReplyKeyboardRemove removeMarkup = new ReplyKeyboardRemove(true);
+        update.getMessage();
 
-        String newMessage = bundle.getString("bot.admin.send.service.name");
-        SendMessage sendMessage = TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage, removeMarkup);
-        adminFeign.sendMessage(sendMessage);
-        manager.setStep(8);
-        registerNewService.rollbackStateToStart();
+//        ReplyKeyboardRemove removeMarkup = new ReplyKeyboardRemove(true);
+//
+//        String newMessage = bundle.getString("bot.admin.send.service.name");
+//        SendMessage sendMessage = TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage, removeMarkup);
+//        adminFeign.sendMessage(sendMessage);
+//        manager.setStep(8);
+//        registerNewService.rollbackStateToStart();
         return true;
     }
 

@@ -81,7 +81,7 @@ public class CustomersResource {
      */
     @PutMapping("/customers")
     public ResponseEntity<ResponseDTO<CustomersDTO>> updateCustomers(@Valid @RequestBody CustomersDTO customersDTO) throws URISyntaxException {
-        log.debug("REST request to update Customers : {}, {}", customersDTO);
+        log.debug("REST request to update Customers : {}", customersDTO);
 
         ResponseDTO<CustomersDTO> result = customersService.update(customersDTO);
         return ResponseEntity.ok(result);

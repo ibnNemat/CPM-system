@@ -10,10 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uz.devops.intern.service.CustomerTelegramService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 @EnableScheduling
 @Component
@@ -56,5 +53,6 @@ public class ScheduleJob {
         };
 
         timer.schedule(timerTask, 1000 * 60 * 15);
+        new Date();
     }
 }

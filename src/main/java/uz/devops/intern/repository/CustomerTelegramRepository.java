@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import uz.devops.intern.domain.CustomerTelegram;
+import uz.devops.intern.domain.Customers;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,4 +38,6 @@ public interface CustomerTelegramRepository extends JpaRepository<CustomerTelegr
 
     @Modifying
     void deleteAllByIdInAndIsActiveFalse(List<Long> ids);
+
+    Optional<CustomerTelegram> findByCustomer(Customers customer);
 }

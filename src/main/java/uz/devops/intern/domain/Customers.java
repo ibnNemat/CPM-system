@@ -37,7 +37,7 @@ public class Customers implements Serializable {
     @OneToOne
     @JoinColumn(unique = true)
     private User user;
-    @ManyToMany(mappedBy = "customers")
+    @ManyToMany(mappedBy = "customers", fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = { "customers", "organization", "services" }, allowSetters = true)
     private Set<Groups> groups = new HashSet<>();
 

@@ -1,5 +1,6 @@
 package uz.devops.intern.telegram.bot.dto;
 
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
@@ -22,3 +23,4 @@ public class BotCommandDTO {
     @JsonProperty("description")
     private String description;
 }
+
