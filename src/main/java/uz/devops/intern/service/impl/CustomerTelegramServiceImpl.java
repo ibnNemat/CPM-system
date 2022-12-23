@@ -73,6 +73,9 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     }
 
     @Override
+    public List<CustomerTelegramDTO> findByTelegramGroupTelegramId(Long telegramId) {
+        log.info("request to get list of CustomerTelegram by telegramId: {}", telegramId);
+        List<CustomerTelegram> customerTelegramList = customerTelegramRepository.getCustomersByChatId(telegramId);
     public List<CustomerTelegramDTO> findByTelegramGroupTelegramId(Long chatId) {
         log.info("request to get list of CustomerTelegram by telegramId: {}", chatId);
         List<CustomerTelegram> customerTelegramList = customerTelegramRepository.findAllByTelegramGroupsChatId(chatId);

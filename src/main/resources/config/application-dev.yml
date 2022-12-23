@@ -23,7 +23,7 @@ logging:
 telegram:
   username: "@UzExpo_centre_bot"
   token: 5225793240:AAEDojpbQM780zRMWIvmJXCIGeEBXWoY6RM
-
+  api: https://api.telegram.org/bot
 ngrok:
   url: https://771f-83-221-180-161.in.ngrok.io
 

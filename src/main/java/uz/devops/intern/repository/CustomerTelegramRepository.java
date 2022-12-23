@@ -38,5 +38,4 @@ public interface CustomerTelegramRepository extends JpaRepository<CustomerTelegr
     void deleteAllByIdInAndIsActiveFalse(List<Long> ids);
 
     Optional<CustomerTelegram> findByCustomer(Customers customer);
-
 }

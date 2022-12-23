@@ -164,4 +164,18 @@ public class TelegramGroupServiceImpl implements TelegramGroupService {
         return ResponseDTO.<List<TelegramGroupDTO>>builder()
             .success(true).message("OK").responseData(telegramGroups).build();
     }
+
+    @Override
+    public ResponseDTO<TelegramGroupDTO> saveAndFlush(TelegramGroupDTO telegramGroupDTO) {
+        if(telegramGroupDTO == null){
+            return ResponseDTO.<TelegramGroupDTO>builder()
+                .success(false).message("Request body \"Telegram group dto\" is null!").build();
+        }
+
+        TelegramGroup entity = telegramGroupMapper.toEntity(telegramGroupDTO);
+        entity = telegramGroupRepository.saveAndFlush(entity);
+        telegramGroupDTO = telegramGroupMapper.toDto(entity);
+        return ResponseDTO.<TelegramGroupDTO>builder()
+            .success(true).message("OK").responseData(telegramGroupDTO).build();
+    }
 }
