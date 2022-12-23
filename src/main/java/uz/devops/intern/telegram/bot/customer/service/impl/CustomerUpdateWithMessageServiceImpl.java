@@ -30,6 +30,7 @@ import uz.devops.intern.service.dto.PaymentHistoryDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.impl.CustomerTelegramServiceImpl;
 import uz.devops.intern.service.mapper.BotTokenMapper;
+import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.customer.service.CustomerUpdateWithCallbackQueryService;
 import uz.devops.intern.telegram.bot.customer.service.CustomerUpdateWithMessageService;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
@@ -104,10 +105,10 @@ public class CustomerUpdateWithMessageServiceImpl implements CustomerUpdateWithM
         log.info("Started working method executeCommandStepByStep. Params requestMessage: {}, telegramUser: {}, update: {}",
             requestMessage, telegramUser, update);
         Optional<CustomerTelegram> optional = customerTelegramRepository.findByTelegramId(telegramUser.getId());
-        if (optional.isPresent() && optional.get().getCustomer() == null){
-            log.warn("Send forbidden message. Not found 'Customer' role for CustomerTelegram: {}", optional.get());
-            return forbiddenMessage(telegramUser);
-        }
+//        if (optional.isPresent() && optional.get().getCustomer() == null){
+//            log.warn("Send forbidden message. Not found 'Customer' role for CustomerTelegram: {}", optional.get());
+//            return forbiddenMessage(telegramUser);
+//        }
 
         if (optional.isPresent()) {
             CustomerTelegram customerTelegram = optional.get();
@@ -249,6 +250,7 @@ public class CustomerUpdateWithMessageServiceImpl implements CustomerUpdateWithM
 
     @Override
     public SendMessage forbiddenMessage(User telegramUser){
+        ResourceBundle resourceBundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(telegramUser.getLanguageCode());
         String sendStringMessage = "\uD83D\uDEAB " + resourceBundle.getString( BOT_AUTHORITY_NOT_EXISTS);
         SendMessage sendMessage = sendMessage(telegramUser.getId(), sendStringMessage, sendMarkup(telegramUser));
         log.info("Message send successfully! User id: {} | Message text: {}", telegramUser, sendMessage);
@@ -298,7 +300,7 @@ public class CustomerUpdateWithMessageServiceImpl implements CustomerUpdateWithM
             return sendCustomerDataNotFoundMessage(telegramUser, customerTelegram);
         }
         List<PaymentDTO> paymentDTOList = paymentService.getAllCustomerPaymentsPayedIsFalse(customer);
-        if (paymentDTOList == null) {
+        if (paymentDTOList.size() == 0) {
             log.warn("send data not found message. Because there is null paymentDTOList");
             return sendCustomerDataNotFoundMessage(telegramUser, customerTelegram);
         }

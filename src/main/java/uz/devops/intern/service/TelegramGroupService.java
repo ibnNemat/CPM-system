@@ -75,4 +75,6 @@ public interface TelegramGroupService {
     TelegramGroupDTO getNotRegisteredTelegramGroups(Long managerTelegramId);
 
     ResponseDTO<List<TelegramGroupDTO>> getTelegramGroupsByCustomer(Long managerTgId);
+
+    ResponseDTO<TelegramGroupDTO> saveAndFlush(TelegramGroupDTO telegramGroupDTO);
 }
