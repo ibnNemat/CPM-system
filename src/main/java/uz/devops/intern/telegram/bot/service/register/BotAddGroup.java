@@ -17,6 +17,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import uz.devops.intern.domain.BotToken;
+import uz.devops.intern.domain.CustomerTelegram;
+import uz.devops.intern.domain.Customers;
 import uz.devops.intern.domain.ResponseFromTelegram;
 import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.feign.CustomerFeignClient;
@@ -34,6 +36,7 @@ import uz.devops.intern.web.rest.utils.WebUtils;
 
 import java.net.URI;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -246,6 +249,14 @@ public class BotAddGroup extends BotStrategyAbs {
     }
 
     private GroupsDTO saveAsGroup(Chat chat, String phoneNumber){
+        List<CustomerTelegramDTO> customerTelegrams = customerTelegramService.findByTelegramGroupTelegramId(chat.getId());
+        Set<CustomersDTO> customersSet = new HashSet<>();
+        if (customerTelegrams != null) {
+            customerTelegrams.stream()
+                .filter(customersTelegram -> customersTelegram.getCustomer() != null)
+                .forEach(customerTelegram -> customersSet.add(customerTelegram.getCustomer()));
+        }
+
         ResponseDTO<GroupsDTO> response = groupsService.findByName(chat.getTitle());
         String groupName = response.getSuccess()? chat.getTitle() + chat.getId(): chat.getTitle();
 
@@ -257,7 +268,7 @@ public class BotAddGroup extends BotStrategyAbs {
 
         WebUtils.setUserToContextHolder(responseDTO.getResponseData());
         GroupsDTO group = GroupsDTO.builder()
-            .name(groupName).build();
+            .name(groupName).customers(customersSet).build();
 
         group = groupsService.save(group);
         log.info("Group is saved successfully!");

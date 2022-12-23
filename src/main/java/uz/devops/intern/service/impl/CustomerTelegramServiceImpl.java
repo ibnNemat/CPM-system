@@ -72,17 +72,25 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         return customerTelegramRepository.findByTelegramId(telegramId);
     }
 
-
     @Override
-    public List<CustomerTelegramDTO> findByTelegramGroupTelegramId(Long telegramId) {
-        log.info("request to get list of CustomerTelegram by telegramId: {}", telegramId);
-        List<CustomerTelegram> customerTelegramList = customerTelegramRepository.findAllByTelegramGroupsChatId(telegramId);
+    public List<CustomerTelegramDTO> findByTelegramGroupTelegramId(Long chatId) {
+        log.info("request to get list of CustomerTelegram by telegramId: {}", chatId);
+        List<CustomerTelegram> customerTelegramList = customerTelegramRepository.findAllByTelegramGroupsChatId(chatId);
         if (customerTelegramList == null)
             return null;
 
         return customerTelegramList.stream()
             .map(customerTelegramMapper::toDto)
             .toList();
+    }
+
+    @Override
+    public List<CustomerTelegram> findByTelegramGroupChatId(Long chatId) {
+        log.info("request to get list of CustomerTelegram by telegramId: {}", chatId);
+        List<CustomerTelegram> customerTelegramList = customerTelegramRepository.findAllByTelegramGroupsChatId(chatId);
+        if (customerTelegramList.size() == 0)
+            return null;
+        return customerTelegramList;
     }
 
     @Override

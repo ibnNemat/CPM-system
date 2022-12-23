@@ -87,8 +87,6 @@ public class ConvertExcelToPDF {
 
             document.close();
             file.delete();
-//            workbook.close();
-//            fileInputStream.close();
         } catch (DocumentException | IOException e) {
             log.error(e.getMessage());
         }
