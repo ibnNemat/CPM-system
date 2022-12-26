@@ -42,4 +42,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
     Optional<User> findByFirstName(String firstName);
+
+    @Query(value = "SELECT * FROM jhi_user WHERE id IN (SELECT user_id FROM customers WHERE id IN (SELECT customers_id FROM rel_groups__customers WHERE groups_id = :groupId))",
+    nativeQuery = true)
+    List<User> findAllByGroupId(@Param("groupId") Long groupId);
 }

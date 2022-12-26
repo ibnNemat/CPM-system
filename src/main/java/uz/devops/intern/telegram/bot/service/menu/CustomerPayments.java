@@ -57,13 +57,11 @@ public class CustomerPayments extends ManagerMenuAbs{
         ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
         if(!update.hasMessage() && !update.getMessage().hasText()){
             Long userId = update.hasCallbackQuery()? update.getCallbackQuery().getFrom().getId() : null;
-//            messageHasNotText(userId, update);
             wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.send.only.message.or.contact"));
             log.warn("User didn't send text! User id: {} | Update: {}", userId, update);
             return false;
         }
 
-//        Long managerId = update.getMessage().getFrom().getId();
         boolean result = removeMenuButtons(manager, bundle);
         basicFunction(manager, bundle);
         return true;
@@ -80,14 +78,14 @@ public class CustomerPayments extends ManagerMenuAbs{
     }
 
     public boolean basicFunction(CustomerTelegramDTO manager, ResourceBundle bundle){
-        ResponseDTO<User> response = userService.getUserByPhoneNumber(manager.getPhoneNumber());
-        if(!response.getSuccess()){
-            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.user.is.not.found"));
-            log.warn("{} | Manager id: {} | Response: {}", response.getMessage(), manager.getTelegramId(), response);
+        ResponseDTO<User> response = getUserByCustomerTg(manager);
+        if(!response.getSuccess() || response.getResponseData() == null){
             return false;
         }
+
         setUserToContextHolder(response.getResponseData());
         List<GroupsDTO> managerGroups = groupsService.findOnlyManagerGroups();
+
         if(managerGroups.isEmpty()){
             wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.groups.are.not.found"));
             log.warn("Payments list is empty, Manager id: {} ", manager.getTelegramId());

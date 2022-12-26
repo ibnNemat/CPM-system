@@ -26,6 +26,7 @@ import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.AdminKeyboards;
 import uz.devops.intern.telegram.bot.dto.EditMessageDTO;
 import uz.devops.intern.telegram.bot.dto.PinMessageDTO;
+import uz.devops.intern.telegram.bot.dto.UpdateType;
 import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
 import uz.devops.intern.telegram.bot.keyboards.AdminMenuKeys;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class BotAddGroup extends BotStrategyAbs {
+    private final UpdateType SUPPORTED_TYPE = UpdateType.CALLBACK_QUERY;
     private final String STATE = "MANAGER_BOT_ADD_GROUP";
     private final Integer STEP = 5;
     private final Integer NEXT_STEP = 6;
@@ -65,32 +67,14 @@ public class BotAddGroup extends BotStrategyAbs {
     @Override
     public boolean execute(Update update, CustomerTelegramDTO manager) {
         ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
-//        if(!update.hasMessage() || !update.getMessage().hasText()){
-//            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.message"));
-//            log.warn("User didn't send text! User id: {} | Update: {}", manager.getTelegramId(), update);
-//            return false;
-//        }
 
-//        String messageText = update.getMessage().getText();
-//        if(!messageText.equals(bundle.getString("bot.admin.those.all"))){
-//            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.message"));
-//            log.warn("User didn't send text! User id: {} | Update: {}", manager.getTelegramId(), update);
-//            return false;
-//        }
-        // Birinchi "Shularni hammasi" digan buttonni yoqotish kere keyin organizatsiyalar ko'rsatilishi kere
-        if(!update.hasCallbackQuery()){
-            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.message"));
-            log.warn("User didn't send text! User id: {} | Update: {}", manager.getTelegramId(), update);
-            return false;
-        }
-        boolean result = sendMessageToRemoveButton(manager, bundle);
-        removeInlineButton(update.getCallbackQuery());
+        boolean result = removeInlineButton(update.getCallbackQuery());
         if(!result){
             wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.please.connect.to.developer"));
             return false;
         }
         result = basicFunctionality(manager, bundle, update.getCallbackQuery().getData());
-//        saveAsGroup(update.getMessage().getChat(), manager.getPhoneNumber());
+
         if(!result){
             wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.please.connect.to.developer"));
             return false;
@@ -115,23 +99,13 @@ public class BotAddGroup extends BotStrategyAbs {
         }
     }
 
-    public boolean sendMessageToRemoveButton(CustomerTelegramDTO manager, ResourceBundle bundle){
-        String newMessage = bundle.getString("bot.admin.send.all.groups.attached.to.one.organization");
-        ReplyKeyboardRemove removeKeyboard = ReplyKeyboardRemove.builder().removeKeyboard(true).build();
-        SendMessage sendMessage = TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage, removeKeyboard);
-        try {
-            adminFeign.sendMessage(sendMessage);
-            return true;
-        }catch (FeignException.FeignClientException e){
-            log.warn("Thrown error while sending message to user when user choose organization! Manager id: {} | Ex. message: {} | Ex. cause: {}",
-                manager.getTelegramId(), e.getMessage(), e.getCause().toString());
-            return false;
-        }
-    }
 
     public boolean basicFunctionality(CustomerTelegramDTO manager, ResourceBundle bundle, String telegramGroupId){
-        String newMessage = bundle.getString("bot.admin.send.choose.one.organization");
-        InlineKeyboardMarkup markup = createManagerOrganizationsButton(manager.getPhoneNumber(), telegramGroupId);
+        String newMessage =
+            bundle.getString("bot.admin.send.all.groups.attached.to.one.organization") + "\n\n" +
+                bundle.getString("bot.admin.send.choose.one.organization");
+
+        InlineKeyboardMarkup markup = createManagerOrganizationsButton(manager, telegramGroupId);
         if(markup == null){
             return false;
         }
@@ -140,16 +114,16 @@ public class BotAddGroup extends BotStrategyAbs {
         return true;
     }
 
-    private InlineKeyboardMarkup createManagerOrganizationsButton(String managerPhoneNumber, String telegramGroupId){
-        ResponseDTO<uz.devops.intern.domain.User> responseDTO = userService.getUserByPhoneNumber(managerPhoneNumber);
+    private InlineKeyboardMarkup createManagerOrganizationsButton(CustomerTelegramDTO manager, String telegramGroupId){
+        ResponseDTO<uz.devops.intern.domain.User> responseDTO = getUserByCustomerTg(manager);
         if(!responseDTO.getSuccess()){
-            log.warn("User(jhi) is not found! Manager phone number: {}", managerPhoneNumber);
+            log.warn("User(jhi) is not found! Manager phone number: {}", manager.getPhoneNumber());
             return null;
         }
         WebUtils.setUserToContextHolder(responseDTO.getResponseData());
         List<OrganizationDTO> organizations = organizationService.getOrganizationsByUserLogin();
         if(organizations.isEmpty()){
-            log.warn("Organizations not found! Manager phone number: {}", managerPhoneNumber);
+            log.warn("Organizations not found! Manager phone number: {}", manager.getPhoneNumber());
             return null;
         }
 
@@ -222,10 +196,8 @@ public class BotAddGroup extends BotStrategyAbs {
         }
         CustomerTelegramDTO manager = customerTgResponse.getResponseData();
 
-//        GroupsDTO group = saveAsGroup(chat, manager.getPhoneNumber());
         sendInviteLink(user, chat.getId());
         TelegramGroupDTO telegramGroup = saveToTelegramGroup(chat, manager);
-        System.out.println(telegramGroup);
         sayThanksToManager(manager, telegramGroup, user.getUserName());
         log.info("Thanks is send to manager, Bot id: {} | Manager id: {}",
             user.getId(), manager.getTelegramId());
@@ -245,9 +217,7 @@ public class BotAddGroup extends BotStrategyAbs {
         System.out.println(responseDTO.getResponseData());
         Set<TelegramGroupDTO> telegramGroups = manager.getTelegramGroups() == null? new HashSet<>(): manager.getTelegramGroups();
         telegramGroups.add(TelegramGroupDTO.builder().id(responseDTO.getResponseData().getId()).build());
-//        entityManager.detach(manager);
         manager.setTelegramGroups(telegramGroups);
-//        manager.setStep(NEXT_STEP);
         manager.setTelegramGroups(telegramGroups);
         customerTelegramService.update(manager);
         log.info("Telegram group is saved successfully, Chat id: {} | DTO: {}", chat.getId(), dto);
@@ -267,46 +237,11 @@ public class BotAddGroup extends BotStrategyAbs {
                 )
             )
         );
-//        ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup();
-//        markup.setResizeKeyboard(true);
-//        markup.setKeyboard(
-//            List.of(new KeyboardRow(
-//                List.of(
-//                    new KeyboardButton(bundle.getString("bot.admin.those.all"))
-//                ))
-//            )
-//        );
 
         SendMessage sendMessage = TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage, markup);
         adminFeign.sendMessage(sendMessage);
     }
 
-    private GroupsDTO saveAsGroup(Chat chat, String phoneNumber){
-        List<CustomerTelegramDTO> customerTelegrams = customerTelegramService.findByTelegramGroupTelegramId(chat.getId());
-        Set<CustomersDTO> customersSet = new HashSet<>();
-        if (customerTelegrams != null) {
-            customerTelegrams.stream()
-                .filter(customersTelegram -> customersTelegram.getCustomer() != null)
-                .forEach(customerTelegram -> customersSet.add(customerTelegram.getCustomer()));
-        }
-
-        ResponseDTO<GroupsDTO> response = groupsService.findByName(chat.getTitle());
-        String groupName = response.getSuccess()? chat.getTitle() + chat.getId(): chat.getTitle();
-
-        ResponseDTO<uz.devops.intern.domain.User> responseDTO = userService.getUserByCreatedBy(phoneNumber, true);
-        if(!responseDTO.getSuccess()){
-            log.warn("User is not found while saving new group! User phone number: {}", phoneNumber);
-            return null;
-        }
-
-        WebUtils.setUserToContextHolder(responseDTO.getResponseData());
-        GroupsDTO group = GroupsDTO.builder()
-            .name(groupName).customers(customersSet).build();
-
-        group = groupsService.save(group);
-        log.info("Group is saved successfully!");
-        return group;
-    }
     private void sendInviteLink(User bot, Long groupId){
         ResourceBundle bundleUz = ResourceBundleUtils.getResourceBundleByUserLanguageCode("uz");
         ResourceBundle bundleRu = ResourceBundleUtils.getResourceBundleByUserLanguageCode("ru");
@@ -356,5 +291,15 @@ public class BotAddGroup extends BotStrategyAbs {
             log.error("Error while pinning message! Message id: {} | Bot token: {} | Exception: {}",
                 messageId, bot.getToken(), e.getMessage());
         }
+    }
+
+    @Override
+    public String messageOrCallback() {
+        return SUPPORTED_TYPE.name();
+    }
+
+    @Override
+    public String getErrorMessage(ResourceBundle bundle) {
+        return bundle.getString("bot.admin.error.only.message");
     }
 }

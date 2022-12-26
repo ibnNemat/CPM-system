@@ -5,40 +5,44 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Cache;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import uz.devops.intern.domain.User;
 import uz.devops.intern.service.GroupsService;
+import uz.devops.intern.service.UserService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.CustomersDTO;
 import uz.devops.intern.service.dto.GroupsDTO;
+import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.dto.EditMessageDTO;
 import uz.devops.intern.telegram.bot.dto.EditMessageTextDTO;
+import uz.devops.intern.telegram.bot.dto.UpdateType;
 import uz.devops.intern.telegram.bot.keyboards.AdminMenuKeys;
 import uz.devops.intern.telegram.bot.keyboards.menu.AdminMenu;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.service.commands.MenuCommand;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @Getter
 public class ListGroupCustomers extends BotStrategyAbs {
+    private final UpdateType SUPPORTED_TYPE = UpdateType.CALLBACK_QUERY;
     private final String STATE = "MANAGER_LIST_OF_CUSTOMER_IN_GROUP";
     private final Integer STEP = 13;
     private final Integer NEXT_STEP = 14;
 
     private final AdminMenuKeys adminMenuKeys;
     private final GroupsService groupsService;
+    private final UserService userService;
 
     @Override
     public boolean execute(Update update, CustomerTelegramDTO manager) {
@@ -81,7 +85,13 @@ public class ListGroupCustomers extends BotStrategyAbs {
         }
 
         String newMessage = bundle.getString("bot.admin.send.customers.payments");
-        InlineKeyboardMarkup customersList = createCustomersInlineButtonsList(groupOptional.get(), bundle);
+        InlineKeyboardMarkup customersList = createCustomersInlineButtonsList(callback, groupOptional.get(), bundle);
+        if(Objects.isNull(customersList)){
+            log.info("Users are not found! Manager id: {} | Group id: {} ", manager.getTelegramId(), groupId);
+            removeInlineButtons(callback, bundle);
+            throwManagerToMenu(manager, bundle);
+            return false;
+        }
         EditMessageTextDTO editMessageTextDTO = createEditMessage(callback, customersList, newMessage);
         try {
             adminFeign.editMessageText(editMessageTextDTO);
@@ -106,6 +116,16 @@ public class ListGroupCustomers extends BotStrategyAbs {
         return STEP;
     }
 
+    @Override
+    public String messageOrCallback() {
+        return SUPPORTED_TYPE.name();
+    }
+
+    @Override
+    public String getErrorMessage(ResourceBundle bundle) {
+        return bundle.getString("bot.admin.error.choose.up");
+    }
+
     private void removeInlineButtons(CallbackQuery callback, ResourceBundle bundle){
         EditMessageDTO editMessageDTO = new EditMessageDTO();
         editMessageDTO.setChatId(String.valueOf(callback.getFrom().getId()));
@@ -123,13 +143,25 @@ public class ListGroupCustomers extends BotStrategyAbs {
 
     }
 
-    private InlineKeyboardMarkup createCustomersInlineButtonsList(GroupsDTO group, ResourceBundle bundle){
-
+    private InlineKeyboardMarkup createCustomersInlineButtonsList(CallbackQuery callback, GroupsDTO group, ResourceBundle bundle){
+        ResponseDTO<List<User>> response = userService.getAllUsersByGroupId(group.getId());
+        if(Objects.isNull(response.getResponseData()) || response.getResponseData().isEmpty()){
+            AnswerCallbackQuery answerCallbackQuery =
+                AnswerCallbackQuery.builder()
+                    .callbackQueryId(callback.getId())
+                    .text(bundle.getString("bot.admin.error.groups.users.are.not.found"))
+                    .build();
+            adminFeign.answerCallbackQuery(answerCallbackQuery);
+            return null;
+        }
         List<List<InlineKeyboardButton>> keyboardButtons = new ArrayList<>();
-        for(CustomersDTO customer: group.getCustomers()){
+        for(User user: response.getResponseData()){
             keyboardButtons.add(
                 List.of(
-                    InlineKeyboardButton.builder().text(customer.getUsername()).callbackData(String.valueOf(customer.getId())).build()
+                    InlineKeyboardButton.builder()
+                        .text(user.getFirstName() + " " + user.getLastName())
+                        .callbackData(user.getLogin())
+                        .build()
                 )
             );
         }

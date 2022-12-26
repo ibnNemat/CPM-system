@@ -14,6 +14,7 @@ import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.OrganizationDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
+import uz.devops.intern.telegram.bot.dto.UpdateType;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 import uz.devops.intern.web.rest.utils.WebUtils;
@@ -23,7 +24,7 @@ import java.util.ResourceBundle;
 
 @Service
 public class NewOrganization extends BotStrategyAbs {
-
+    private final UpdateType SUPPORTED_TYPE = UpdateType.MESSAGE;
     private final String STATE = "ORGANIZATION_NAME_AND_NEW_BOT_TOKEN";
     private final Integer STEP = 4;
     private final Integer NEXT_STEP = 5;
@@ -41,28 +42,19 @@ public class NewOrganization extends BotStrategyAbs {
     @Override
     public boolean execute(Update update, CustomerTelegramDTO manager) {
         ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
-        ResponseDTO<User> response = userService.getUserByPhoneNumber(manager.getPhoneNumber());
-        if(!response.getSuccess() && response.getResponseData() == null){
-            log.warn("User is not found! Manager id: {} | Manager phone number: {} | Response: {}",
-                manager.getTelegramId(), manager.getPhoneNumber(), response);
-            // Here should throw exception for send message to admin about error
-            return false;
-        }
-        if(!update.hasMessage() || !update.getMessage().hasText()){
-            wrongValue(manager.getTelegramId(), "bot.admin.error.send.only.text");
-            log.warn("User didn't send text! User id: {} | Update: {} ", manager.getTelegramId(), update);
+        ResponseDTO<User> response = getUserByCustomerTg(manager);
+        if(!response.getSuccess() || response.getResponseData() == null){
             return false;
         }
 
-        Message message = update.getMessage();
         WebUtils.setUserToContextHolder(response.getResponseData());
-        String organizationName = message.getText();
+        String organizationName = update.getMessage().getText();
 
         ResponseDTO<OrganizationDTO> organizationResponse =
             organizationService.getOrganizationByName(organizationName);
 
         if(organizationResponse.getSuccess()){
-            wrongValue(message.getFrom().getId(), bundle.getString("bot.admin.error.organization.is.already.exists"));
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.organization.is.already.exists"));
             log.warn("Organization is already exists, Organization: {}", organizationName);
             return false;
         }
@@ -70,9 +62,9 @@ public class NewOrganization extends BotStrategyAbs {
         OrganizationDTO organization = OrganizationDTO.builder()
             .name(organizationName).build();
         organization = organizationService.save(organization);
+
         String newMessage = bundle.getString("bot.admin.send.organization.is.saved.successfully");
         adminFeign.sendMessage(TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage));
-//        System.out.println("Organization is saved: " + organization);
 
         basicFunction(manager, bundle);
         log.info("Manager is added new organization, Organization: {} | Manager id: {}: {} | Message text: {}",
@@ -83,7 +75,7 @@ public class NewOrganization extends BotStrategyAbs {
     public void basicFunction(CustomerTelegramDTO manager, ResourceBundle bundle){
         ResponseDTO<BotTokenDTO> response = botTokenService.findByManagerId(manager.getTelegramId());
         if(!response.getSuccess() || response.getResponseData() == null){
-            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.please.connect.to.developer"));
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.bot.is.not.found"));
             log.warn("Bot is not found! User id: {} ", manager.getTelegramId());
             return;
         }
@@ -96,16 +88,6 @@ public class NewOrganization extends BotStrategyAbs {
         manager.setStep(NEXT_STEP);
     }
 
-    private boolean cancelProcess(Message message, CustomerTelegramDTO manager){
-        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
-        if(!message.hasText() || !message.getText().equals(bundle.getString("bot.admin.keyboard.cancel.process"))){
-            return false;
-        }
-
-
-        manager.setStep(7);
-        return true;
-    }
 
     @Override
     public String getState() {
@@ -115,5 +97,15 @@ public class NewOrganization extends BotStrategyAbs {
     @Override
     public Integer getStep() {
         return STEP;
+    }
+
+    @Override
+    public String messageOrCallback() {
+        return SUPPORTED_TYPE.name();
+    }
+
+    @Override
+    public String getErrorMessage(ResourceBundle bundle) {
+        return bundle.getString("bot.admin.error.only.message");
     }
 }

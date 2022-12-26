@@ -1,6 +1,7 @@
 package uz.devops.intern.repository;
 
 import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import uz.devops.intern.domain.Customers;
 import uz.devops.intern.domain.Groups;
@@ -40,4 +41,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     List<Payment> findAllByCustomerAndIsPaidFalseOrderByStartedPeriod(Customers customer);
 
     Optional<Payment> findByCustomerId(Long customerId);
+
+    @Query("SELECT p FROM Payment p WHERE p.customer.id = (SELECT c.id FROM Customers c WHERE c.user.id =  (SELECT u.id FROM User u WHERE u.login = :login))")
+    Optional<Payment> findByUserLogin(@Param("login") String login);
 }

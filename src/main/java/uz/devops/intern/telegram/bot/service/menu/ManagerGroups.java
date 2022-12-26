@@ -30,12 +30,10 @@ public class ManagerGroups extends ManagerMenuAbs{
     private final String SUPPORTED_TEXT = "\uD83D\uDC65 Guruh qo'shish";
 
     private final List<String> SUPPORTED_TEXTS = new ArrayList<>();
-    private final GroupsService groupsService;
     private final NewOrganization newOrganization;
 
-    public ManagerGroups(AdminFeign adminFeign, CustomerTelegramService customerTelegramService, TelegramGroupService telegramGroupService, UserService userService, GroupsService groupsService, NewOrganization newOrganization) {
+    public ManagerGroups(AdminFeign adminFeign, CustomerTelegramService customerTelegramService, TelegramGroupService telegramGroupService, UserService userService, NewOrganization newOrganization) {
         super(adminFeign, customerTelegramService, telegramGroupService, userService);
-        this.groupsService = groupsService;
         this.newOrganization = newOrganization;
     }
 
@@ -54,41 +52,14 @@ public class ManagerGroups extends ManagerMenuAbs{
     @Override
     public boolean todo(Update update, CustomerTelegramDTO manager) {
         ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
-        ResponseDTO<User> responseDTO = userService.getUserByPhoneNumber(manager.getPhoneNumber());
-        if (!responseDTO.getSuccess() && responseDTO.getResponseData() == null) {
-            log.warn("Manager is not found from jhi_user! Manager: {} | Response: {}", manager, responseDTO);
+        ResponseDTO<User> responseDTO = getUserByCustomerTg(manager);
+        if (!responseDTO.getSuccess() || responseDTO.getResponseData() == null) {
             return false;
         }
 
         newOrganization.basicFunction(manager, bundle);
         customerTelegramService.update(manager);
         return false;
-//        setUserToContextHolder(responseDTO.getResponseData());
-//
-//        ResponseDTO<List<TelegramGroupDTO>> response = telegramGroupService.getTelegramGroupsByCustomer(manager.getId());
-//        if(!response.getSuccess()){
-//            wrongValue(manager.getTelegramId(), response.getMessage());
-//            log.warn("{}, Response: {}", response.getMessage(), response);
-//            return false;
-//        }
-//
-//        if (response.getResponseData().isEmpty()) {
-//            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.telegram.group.non"));
-//            log.warn("Has no telegram group, Manager id: {} ", manager.getTelegramId());
-//            return false;
-//        }
-//        List<TelegramGroupDTO> telegramGroups = response.getResponseData();
-//        log.info("Manager telegram groups, Telegram groups count: {} | Telegram groups: {}", telegramGroups.size(), telegramGroups);
-//
-//        for (TelegramGroupDTO dto : telegramGroups) {
-//            String newMessage = createGroupText(dto, bundle, manager.getTelegramId());
-//            InlineKeyboardMarkup markup = createGroupButtons(dto.getChatId(), bundle);
-//            SendMessage sendMessage =
-//                TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage, markup);
-//            adminFeign.sendMessage(sendMessage);
-//        }
-//        manager.setStep(6);
-//        return true;
     }
 
     @Override
@@ -101,28 +72,6 @@ public class ManagerGroups extends ManagerMenuAbs{
         return SUPPORTED_TEXTS;
     }
 
-    private String createGroupText(TelegramGroupDTO groupDTO, ResourceBundle bundle, Long managerId){
-        ResponseDTO<List<CustomerTelegramDTO>> response =
-            customerTelegramService.getCustomerTgByChatId(groupDTO.getId());
-
-        StringBuilder text = new StringBuilder(String.format(
-            "%s %s\n%s %d\n=========================\n",
-            bundle.getString("bot.admin.group.name"),
-            groupDTO.getName(),
-            bundle.getString("bot.admin.customers.count"),
-            response.getResponseData().size()
-        ));
-
-        List<CustomerTelegramDTO> customerTelegrams = response.getResponseData();
-        int index = 1;
-        for(CustomerTelegramDTO customer: customerTelegrams){
-            if(customer.getTelegramId().equals(managerId))continue;
-            text.append(String.format(
-                "%d. %s\n", index++, customer.getFirstname()
-            ));
-        }
-        return text.toString();
-    }
 
     private InlineKeyboardMarkup createGroupButtons(Long chatId, ResourceBundle bundle){
         List<List<InlineKeyboardButton>> buttons = new ArrayList<>();

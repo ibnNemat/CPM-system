@@ -99,12 +99,12 @@ public class ServiceStartedTimeState extends State<ServiceFSM>{
             log.warn("Date's year is invalid! User id: {} | Year: {}", managerId, year);
             return false;
         }
-        if(!(month >= 1 && month <= 12)){
+        if(month < LocalDate.now().getMonth().getValue()){
             wrongValue(managerId, bundle.getString("bot.admin.error.start.time.is.invalid.month"));
             log.warn("Date's month is invalid! User id: {} | Month: {}", managerId, month);
             return false;
         }
-        if(!(day >= 1 && day <= 31)){
+        if(day < LocalDate.now().getDayOfMonth()){
             wrongValue(managerId, bundle.getString("bot.admin.error.start.time.is.invalid.day"));
             log.warn("Date's day in invalid! User id: {} | Day: {}", managerId, day);
             return false;

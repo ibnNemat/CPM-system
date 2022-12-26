@@ -1,5 +1,6 @@
 package uz.devops.intern.service.impl;
 
+import feign.Response;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -335,5 +336,24 @@ public class PaymentServiceImpl implements PaymentService {
         PaymentDTO dto = paymentOptional.map(PaymentsMapper::toDto).get();
         return ResponseDTO.<PaymentDTO>builder()
             .success(true).message("OK").responseData(dto).build();
+    }
+
+    @Override
+    public ResponseDTO<PaymentDTO> getByUserLogin(String login){
+        if(login == null || login.trim().isEmpty()){
+            return ResponseDTO.<PaymentDTO>builder()
+                .success(false).message("Parameter \"Login\" is null or empty!").build();
+        }
+
+        Optional<Payment> paymentOptional = paymentRepository.findByUserLogin(login);
+        if(paymentOptional.isEmpty()){
+            return ResponseDTO.<PaymentDTO>builder()
+                .success(false).message("Data is not found!").build();
+        }
+
+        PaymentDTO dto = paymentOptional.map(PaymentsMapper::toDto).get();
+        return ResponseDTO.<PaymentDTO>builder()
+            .success(true).message("OK").responseData(dto).build();
+
     }
 }

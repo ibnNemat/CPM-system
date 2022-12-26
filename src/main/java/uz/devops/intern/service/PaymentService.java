@@ -73,4 +73,6 @@ public interface PaymentService {
     void delete(Long id);
 
     ResponseDTO<PaymentDTO> getByCustomerId(Long customerId);
+
+    ResponseDTO<PaymentDTO> getByUserLogin(String login);
 }

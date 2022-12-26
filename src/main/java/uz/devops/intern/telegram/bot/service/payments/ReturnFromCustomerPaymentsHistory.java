@@ -15,6 +15,7 @@ import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.dto.EditMessageDTO;
 import uz.devops.intern.telegram.bot.dto.EditMessageTextDTO;
+import uz.devops.intern.telegram.bot.dto.UpdateType;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ import java.util.ResourceBundle;
 @Service
 @RequiredArgsConstructor
 public class ReturnFromCustomerPaymentsHistory extends BotStrategyAbs {
-
+    private final UpdateType SUPPORTED_TYPE = UpdateType.CALLBACK_QUERY;
     private final String STATE = "MANAGER_RETURN_TO_BACK_OR_MENU";
     private final Integer STEP = 15;
     private final Integer NEXT_STEP = 7;
@@ -89,6 +90,16 @@ public class ReturnFromCustomerPaymentsHistory extends BotStrategyAbs {
     @Override
     public Integer getStep() {
         return STEP;
+    }
+
+    @Override
+    public String messageOrCallback() {
+        return SUPPORTED_TYPE.name();
+    }
+
+    @Override
+    public String getErrorMessage(ResourceBundle bundle) {
+        return bundle.getString("bot.admin.error.choose.up");
     }
 
     private InlineKeyboardMarkup createCustomersInlineButtonsList(GroupsDTO group, ResourceBundle bundle){

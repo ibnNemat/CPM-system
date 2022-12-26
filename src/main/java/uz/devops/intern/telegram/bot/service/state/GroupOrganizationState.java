@@ -68,6 +68,7 @@ public class GroupOrganizationState extends State<BotFSM>{
 
         ResponseDTO<User> responseDTO = userService.getUserByPhoneNumber(manager.getPhoneNumber());
         if(!responseDTO.getSuccess()){
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.user.is.not.found"));
             log.warn("{} | Response: {}", responseDTO.getMessage(), responseDTO);
             return false;
         }
@@ -105,13 +106,6 @@ public class GroupOrganizationState extends State<BotFSM>{
         customerTelegramService.update(manager);
         return true;
     }
-//
-//    public void wrongValue(Long chatId, String message){
-//        SendMessage sendMessage = TelegramsUtil.sendMessage(chatId, message);
-//        Update update = adminFeign.sendMessage(sendMessage);
-//        log.warn("User send invalid value, Chat id: {} | Message: {} | Update: {}",
-//            chatId, message, update);
-//    }
 
     private EditMessageTextDTO createEditMessageText(CallbackQuery callback, InlineKeyboardMarkup markup, String text){
 

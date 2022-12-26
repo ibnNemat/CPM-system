@@ -15,6 +15,8 @@ import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.service.CustomerTelegramService;
 import uz.devops.intern.service.TelegramGroupService;
 import uz.devops.intern.service.UserService;
+import uz.devops.intern.service.dto.CustomerTelegramDTO;
+import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
@@ -58,15 +60,16 @@ public abstract class ManagerMenuAbs implements ManagerMenuStrategy {
             chatId, message, update);
     }
 
-//    public void messageHasNotText(Long chatId, Update update){
-//        ResourceBundleUtils.getResourceBundleByUserLanguageCode("ru");
-//        wrongValue(chatId, "Iltimos xabar yuboring\uD83D\uDE4F");
-//        log.warn("User hasn't send text, Chat id: {} | Update: {}", chatId, update);
-//    }
-//
-//    public void messageHasNotText(Long chatId, Update update, Boolean contact){
-//        wrongValue(chatId, "Iltimos xabar yoki kontakt yuboring\uD83D\uDE4F");
-//        log.warn("User hasn't send text, Chat id: {} | Update: {}", chatId, update);
-//    }
+    public ResponseDTO<User> getUserByCustomerTg(CustomerTelegramDTO manager){
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
+        ResponseDTO<User> response = userService.getUserByPhoneNumber(manager.getPhoneNumber());
+        if(!response.getSuccess()){
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.user.is.not.found"));
+            log.warn("{} | Manager id: {} | Response: {}", response.getMessage(), manager.getTelegramId(), response);
+            return response;
+        }
+        log.info("User by CustomerTelegram phone number, Phone number: {} | Response: {}", manager.getPhoneNumber(), response);
+        return response;
+    }
 
 }

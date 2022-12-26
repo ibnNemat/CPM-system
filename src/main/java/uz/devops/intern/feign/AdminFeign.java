@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -22,7 +23,7 @@ import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
 import java.util.List;
 
 @FeignClient(value = "admin-feign",
-    url = "https://api.telegram.org/bot5926613188:AAF3AKO0Yfwc5dk-oFiMvAPDvMGztkGCTkc")
+    url = "https://api.telegram.org/bot5225793240:AAEDojpbQM780zRMWIvmJXCIGeEBXWoY6RM")
 public interface AdminFeign {
     @PostMapping("/sendMessage")
     Update sendMessage(@RequestBody SendMessage sendMessage);
@@ -41,4 +42,7 @@ public interface AdminFeign {
 
     @GetMapping("/leaveChat")
     WebhookResponseDTO leaveChat(@RequestParam("chat_id") String chat_id);
+
+    @PostMapping("/answerCallbackQuery")
+    ResponseFromTelegram<Boolean> answerCallbackQuery(@RequestBody AnswerCallbackQuery answerCallbackQuery);
 }
