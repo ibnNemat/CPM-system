@@ -64,8 +64,10 @@ public class CustomerUpdateWithCallbackQueryServiceImpl implements CustomerUpdat
         log.info("command with callbackQuery after pressed the inline button. CallbackQuery: {} | URI: {}", callbackQuery, telegramURI);
         User telegramUser = callbackQuery.getFrom();
         Optional<CustomerTelegram> optionalCustomerTelegram = customerTelegramRepository.findByTelegramId(telegramUser.getId());
-        if (optionalCustomerTelegram.isEmpty())
+        if (optionalCustomerTelegram.isEmpty()){
+            log.warn("Send not found message. Because there is no customerTelegram found");
             return sendCustomerDataNotFoundMessageWithParamTelegramUser(telegramUser);
+        }
 
         CustomerTelegram customerTelegram = optionalCustomerTelegram.get();
         customerTelegram.setIsActive(true);
@@ -104,10 +106,11 @@ public class CustomerUpdateWithCallbackQueryServiceImpl implements CustomerUpdat
 
     @Override
     public EditMessageTextDTO changeCustomerProfile(User telegramUser, CustomerTelegram customerTelegram, CallbackQuery callbackQuery) {
+        log.info("Started working method changeCustomerProfile. Params: telegramUser: {} | customerTelegram: {} | callbackQuery: {}",
+            telegramUser, customerTelegram, callbackQuery);
         resourceBundle = getResourceBundleUsingCustomerTelegram(customerTelegram);
         customerTelegram.setStep(2);
         customerTelegramRepository.save(customerTelegram);
-
 
         String data = callbackQuery.getData().substring(7);
         List<String> dataList = List.of("email", "phone number", "the balance", "name");
@@ -125,6 +128,8 @@ public class CustomerUpdateWithCallbackQueryServiceImpl implements CustomerUpdat
 
     @Override
     public EditMessageTextDTO showCurrentCustomerPayment(User telegramUser, CustomerTelegram customerTelegram, CallbackQuery callbackQuery) {
+        log.info("Started working method showCurrentCustomerPayment. Params: telegramUser: {} | customerTelegram: {} | callbackQuery: {}",
+            telegramUser, customerTelegram, callbackQuery);
         resourceBundle = getResourceBundleUsingCustomerTelegram(customerTelegram);
         String[] data = callbackQuery.getData().split(" ");
         Long idPaymentHistory = Long.parseLong(data[3]);
@@ -140,6 +145,7 @@ public class CustomerUpdateWithCallbackQueryServiceImpl implements CustomerUpdat
         EditMessageTextDTO editMessageTextDTO = createMessageTextDTO(builder.toString(), callbackQuery, telegramUser);
         backHomeMenuButton = resourceBundle.getString(BOT_BACK_HOME_BUTTON);
         editMessageTextDTO.setReplyMarkup(backToMenuInlineButton(customerTelegram, backHomeMenuButton, DATA_BACK_TO_HOME));
+        log.info("Successfully send message current customer of payment: {}", editMessageTextDTO);
         return editMessageTextDTO;
     }
 
@@ -151,6 +157,7 @@ public class CustomerUpdateWithCallbackQueryServiceImpl implements CustomerUpdat
         editMessageTextDTO.setParseMode("HTML");
         editMessageTextDTO.setMessageId(callbackQuery.getMessage().getMessageId());
         editMessageTextDTO.setInlineMessageId(callbackQuery.getInlineMessageId());
+        log.info("Successfully created editMessageDTO: {}", editMessageTextDTO);
         return editMessageTextDTO;
     }
 
@@ -158,11 +165,14 @@ public class CustomerUpdateWithCallbackQueryServiceImpl implements CustomerUpdat
     public EditMessageTextDTO createMessageTextDTOWithEmptyInlineButton(String text, CallbackQuery callbackQuery, User telegramUser) {
         EditMessageTextDTO editMessageTextDTO = createMessageTextDTO(text, callbackQuery, telegramUser);
         editMessageTextDTO.setReplyMarkup(new InlineKeyboardMarkup());
+        log.info("Successfully created editMessageTextDTO with empty inline button: {}", editMessageTextDTO);
         return editMessageTextDTO;
     }
 
     @Override
     public EditMessageTextDTO sendRequestPaymentSum(CustomerTelegram customerTelegram, User telegramUser, CallbackQuery callbackQuery) {
+        log.info("Started working method sendRequestPaymentSum to customer. Params: telegramUser: {} | customerTelegram: {} | callbackQuery: {}",
+            telegramUser, customerTelegram, callbackQuery);
         resourceBundle = getResourceBundleUsingCustomerTelegram(customerTelegram);
         customerTelegram.setStep(3);
         customerTelegramRepository.save(customerTelegram);
@@ -177,6 +187,7 @@ public class CustomerUpdateWithCallbackQueryServiceImpl implements CustomerUpdat
 
         EditMessageTextDTO editMessageTextDTO = createMessageTextDTO(stringMessage, callbackQuery, telegramUser);
         editMessageTextDTO.setReplyMarkup(new InlineKeyboardMarkup());
+        log.info("Successfully send request sum of payment to customer : {}", editMessageTextDTO);
         return editMessageTextDTO;
     }
 
@@ -224,6 +235,7 @@ public class CustomerUpdateWithCallbackQueryServiceImpl implements CustomerUpdat
         messageTextDTO.setReplyMarkup(inlineKeyboardMarkup);
 
         customerFeign.editMessageText(telegramURI, messageTextDTO);
+        log.info("Successfully edited customer payment. EditMessageText: {}", messageTextDTO);
         return new SendMessage();
     }
 
@@ -246,7 +258,6 @@ public class CustomerUpdateWithCallbackQueryServiceImpl implements CustomerUpdat
         }
     }
 
-
     private ReplyKeyboardMarkup customerMenuReplyKeyboardButtons(CustomerTelegram customerTelegram) {
         resourceBundle = getResourceBundleUsingCustomerTelegram(customerTelegram);
         setTextToButtons(resourceBundle);
@@ -265,6 +276,7 @@ public class CustomerUpdateWithCallbackQueryServiceImpl implements CustomerUpdat
         ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup();
         markup.setResizeKeyboard(true);
         markup.setKeyboard(List.of(row1, row2, row3));
+        log.info("Successfully created customer menu. ReplyKeyboardMarkup: {}", markup);
         return markup;
     }
 }

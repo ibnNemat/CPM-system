@@ -94,22 +94,21 @@ public class ServicesServiceImpl implements ServicesService {
             return new ResponseDTO<ServicesDTO>(ResponseCodeConstants.NOT_FOUND, "group not fond", false, null);
 
         for (Groups group: groupsIncludeToPayment) {
-            if (group.getCustomers() != null) {
-                for (Customers customerForService : group.getCustomers()) {
-                    Payment newPaymentForService = new Payment();
-                    newPaymentForService.setService(service);
-                    newPaymentForService.setGroup(group);
-                    newPaymentForService.setCustomer(customerForService);
-                    newPaymentForService.setStartedPeriod(startedPeriod);
-                    newPaymentForService.setFinishedPeriod(endPeriod);
-                    newPaymentForService.setIsPaid(false);
-                    newPaymentForService.setPaidMoney(0D);
-                    newPaymentForService.setPaymentForPeriod(service.getPrice());
-                    paymentList.add(newPaymentForService);
-                    taskToSendMessage.sendNotificationIfCustomerNotPaidForService(
-                        customerForService, group, service, startedPeriod, endPeriod
-                    );
-                }
+            if (group.getCustomers() == null) continue;
+            for (Customers customerForService : group.getCustomers()) {
+                Payment newPaymentForService = new Payment();
+                newPaymentForService.setService(service);
+                newPaymentForService.setGroup(group);
+                newPaymentForService.setCustomer(customerForService);
+                newPaymentForService.setStartedPeriod(startedPeriod);
+                newPaymentForService.setFinishedPeriod(endPeriod);
+                newPaymentForService.setIsPaid(false);
+                newPaymentForService.setPaidMoney(0D);
+                newPaymentForService.setPaymentForPeriod(service.getPrice());
+                paymentList.add(newPaymentForService);
+                taskToSendMessage.sendNotificationIfCustomerNotPaidForService(
+                    customerForService, group, service, startedPeriod, endPeriod
+                );
             }
         }
         paymentService.saveAll(paymentList);
