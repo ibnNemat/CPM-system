@@ -9,24 +9,26 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import uz.devops.intern.domain.User;
 import uz.devops.intern.service.GroupsService;
-import uz.devops.intern.service.dto.CustomerTelegramDTO;
-import uz.devops.intern.service.dto.CustomersDTO;
-import uz.devops.intern.service.dto.GroupsDTO;
-import uz.devops.intern.service.dto.UserDTO;
+import uz.devops.intern.service.UserService;
+import uz.devops.intern.service.dto.*;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.dto.EditMessageDTO;
 import uz.devops.intern.telegram.bot.dto.EditMessageTextDTO;
+import uz.devops.intern.telegram.bot.dto.UpdateType;
 import uz.devops.intern.telegram.bot.keyboards.AdminMenuKeys;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 @Service
 public class RefactorGroup extends BotStrategyAbs {
+    private final UpdateType SUPPORTED_TYPE = UpdateType.CALLBACK_QUERY;
     private final String STATE = "MANAGER_REFACTORING_OWN_GROUPS";
     private final Integer STEP = 9;
     private final Integer PREV_STEP = 7;
@@ -36,6 +38,8 @@ public class RefactorGroup extends BotStrategyAbs {
     private AdminMenuKeys adminMenuKeys;
     @Autowired
     private GroupsService groupsService;
+    @Autowired
+    private UserService userService;
 
     @Override
     public String getState() {
@@ -48,13 +52,19 @@ public class RefactorGroup extends BotStrategyAbs {
     }
 
     @Override
+    public String messageOrCallback() {
+        return SUPPORTED_TYPE.name();
+    }
+
+    @Override
+    public String getErrorMessage(ResourceBundle bundle) {
+        return bundle.getString("bot.admin.error.choose.up");
+    }
+
+    @Override
     public boolean execute(Update update, CustomerTelegramDTO manager) {
         ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
-        if(!update.hasCallbackQuery()){
-            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.choose.up"));
-            log.warn("User didn't press inline keyboard! Manager id: {} | Update: {}", manager.getTelegramId(), update);
-            return false;
-        }
+
         String callbackData = update.getCallbackQuery().getData();
         if(callbackData.equals("BACK")){
             toBack(update.getCallbackQuery(), manager.getLanguageCode());
@@ -75,9 +85,14 @@ public class RefactorGroup extends BotStrategyAbs {
                 bundle.getString("bot.admin.customers.count") + " " + group.getCustomers().size());
 
         int i = 1;
-        for(CustomersDTO customer: group.getCustomers()){
-//            if(){}
-            newMessage.append(String.format("\n %d. %s", i++, customer.getUsername()));
+        ResponseDTO<List<User>> response = userService.getAllUsersByGroupId(group.getId());
+        if(Objects.isNull(response.getResponseData())){
+            log.warn("List of users is null! Response: {} ", response);
+            return false;
+        }
+
+        for(User user: response.getResponseData()){
+            newMessage.append(String.format("\n %d. %s %s", i++, user.getFirstName(), user.getLastName()));
         }
 
         boolean result = basicFunction(manager, update.getCallbackQuery(), newMessage.toString());
@@ -92,14 +107,17 @@ public class RefactorGroup extends BotStrategyAbs {
     private InlineKeyboardMarkup createGroupRefactoringButtons(String callback, ResourceBundle bundle){
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         List<InlineKeyboardButton> header = List.of(
-            InlineKeyboardButton.builder().text(bundle.getString("bot.admin.keyboard.group.change.name")).callbackData(callback).build()
+            InlineKeyboardButton.builder().text(bundle.getString("bot.admin.keyboard.group.change.name")).callbackData(callback + ": GROUP_NAME").build()
+        );
+        List<InlineKeyboardButton> body = List.of(
+            InlineKeyboardButton.builder().text(bundle.getString("bot.admin.keyboard.group.change.organization")).callbackData(callback + ": GROUP_ORGANIZATION").build()
         );
         List<InlineKeyboardButton> footer = List.of(
             InlineKeyboardButton.builder().text(bundle.getString("bot.admin.keyboard.for.back")).callbackData("BACK").build()
         );
 
         markup.setKeyboard(List.of(
-            header, footer
+            header, body, footer
         ));
         System.out.println(markup);
         return markup;

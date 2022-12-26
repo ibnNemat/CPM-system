@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import uz.devops.intern.service.*;
 import uz.devops.intern.service.dto.*;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
+import uz.devops.intern.telegram.bot.dto.UpdateType;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 
 import javax.annotation.PostConstruct;
@@ -13,7 +14,7 @@ import java.util.*;
 
 @Service
 public class MenuManager extends BotStrategyAbs {
-
+    private final UpdateType SUPPORTED_TYPE = UpdateType.MESSAGE;
     private final String STATE = "MANAGER_MENU";
     private final Integer STEP = 7;
 
@@ -47,12 +48,12 @@ public class MenuManager extends BotStrategyAbs {
     @Override
     public boolean execute(Update update, CustomerTelegramDTO manager) {
         ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
-        if(!update.hasMessage() || !update.getMessage().hasText()){
-            Long userId = update.hasCallbackQuery()? update.getCallbackQuery().getFrom().getId() : null;
-            wrongValue(userId, bundle.getString("bot.admin.send.only.message.or.contact"));
-            log.warn("User didn't send text! User id: {} | Update: {}", userId, update);
-            return false;
-        }
+//        if(!update.hasMessage() || !update.getMessage().hasText()){
+//            Long userId = update.hasCallbackQuery()? update.getCallbackQuery().getFrom().getId() : null;
+//            wrongValue(userId, bundle.getString("bot.admin.send.only.message.or.contact"));
+//            log.warn("User didn't send text! User id: {} | Update: {}", userId, update);
+//            return false;
+//        }
 
         Long userId = update.getMessage().getFrom().getId();
         String messageText = update.getMessage().getText();
@@ -69,6 +70,16 @@ public class MenuManager extends BotStrategyAbs {
     @Override
     public Integer getStep() {
         return STEP;
+    }
+
+    @Override
+    public String messageOrCallback() {
+        return SUPPORTED_TYPE.name();
+    }
+
+    @Override
+    public String getErrorMessage(ResourceBundle bundle) {
+        return bundle.getString("bot.admin.error.only.message");
     }
 
 }

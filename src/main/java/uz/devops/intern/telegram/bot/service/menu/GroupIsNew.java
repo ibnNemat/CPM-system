@@ -11,6 +11,7 @@ import uz.devops.intern.service.GroupsService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.GroupsDTO;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
+import uz.devops.intern.telegram.bot.dto.UpdateType;
 import uz.devops.intern.telegram.bot.keyboards.AdminMenuKeys;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.service.commands.MenuCommand;
@@ -21,6 +22,7 @@ import java.util.ResourceBundle;
 
 @Service
 public class GroupIsNew extends BotStrategyAbs {
+    private final UpdateType SUPPORTED_TYPE = UpdateType.MESSAGE;
     private final String STATE = "MANAGER_UPDATED_GROUP";
     private final Integer STEP = 11;
     private final Integer NEXT_STEP = 12;
@@ -77,5 +79,15 @@ public class GroupIsNew extends BotStrategyAbs {
     @Override
     public Integer getStep() {
         return STEP;
+    }
+
+    @Override
+    public String messageOrCallback() {
+        return SUPPORTED_TYPE.name();
+    }
+
+    @Override
+    public String getErrorMessage(ResourceBundle bundle) {
+        return bundle.getString("bot.admin.error.only.message");
     }
 }

@@ -411,4 +411,20 @@ public class UserService {
     public Optional<User> findByFirstName(String firstName) {
         return userRepository.findByFirstName(firstName);
     }
+
+    public ResponseDTO<List<User>> getAllUsersByGroupId(Long groupId){
+        if(Objects.isNull(groupId)){
+            return ResponseDTO.<List<User>>builder()
+                .success(false).message("Parameter \"Group id\" is null!").build();
+        }
+
+        List<User> users = userRepository.findAllByGroupId(groupId);
+        if(users.isEmpty()){
+            return ResponseDTO.<List<User>>builder()
+                .success(false).message("Users are not found!").responseData(users).build();
+        }
+
+        return ResponseDTO.<List<User>>builder()
+            .success(true).message("OK").responseData(users).build();
+    }
 }

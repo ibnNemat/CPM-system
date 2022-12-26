@@ -18,16 +18,19 @@ import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.dto.UserDTO;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
+import uz.devops.intern.telegram.bot.dto.UpdateType;
 import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
 import java.net.URI;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 @Service
 //@RequiredArgsConstructor
 public class ManagerBotToken extends BotStrategyAbs {
+    private final UpdateType SUPPORTED_TYPE = UpdateType.MESSAGE;
     private final String telegramAPI = "https://api.telegram.org/bot";
     private final String STATE = "MANAGER_NEW_BOT_TOKEN";
     private final Integer STEP = 3;
@@ -47,19 +50,12 @@ public class ManagerBotToken extends BotStrategyAbs {
     @Override
     public boolean execute(Update update, CustomerTelegramDTO manager) {
         ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
-        if(!update.hasMessage() && !update.getMessage().hasText()){
-            messageHasNotText(manager.getTelegramId(), update);
-            log.warn("Manager didn't send text! Manager: {}", manager);
-            return false;
-        }
 
-        Message message = update.getMessage();
-        Long userId = message.getFrom().getId();
-        String newBotToken = message.getText();
+        String newBotToken = update.getMessage().getText();
 
         ResponseDTO<BotTokenDTO> responseDTO = botTokenService.findByToken(newBotToken);
         if(responseDTO.getSuccess() && responseDTO.getMessage().equals("OK")){
-            wrongValue(userId, bundle.getString("bot.admin.bot.is.already.exists"));
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.bot.is.already.exists"));
             log.warn("Bot is already exists! Bot token: {} | BotTokenDTO: {} | Manager: {}",
                 newBotToken, responseDTO.getResponseData(), manager);
             return false;
@@ -67,7 +63,7 @@ public class ManagerBotToken extends BotStrategyAbs {
 
         URI uri = createCustomerURI(newBotToken);
         if(uri == null){
-            wrongValue(userId, bundle.getString("bot.admin.error.bot.token.is.invalid"));
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.bot.token.is.invalid"));
             log.warn("Bot token is invalid! User id: {} | Token: {}", manager.getTelegramId(), newBotToken);
             return false;
         }
@@ -82,8 +78,8 @@ public class ManagerBotToken extends BotStrategyAbs {
             return false;
         }
 
-        if(!telegramResponse.getOk() && telegramResponse.getResult() == null){
-            wrongValue(userId, bundle.getString("bot.admin.error.bot.token.is.invalid"));
+        if(!telegramResponse.getOk() || telegramResponse.getResult() == null){
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.bot.token.is.invalid"));
             log.warn("Given bot token is invalid! Bot token: {} | Manager: {} | Response from telegram: {}",
                 newBotToken, manager, telegramResponse);
             return false;
@@ -98,13 +94,13 @@ public class ManagerBotToken extends BotStrategyAbs {
         String result = checkWebhookResponse(webhookResponse);
 
         if (!result.equals("Ok")) {
-            wrongValue(userId, result);
+            wrongValue(manager.getTelegramId(), result);
             log.info("Setting webhook is failed, Response: {} | Bot token: {} | Customer: {}",
                 webhookResponse, newBotToken, manager);
             return false;
         }
 
-        saveBotEntity(bot, manager.getPhoneNumber(), newBotToken);
+        saveBotEntity(bot, manager, newBotToken);
         basicFunction(manager, bundle);
         return true;
     }
@@ -125,6 +121,16 @@ public class ManagerBotToken extends BotStrategyAbs {
     @Override
     public Integer getStep() {
         return STEP;
+    }
+
+    @Override
+    public String messageOrCallback() {
+        return SUPPORTED_TYPE.name();
+    }
+
+    @Override
+    public String getErrorMessage(ResourceBundle bundle) {
+        return bundle.getString("bot.admin.error.only.message");
     }
 
     private WebhookResponseDTO setWebhookToNewBot(String token, Long botId){
@@ -149,8 +155,12 @@ public class ManagerBotToken extends BotStrategyAbs {
         return "Ok";
     }
 
-    private void saveBotEntity(User bot, String phoneNumber, String newBotToken){
-        ResponseDTO<uz.devops.intern.domain.User> response = userService.getUserByCreatedBy(phoneNumber, true);
+    private void saveBotEntity(User bot, CustomerTelegramDTO manager, String newBotToken){
+        ResponseDTO<uz.devops.intern.domain.User> response = getUserByCustomerTg(manager);
+        if(Objects.isNull(response.getResponseData())){
+            return;
+        }
+
         UserDTO dto = new UserDTO();
         dto.setId(response.getResponseData().getId());
         dto.setLogin(response.getResponseData().getLogin());

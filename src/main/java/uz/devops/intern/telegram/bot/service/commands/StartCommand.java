@@ -1,5 +1,6 @@
 package uz.devops.intern.telegram.bot.service.commands;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -22,6 +23,8 @@ public class StartCommand extends BotCommandAbs {
     private final String COMMAND = "/start";
 
     private final Integer SUPPORTED_STEP = 1;
+    @Autowired
+    private MenuCommand menuCommand;
 
     protected StartCommand(AdminFeign adminFeign) {
         super(adminFeign);
@@ -42,6 +45,7 @@ public class StartCommand extends BotCommandAbs {
 
         if(response.getSuccess() && response.getResponseData() != null) {
             // Todo if exists return something
+            menuCommand.executeCommand(update, userId);
             return false;
         }
         startProcess(message, null);
@@ -79,4 +83,8 @@ public class StartCommand extends BotCommandAbs {
     public Integer getSupportedStep(){
         return SUPPORTED_STEP;
     }
+
+//    private boolean throwToMenu(){
+//        me
+//    }
 }

@@ -1,5 +1,6 @@
 package uz.devops.intern.service.impl;
 
+import feign.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -187,7 +188,7 @@ public class PaymentServiceImpl implements PaymentService {
         if (optionalGroupsDTO.isPresent()) {
             GroupsDTO groups = optionalGroupsDTO.get();
             paymentHistory.setGroupName(groups.getName());
-            paymentHistory.setOrganizationName(groups.getGroupOwnerName());
+            paymentHistory.setOrganizationName(groups.getOrganization().getName());
         }
         paymentHistory.setServiceName(service.getName());
         paymentHistory.setCustomer(customer);
@@ -325,5 +326,24 @@ public class PaymentServiceImpl implements PaymentService {
         PaymentDTO dto = paymentOptional.map(PaymentsMapper::toDto).get();
         return ResponseDTO.<PaymentDTO>builder()
             .success(true).message("OK").responseData(dto).build();
+    }
+
+    @Override
+    public ResponseDTO<PaymentDTO> getByUserLogin(String login){
+        if(login == null || login.trim().isEmpty()){
+            return ResponseDTO.<PaymentDTO>builder()
+                .success(false).message("Parameter \"Login\" is null or empty!").build();
+        }
+
+        Optional<Payment> paymentOptional = paymentRepository.findByUserLogin(login);
+        if(paymentOptional.isEmpty()){
+            return ResponseDTO.<PaymentDTO>builder()
+                .success(false).message("Data is not found!").build();
+        }
+
+        PaymentDTO dto = paymentOptional.map(PaymentsMapper::toDto).get();
+        return ResponseDTO.<PaymentDTO>builder()
+            .success(true).message("OK").responseData(dto).build();
+
     }
 }

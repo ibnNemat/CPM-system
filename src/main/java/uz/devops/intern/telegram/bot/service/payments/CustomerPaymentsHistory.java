@@ -7,31 +7,29 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import uz.devops.intern.domain.User;
-import uz.devops.intern.service.GroupsService;
-import uz.devops.intern.service.PaymentService;
-import uz.devops.intern.service.dto.CustomerTelegramDTO;
-import uz.devops.intern.service.dto.GroupsDTO;
-import uz.devops.intern.service.dto.PaymentDTO;
-import uz.devops.intern.service.dto.ResponseDTO;
+import uz.devops.intern.service.*;
+import uz.devops.intern.service.dto.*;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.dto.EditMessageTextDTO;
+import uz.devops.intern.telegram.bot.dto.UpdateType;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.service.menu.CustomerPayments;
 import uz.devops.intern.web.rest.utils.WebUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class CustomerPaymentsHistory extends BotStrategyAbs {
+    private final UpdateType SUPPORTED_TYPE = UpdateType.CALLBACK_QUERY;
     private final String STATE = "CURRENT_CUSTOMER_PAYMENTS";
     private final Integer STEP = 14;
     private final Integer NEXT_STEP = 15;
     private final CustomerPayments customerPayments;
     private final GroupsService groupsService;
     private final PaymentService paymentService;
+    private final UserService userService;
+    private final ServicesService servicesService;
 
     @Override
     public boolean execute(Update update, CustomerTelegramDTO manager) {
@@ -65,28 +63,23 @@ public class CustomerPaymentsHistory extends BotStrategyAbs {
             manager.setStep(customerPayments.getNextStep());
             return true;
         }
+        String customerLogin = callbackData;
 
-        Long customerId = null;
-        try{
-            customerId = Long.parseLong(callbackData);
-        }catch (NumberFormatException e){
-            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.choose.up"));
-            log.warn("User didn't pressed shown inline buttons! Manager id: {} | Callback data: {}", manager.getTelegramId(), callbackData);
-            return false;
-        }
-
-        ResponseDTO<PaymentDTO> response = paymentService.getByCustomerId(customerId);
+        ResponseDTO<PaymentDTO> response = paymentService.getByUserLogin(customerLogin);
         if(!response.getSuccess() || response.getResponseData() == null){
             String newMessage = String.format(bundle.getString("bot.admin.error.groups.are.not.attached.to.service"), bundle.getString("bot.admin.keyboard.for.back"));
             EditMessageTextDTO editMessageTextDTO = createEditMessage(update.getCallbackQuery(), update.getCallbackQuery().getMessage().getReplyMarkup(), newMessage);
             adminFeign.editMessageText(editMessageTextDTO);
-            log.warn("Customer's payment is not found! Manager id: {} | Customer id: {}", manager.getTelegramId(), customerId);
+            log.warn("Customer's payment is not found! Manager id: {} | Customer login: {}", manager.getTelegramId(), customerLogin);
             return false;
         }
 
         PaymentDTO payment = response.getResponseData();
-        String newMessage = createText(payment);
-        InlineKeyboardMarkup markup = createInlineButtons(customerId, bundle);
+        String newMessage = createText(manager, payment);
+        if(Objects.isNull(newMessage)){
+            return false;
+        }
+        InlineKeyboardMarkup markup = createInlineButtons(customerLogin, bundle);
         EditMessageTextDTO editMessageTextDTO = createEditMessage(update.getCallbackQuery(), markup, newMessage);
         try {
             adminFeign.editMessageText(editMessageTextDTO);
@@ -107,6 +100,16 @@ public class CustomerPaymentsHistory extends BotStrategyAbs {
     @Override
     public Integer getStep() {
         return STEP;
+    }
+
+    @Override
+    public String messageOrCallback() {
+        return SUPPORTED_TYPE.name();
+    }
+
+    @Override
+    public String getErrorMessage(ResourceBundle bundle) {
+        return bundle.getString("bot.admin.error.choose.up");
     }
 
     public Integer getNextStep(){
@@ -132,11 +135,11 @@ public class CustomerPaymentsHistory extends BotStrategyAbs {
         return InlineKeyboardMarkup.builder().keyboard(keyboardButtons).build();
     }
 
-    private InlineKeyboardMarkup createInlineButtons(Long customerId, ResourceBundle bundle){
+    private InlineKeyboardMarkup createInlineButtons(String login, ResourceBundle bundle){
         List<List<InlineKeyboardButton>> keyboards = List.of(
-            List.of(
-                InlineKeyboardButton.builder().text(bundle.getString("bot.admin.keyboard.for.back")).callbackData(String.valueOf(customerId)).build()
-            ),
+//            List.of(
+//                InlineKeyboardButton.builder().text(bundle.getString("bot.admin.keyboard.for.back")).callbackData(login).build()
+//            ),
             List.of(
                 InlineKeyboardButton.builder().text(bundle.getString("bot.admin.keyboard.for.menu")).callbackData("MENU").build()
             )
@@ -145,14 +148,34 @@ public class CustomerPaymentsHistory extends BotStrategyAbs {
         return InlineKeyboardMarkup.builder().keyboard(keyboards).build();
     }
 
-    private String createText(PaymentDTO payment){
-        return  "Foydalanuvchi: " + payment.getCustomer().getUsername() +
-            "\nFoydalanuvchi tel.: " + payment.getCustomer().getPhoneNumber() +
-            "\nGuruh nomi: " + payment.getGroup().getName() +
-            "\nFoydalanuvchi a'zo bo'lgan xizmat: " + payment.getService().getName() +
-            "\nXizmatning boshlangan sanasi: " + payment.getService().getStartedPeriod() +
-            "\nTo'langan pul: " + payment.getPaidMoney() + "\n";
+    private String createText(CustomerTelegramDTO manager, PaymentDTO payment){
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleUsingLanguageCode(manager.getLanguageCode());
+        Optional<ServicesDTO> serviceOptional = servicesService.findOne(payment.getService().getId());
+        if(serviceOptional.isEmpty()){
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.services.are.not.found"));
+            log.warn("Services are not found! Manager id: {} | Service id: {}", manager.getTelegramId(), payment.getService().getId());
+            return null;
+        }
+        ResponseDTO<User> response =
+            userService.getUserByPhoneNumber(payment.getCustomer().getPhoneNumber());
+        if(!response.getSuccess() || Objects.isNull(response.getResponseData())){
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.user.is.not.found"));
+            log.warn("Manager customer is not found! Manager id: {} | Customer phone number: {} ",
+                manager.getTelegramId(), payment.getCustomer().getPhoneNumber());
+            return null;
+        }
 
+        ServicesDTO service = serviceOptional.get();
+        User user = response.getResponseData();
+
+        return String.format(bundle.getString("bot.admin.send.text.customer.payment.history"),
+            user.getFirstName() + " " + user.getLastName(),
+            user.getCreatedBy(),
+            service.getName(),
+            payment.getStartedPeriod(),
+            payment.getPaidMoney(),
+            service.getPrice(),
+            service.getPrice() - payment.getPaidMoney());
     }
 
 }

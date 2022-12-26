@@ -2,6 +2,7 @@ package uz.devops.intern.telegram.bot.service.register;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -12,6 +13,7 @@ import uz.devops.intern.service.UserService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
+import uz.devops.intern.telegram.bot.dto.UpdateType;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 
 import java.util.List;
@@ -23,13 +25,14 @@ import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.sendMessage;
 @Service
 @RequiredArgsConstructor
 public class VerifyManager extends BotStrategyAbs {
-
+    private final UpdateType SUPPORTED_TYPE = UpdateType.MESSAGE;
     private final String STATE = "MANAGER_VERIFICATION";
     private final Integer STEP = 2;
     private final Integer NEXT_STEP = 3;
 
-//    @Autowired
     private final UserService userService;
+    @Value("${notion.link.new-telegram-bot}")
+    private String URL_FOR_TUTORIAL;
     @Override
     public String getState() {
         return STATE;
@@ -41,15 +44,20 @@ public class VerifyManager extends BotStrategyAbs {
     }
 
     @Override
+    public String messageOrCallback() {
+        return SUPPORTED_TYPE.name();
+    }
+
+    @Override
+    public String getErrorMessage(ResourceBundle bundle) {
+        return bundle.getString("bot.admin.error.only.message");
+    }
+
+    @Override
     public boolean execute(Update update, CustomerTelegramDTO manager) {
         log.info("Verifying user by phone number, Customer: {}", manager);
 
         ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
-        if(!update.hasMessage() || (!update.getMessage().hasContact() && !update.getMessage().hasText())){
-            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.send.only.message.or.contact"));
-            log.warn("No message in update! Update: {} ", update);
-            return false;
-        }
 
         Message message = update.getMessage();
         Long userId = message.getFrom().getId();
@@ -87,7 +95,7 @@ public class VerifyManager extends BotStrategyAbs {
 
     public void basicFunction(CustomerTelegramDTO manager, ResourceBundle bundle){
         // Here bot should send tutorial telegraph about how to create bot.
-        String newMessage = bundle.getString("bot.admin.send.new.bot.token");
+        String newMessage = String.format(bundle.getString("bot.admin.send.new.bot.token"), URL_FOR_TUTORIAL);
         ReplyKeyboardRemove removeMarkup = new ReplyKeyboardRemove(true);
         SendMessage sendMessage = sendMessage(manager.getTelegramId(), newMessage, removeMarkup);
         adminFeign.sendMessage(sendMessage);
@@ -126,5 +134,4 @@ public class VerifyManager extends BotStrategyAbs {
 
         return false;
     }
-
 }

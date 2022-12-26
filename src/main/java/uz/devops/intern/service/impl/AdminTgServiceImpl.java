@@ -14,6 +14,7 @@ import uz.devops.intern.service.dto.*;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.dto.BotCommandDTO;
 import uz.devops.intern.telegram.bot.dto.BotCommandsMenuDTO;
+import uz.devops.intern.telegram.bot.dto.UpdateType;
 import uz.devops.intern.telegram.bot.service.BotCommand;
 import uz.devops.intern.telegram.bot.service.BotCommandAbs;
 import uz.devops.intern.telegram.bot.service.BotStrategy;
@@ -61,7 +62,6 @@ public class AdminTgServiceImpl implements AdminTgService {
             return false;
         }
 
-
         ResponseDTO<CustomerTelegramDTO> response =
             customerTelegramService.getCustomerByTelegramId(userId);
 
@@ -80,22 +80,9 @@ public class AdminTgServiceImpl implements AdminTgService {
                 update.getMessage().hasContact()?
                     update.getMessage().getContact().getPhoneNumber(): null;
 
-            if(messageText == null){
-                String newMessage = resourceBundle.getString("bot.admin.send.only.message.or.contact");
-                SendMessage sendMessage = TelegramsUtil.sendMessage(userId, newMessage);
-                adminFeign.sendMessage(sendMessage);
-                log.warn("User didn't send Message or Contact! User id: {} | Update: {}", userId, update);
-                return false;
-            }
 
-            else if(messageText.contains("/")){
+            if(messageText.contains("/")){
                 log.info("\"/\" contains in Message!");
-//                if(response.getResponseData().getStep() == 5){
-//                    ResourceBundle bundle = ResourceBundleUtils.getResourceBundleUsingLanguageCode(response.getResponseData().getLanguageCode());
-//                    SendMessage sendMessage = TelegramsUtil.sendMessage(response.getResponseData().getTelegramId(), bundle.getString("bot.admin.error.commands.does.not.works.on.adding.groups"));
-//                    adminFeign.sendMessage(sendMessage);
-//                    log.warn("Manager send command while adding bot to group! Manager id: {} | Command: {}", response.getResponseData().getTelegramId(), messageText);
-//                }
                 BotCommand command = commandsMap.getOrDefault(messageText, commandsMap.get("/unknown"));
                 return command.executeCommand(update, userId);
             }
@@ -120,14 +107,38 @@ public class AdminTgServiceImpl implements AdminTgService {
     }
 
     private boolean logic(Update update, ResponseDTO<CustomerTelegramDTO> response){
-        log.info("Into main business logic, Update: {} | Manager: {}", update, response.getMessage());
         CustomerTelegramDTO customerTgDTO = response.getResponseData();
-        BotStrategy obj = map.get(customerTgDTO.getStep());
+        BotStrategyAbs obj = map.get(customerTgDTO.getStep());
+        boolean isSupported = checkSupportedType(update, obj);
+
+        if(!isSupported){
+            ResourceBundle bundle = ResourceBundleUtils.getResourceBundleUsingLanguageCode(customerTgDTO.getLanguageCode());
+            obj.wrongValue(customerTgDTO.getTelegramId(),obj.getErrorMessage(bundle));
+            log.warn("Manager send unsupported thing! Manager id: {} | Update: {} ",
+                customerTgDTO.getTelegramId(), update);
+            return false;
+        }
+
+
         boolean isSuccess = obj.execute(update, customerTgDTO);
         if(isSuccess){
             ResponseDTO<CustomerTelegramDTO> updatedCustomerTgDTO = customerTelegramService.update(customerTgDTO);
             log.info("User is successfully updated! Response: {}", updatedCustomerTgDTO);
         }
         return isSuccess;
+    }
+
+    private boolean checkSupportedType(Update update, BotStrategy o){
+        if(update.hasMessage() && o.messageOrCallback().equals(UpdateType.MESSAGE.name()) &&
+            (update.getMessage().hasText() || update.getMessage().hasContact())){
+            return true;
+        }
+        if(update.hasCallbackQuery() && o.messageOrCallback().equals(UpdateType.CALLBACK_QUERY.name())){
+            return true;
+        }
+        if(o.messageOrCallback().equals(UpdateType.BOTH_OF_THEM.name())){
+            return true;
+        }
+        return false;
     }
 }

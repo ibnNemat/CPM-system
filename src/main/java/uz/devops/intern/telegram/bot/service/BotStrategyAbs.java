@@ -1,5 +1,6 @@
 package uz.devops.intern.telegram.bot.service;
 
+import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import uz.devops.intern.service.UserService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
+import uz.devops.intern.telegram.bot.dto.EditMessageDTO;
 import uz.devops.intern.telegram.bot.dto.EditMessageTextDTO;
 import uz.devops.intern.telegram.bot.keyboards.AdminMenuKeys;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
@@ -50,18 +52,6 @@ public abstract class BotStrategyAbs implements BotStrategy {
         Update update = adminFeign.sendMessage(sendMessage);
         log.warn("User send invalid value, Chat id: {} | Message: {} | Update: {}",
             chatId, message, update);
-    }
-
-    public void messageHasNotText(Long chatId, Update update){
-        ResourceBundle bundle =
-            ResourceBundleUtils.getResourceBundleByUserLanguageCode(update.getMessage().getFrom().getLanguageCode());
-        wrongValue(chatId, bundle.getString("bot.admin.send.only.message.or.contact"));
-        log.warn("User hasn't send text, Chat id: {} | Update: {}", chatId, update);
-    }
-
-    public void messageHasNotText(Long chatId, Update update, Boolean contact){
-        wrongValue(chatId, "Iltimos xabar yoki kontakt yuboring\uD83D\uDE4F");
-        log.warn("User hasn't send text, Chat id: {} | Update: {}", chatId, update);
     }
 
     public URI createCustomerURI(String token){
@@ -104,5 +94,21 @@ public abstract class BotStrategyAbs implements BotStrategy {
             "HTML",
             null
         );
+    }
+
+    protected boolean removeInlineButtons(CallbackQuery callback){
+        EditMessageDTO editMessageDTO = new EditMessageDTO(
+            String.valueOf(callback.getFrom().getId()),
+            callback.getMessage().getMessageId(),
+            callback.getInlineMessageId(),
+            new InlineKeyboardMarkup()
+        );
+        try {
+            adminFeign.editMessageReplyMarkup(editMessageDTO);
+            return true;
+        }catch (FeignException.FeignClientException e){
+            log.warn("Error while editing message when manager renamed group! Manager id: {} ", callback.getFrom().getId());
+            return false;
+        }
     }
 }

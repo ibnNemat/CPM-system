@@ -30,9 +30,6 @@ public class GroupStates extends State<BotFSM>{
     private final OrganizationService organizationService;
     private final AdminFeign adminFeign;
 
-    @Autowired
-    private GroupOrganizationState groupOrganizationState;
-
     public GroupStates(BotFSM context) {
         super(context, context.getAdminFeign());
         this.groupsService = context.getGroupsService();
@@ -68,6 +65,7 @@ public class GroupStates extends State<BotFSM>{
         TelegramGroupDTO telegramGroup = telegramGroupService.findOneByChatId(groupChatId);
         ResponseDTO<User> responseDTO = userService.getUserByPhoneNumber(manager.getPhoneNumber());
         if(!responseDTO.getSuccess()){
+            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.user.is.not.found"));
             log.warn("{}", responseDTO);
             return false;
         }
@@ -115,11 +113,5 @@ public class GroupStates extends State<BotFSM>{
         return dto;
     }
 
-//    public void wrongValue(Long chatId, String message){
-//        SendMessage sendMessage = TelegramsUtil.sendMessage(chatId, message);
-//        Update update = adminFeign.sendMessage(sendMessage);
-//        log.warn("User send invalid value, Chat id: {} | Message: {} | Update: {}",
-//            chatId, message, update);
-//    }
 
 }

@@ -56,10 +56,8 @@ public class AllGroups extends ManagerMenuAbs{
     @Override
     public boolean todo(Update update, CustomerTelegramDTO manager) {
         ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
-        ResponseDTO<User> responseDTO = userService.getUserByPhoneNumber(manager.getPhoneNumber());
-        if(!responseDTO.getSuccess()){
-            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.user.is.not.found"));
-            log.warn("{} | Manager id: {} | Response: {}", responseDTO.getMessage(), manager.getTelegramId(), responseDTO);
+        ResponseDTO<User> responseDTO = getUserByCustomerTg(manager);
+        if(responseDTO.getResponseData() == null){
             return false;
         }
 

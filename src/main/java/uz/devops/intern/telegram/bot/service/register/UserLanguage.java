@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
+import uz.devops.intern.telegram.bot.dto.UpdateType;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.utils.KeyboardUtil;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
@@ -17,18 +18,13 @@ import static uz.devops.intern.telegram.bot.utils.TelegramsUtil.sendMessage;
 
 @Service
 public class UserLanguage extends BotStrategyAbs {
-
+    private final UpdateType SUPPORTED_TYPE = UpdateType.MESSAGE;
     private final String STATE = "MANAGER_LANGUAGE";
     private final Integer STEP = 1;
+    private final Integer NEXT_STEP = 2;
 
     @Override
     public boolean execute(Update update, CustomerTelegramDTO manager) {
-        if(!update.hasMessage()){
-            Long userId = update.hasCallbackQuery()? update.getCallbackQuery().getFrom().getId(): null;
-            messageHasNotText(userId, update);
-            return false;
-        }
-
         Message message = update.getMessage();
         Long userId = message.getFrom().getId();
         String messageText = message.getText();
@@ -43,7 +39,7 @@ public class UserLanguage extends BotStrategyAbs {
         String languageCode = KeyboardUtil.getLanguages().get(messageText);
         bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(languageCode);
         manager.setLanguageCode(languageCode);
-        manager.setStep(2);
+        manager.setStep(NEXT_STEP);
 
         String newMessage = bundle.getString("bot.admin.send.contact");
         ReplyKeyboardMarkup markup = KeyboardUtil.phoneNumber(manager.getLanguageCode());
@@ -62,5 +58,15 @@ public class UserLanguage extends BotStrategyAbs {
     @Override
     public Integer getStep() {
         return STEP;
+    }
+
+    @Override
+    public String messageOrCallback(){
+        return SUPPORTED_TYPE.name();
+    }
+
+    @Override
+    public String getErrorMessage(ResourceBundle bundle) {
+        return bundle.getString("bot.admin.error.only.message");
     }
 }
