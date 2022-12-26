@@ -12,6 +12,7 @@ import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.service.*;
 import uz.devops.intern.service.dto.*;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
+import uz.devops.intern.telegram.bot.annotations.AnnotationTestArea;
 import uz.devops.intern.telegram.bot.dto.BotCommandDTO;
 import uz.devops.intern.telegram.bot.dto.BotCommandsMenuDTO;
 import uz.devops.intern.telegram.bot.dto.UpdateType;
@@ -39,10 +40,19 @@ public class AdminTgServiceImpl implements AdminTgService {
     @Autowired
     @Qualifier("command-objects-map")
     private Map<String, BotCommandAbs> commandsMap;
+    @Autowired
+    private AnnotationTestArea annotationTestArea;
 
     public AdminTgServiceImpl(CustomerTelegramService customerTelegramService, AdminFeign adminFeign) {
         this.customerTelegramService = customerTelegramService;
         this.adminFeign = adminFeign;
+    }
+
+    @PostConstruct
+    public void test() throws NoSuchMethodException {
+        annotationTestArea.checkAnnotationInteger(1);
+        annotationTestArea.checkAnnotationInteger("12");
+//        annotationTestArea.checkAnnotationWithString("Something");
     }
 
     @PreDestroy

@@ -129,7 +129,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             return ResponseDTO.<OrganizationDTO>builder()
                 .success(false).message("Data is not found!").build();
         }
-        OrganizationDTO dto = organizationOptional.map(organizationMapper::toDto).get();
+        OrganizationDTO dto = organizationOptional.map(OrganizationsMapper::toDtoWithoutGroups).get();
         return ResponseDTO.<OrganizationDTO>builder()
             .success(true).message("OK").responseData(dto).build();
     }

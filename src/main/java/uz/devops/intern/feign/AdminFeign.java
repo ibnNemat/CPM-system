@@ -23,7 +23,7 @@ import uz.devops.intern.telegram.bot.dto.WebhookResponseDTO;
 import java.util.List;
 
 @FeignClient(value = "admin-feign",
-    url = "https://api.telegram.org/bot5926613188:AAF3AKO0Yfwc5dk-oFiMvAPDvMGztkGCTkc")
+    url = "https://api.telegram.org/bot5225793240:AAEDojpbQM780zRMWIvmJXCIGeEBXWoY6RM")
 public interface AdminFeign {
     @PostMapping("/sendMessage")
     Update sendMessage(@RequestBody SendMessage sendMessage);
