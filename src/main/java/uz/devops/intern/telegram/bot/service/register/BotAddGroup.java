@@ -239,8 +239,7 @@ public class BotAddGroup extends BotStrategyAbs {
         TelegramGroupDTO telegramGroupDTO = telegramGroupService.findOneByChatId(chat.getId());
 
         if(telegramGroupDTO != null){
-//            wrongValue(manager.getTelegramId(), bundle.getString(""));
-            return null;
+            return telegramGroupDTO;
         }
         ResponseDTO<TelegramGroupDTO> responseDTO = telegramGroupService.saveAndFlush(dto);
         System.out.println(responseDTO.getResponseData());

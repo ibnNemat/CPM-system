@@ -1,5 +1,6 @@
 package uz.devops.intern.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -31,11 +32,13 @@ import java.util.*;
 
 import static uz.devops.intern.constants.ResponseMessageConstants.*;
 import static uz.devops.intern.constants.ResponseCodeConstants.OK;
+import static uz.devops.intern.domain.enumeration.PeriodType.ONETIME;
 
 /**
  * Service Implementation for managing {@link Services}.
  */
 @Service
+@RequiredArgsConstructor
 public class ServicesServiceImpl implements ServicesService {
     private final Logger log = LoggerFactory.getLogger(ServicesServiceImpl.class);
     private final ServicesRepository servicesRepository;
@@ -44,17 +47,6 @@ public class ServicesServiceImpl implements ServicesService {
     private final TimerTaskToSendMessage taskToSendMessage;
     private final GroupsService groupService;
     private static final String ENTITY_NAME = "services";
-    private final CustomersService customerService;
-    private final AuthenticatedUserUtil authenticatedUserUtil;
-    public ServicesServiceImpl(ServicesRepository servicesRepository, ServicesMapper servicesMapper, PaymentService paymentService, TimerTaskToSendMessage taskToSendMessage, GroupsService groupService, CustomersService customerService, AuthenticatedUserUtil authenticatedUserUtil) {
-        this.servicesRepository = servicesRepository;
-        this.servicesMapper = servicesMapper;
-        this.paymentService = paymentService;
-        this.taskToSendMessage = taskToSendMessage;
-        this.groupService = groupService;
-        this.customerService = customerService;
-        this.authenticatedUserUtil = authenticatedUserUtil;
-    }
 
     @Override
     public ResponseDTO<ServicesDTO> save(ServicesDTO servicesDTO) {
@@ -62,10 +54,15 @@ public class ServicesServiceImpl implements ServicesService {
         if (servicesDTO.getGroups().size() == 0){
             return new ResponseDTO<ServicesDTO>(ResponseCodeConstants.NOT_FOUND, "group not found", false, null);
         }
-
         Services services = ServiceMapper.toEntity(servicesDTO);
+        Set<Long> groupsId = new HashSet<>();
+        services.getGroups().forEach(group ->  groupsId.add(group.getId()));
+        int countGroups = groupService.countAllByGroupsId(groupsId);
+        if (services.getGroups().size() != countGroups) {
+            log.warn("Some groups id not exist in database. Request groups: {}", servicesDTO.getGroups());
+            return new ResponseDTO<ServicesDTO>(ResponseCodeConstants.NOT_FOUND, "some group not found", false, null);
+        }
         services = servicesRepository.save(services);
-
         ResponseDTO responseDTO = createPaymentEachCustomers(services);
         if (!responseDTO.getSuccess())
             return responseDTO;
@@ -78,7 +75,11 @@ public class ServicesServiceImpl implements ServicesService {
         Payment paymentToSetPeriod = new Payment();
         LocalDate startedPeriod = service.getStartedPeriod();
         paymentToSetPeriod.setStartedPeriod(startedPeriod);
-        PaymentServiceImpl.setNextFinishedPeriodToPayment(paymentToSetPeriod, service);
+        if (service.getPeriodType().equals(ONETIME)){
+            paymentToSetPeriod.setFinishedPeriod(startedPeriod);
+        }else{
+            PaymentServiceImpl.setNextFinishedPeriodToPayment(paymentToSetPeriod, service);
+        }
         LocalDate endPeriod = paymentToSetPeriod.getFinishedPeriod();
 
         Set<Groups> groupsForService = service.getGroups();

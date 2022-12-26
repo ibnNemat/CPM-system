@@ -2,17 +2,22 @@ package uz.devops.intern.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import uz.devops.intern.file.io.PDFWriterClass;
 import uz.devops.intern.service.MailServiceHelper;
+import uz.devops.intern.service.dto.PaymentDTO;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.ResourceBundle;
+
+import static uz.devops.intern.constants.ResourceBundleConstants.MAIL_MESSAGE_NOTIFICATION_DEBT;
 
 @Service
 @RequiredArgsConstructor
@@ -21,19 +26,22 @@ public class MailServiceHelperImpl implements MailServiceHelper {
     @Value("${spring.mail.username}")
     private String mailCPMSystem;
     private final JavaMailSender javaMailSender;
+    private final PDFWriterClass PDFWriterClass;
 
     @Override
-    public void sendMessageWithPDF(String to, String subject, String text){
+    public synchronized void invokerPdfWriterAndMailSender(String to, String subject, ResourceBundle resourceBundle, List<PaymentDTO> paymentDTOList){
+        PDFWriterClass.convertToPDFFromExcel(paymentDTOList, resourceBundle);
+        log.info("current thread while sending message to email {}" ,Thread.currentThread().getName());
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper;
         try {
             File file = new File("src/main/resources/templates/customer_debts.pdf");
-            mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+            mimeMessageHelper = new MimeMessageHelper(mimeMessage, true,  StandardCharsets.UTF_8.name());
             mimeMessageHelper.setSubject(subject);
             mimeMessageHelper.setFrom(mailCPMSystem);
             mimeMessageHelper.setTo(to);
             mimeMessageHelper.setReplyTo(mailCPMSystem);
-            mimeMessageHelper.setText(text, true);
+            mimeMessageHelper.setText(resourceBundle.getString(MAIL_MESSAGE_NOTIFICATION_DEBT), true);
             mimeMessageHelper.addAttachment("debts-info.pdf", file);
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
@@ -49,7 +57,7 @@ public class MailServiceHelperImpl implements MailServiceHelper {
             message.setFrom(mailCPMSystem);
             message.setTo(to);
             message.setSubject("Debt for services");
-            message.setText(text, true);
+            message.setText(text, false);
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
             log.error(e.getMessage());

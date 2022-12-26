@@ -1,5 +1,6 @@
 package uz.devops.intern.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -15,9 +16,7 @@ import uz.devops.intern.service.GroupsService;
 import uz.devops.intern.service.PaymentHistoryService;
 import uz.devops.intern.service.PaymentService;
 import uz.devops.intern.service.dto.*;
-import uz.devops.intern.service.mapper.PaymentHistoryMapper;
-import uz.devops.intern.service.mapper.PaymentMapper;
-import uz.devops.intern.service.mapper.PaymentsMapper;
+import uz.devops.intern.service.mapper.*;
 import uz.devops.intern.service.utils.AuthenticatedUserUtil;
 import uz.devops.intern.service.utils.ContextHolderUtil;
 import uz.devops.intern.web.rest.errors.BadRequestAlertException;
@@ -34,6 +33,7 @@ import static uz.devops.intern.constants.ResponseCodeConstants.*;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
     private final Logger log = LoggerFactory.getLogger(PaymentServiceImpl.class);
     private final PaymentRepository paymentRepository;
@@ -43,18 +43,9 @@ public class PaymentServiceImpl implements PaymentService {
     private final GroupsService groupsService;
     private final AuthenticatedUserUtil authenticatedUserUtil;
     private final PaymentMapper paymentMapper;
+    private final CustomersMapper customersMapper;
     private final PaymentHistoryMapper paymentHistoryMapper;
     private static final String ENTITY_NAME = "payment";
-    public PaymentServiceImpl(PaymentRepository paymentRepository, CustomersService customersService, ServicesRepository servicesRepository, PaymentHistoryService paymentHistoryService, GroupsService groupsService, AuthenticatedUserUtil authenticatedUserUtil, PaymentMapper paymentMapper, PaymentHistoryMapper paymentHistoryMapper) {
-        this.paymentRepository = paymentRepository;
-        this.customersService = customersService;
-        this.servicesRepository = servicesRepository;
-        this.paymentHistoryService = paymentHistoryService;
-        this.groupsService = groupsService;
-        this.authenticatedUserUtil = authenticatedUserUtil;
-        this.paymentMapper = paymentMapper;
-        this.paymentHistoryMapper = paymentHistoryMapper;
-    }
 
     @Override
     public PaymentDTO save(PaymentDTO paymentDTO) {
@@ -187,7 +178,7 @@ public class PaymentServiceImpl implements PaymentService {
         if (optionalGroupsDTO.isPresent()) {
             GroupsDTO groups = optionalGroupsDTO.get();
             paymentHistory.setGroupName(groups.getName());
-            paymentHistory.setOrganizationName(groups.getGroupOwnerName());
+            paymentHistory.setOrganizationName(groups.getOrganization().getName());
         }
         paymentHistory.setServiceName(service.getName());
         paymentHistory.setCustomer(customer);
@@ -255,6 +246,35 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    public ResponseDTO<PaymentDTO> includePaymentToNewCustomer(PaymentRequestParamDTO paymentRequestParam) {
+        Optional<CustomersDTO> customersOptional = customersService.findOne(paymentRequestParam.getCustomerId());
+        if (customersOptional.isEmpty()) return ResponseDTO.<PaymentDTO>builder().code(NOT_FOUND).success(false).message("customer not found").build();
+        Optional<Groups> groupsOptional = groupsService.findById(paymentRequestParam.getServiceId());
+        if (groupsOptional.isEmpty()) return ResponseDTO.<PaymentDTO>builder().code(NOT_FOUND).success(false).message("group not found").build();
+        Optional<Services> servicesOptional = servicesRepository.findById(paymentRequestParam.getServiceId());
+        if (servicesOptional.isEmpty()) return ResponseDTO.<PaymentDTO>builder().code(NOT_FOUND).success(false).message("service not found").build();
+
+        Customers customer = customersOptional.map(customersMapper::toEntity).get();
+        Groups group = groupsOptional.get();
+        Services service = servicesOptional.get();
+
+        Payment paymentEntity = Payment.builder()
+            .customer(customer)
+            .isPaid(false)
+            .service(service)
+            .group(group)
+            .paymentForPeriod(service.getPrice())
+            .paidMoney(0D)
+            .startedPeriod(service.getStartedPeriod())
+            .build();
+
+        setNextFinishedPeriodToPayment(paymentEntity, service);
+        PaymentDTO paymentDTO = PaymentsMapper.toDto(paymentEntity);
+
+        return new ResponseDTO<PaymentDTO>(OK, ResponseMessageConstants.SAVED, true, paymentDTO);
+    }
+
+    @Override
     public List<PaymentDTO> findAllByCustomerAndGroupAndServiceAndStartedPeriodAndIsPaidFalse(Customers customers, Services service, Groups group, LocalDate startedPeriod) {
         log.debug("Request to get all customer Payments paid is false");
         List<Payment> paymentList = paymentRepository.findAllByCustomerAndGroupAndServiceAndStartedPeriodAndIsPaidFalse(customers, group, service, startedPeriod);
@@ -285,8 +305,6 @@ public class PaymentServiceImpl implements PaymentService {
             .toList();
         return new ResponseDTO<>(OK, ResponseMessageConstants.OK, true, paymentDTOList);
     }
-
-
 
     @Override
     public List<PaymentDTO> getAllPaymentsCreatedByGroupManager(){

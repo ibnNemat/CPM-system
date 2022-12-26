@@ -73,6 +73,7 @@ public class TelegramsUtil {
             .username(telegramUser.getUserName())
             .languageCode(telegramUser.getLanguageCode())
             .step(1)
+            .manager(false)
             .isActive(true);
     }
 

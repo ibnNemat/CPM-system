@@ -134,9 +134,9 @@ public class CustomerPaymentsHistory extends BotStrategyAbs {
 
     private InlineKeyboardMarkup createInlineButtons(Long customerId, ResourceBundle bundle){
         List<List<InlineKeyboardButton>> keyboards = List.of(
-            List.of(
-                InlineKeyboardButton.builder().text(bundle.getString("bot.admin.keyboard.for.back")).callbackData(String.valueOf(customerId)).build()
-            ),
+//            List.of(
+//                InlineKeyboardButton.builder().text(bundle.getString("bot.admin.keyboard.for.back")).callbackData(String.valueOf(customerId)).build()
+//            ),
             List.of(
                 InlineKeyboardButton.builder().text(bundle.getString("bot.admin.keyboard.for.menu")).callbackData("MENU").build()
             )

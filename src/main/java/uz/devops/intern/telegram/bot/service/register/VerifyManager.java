@@ -78,6 +78,7 @@ public class VerifyManager extends BotStrategyAbs {
         }
 
         manager.setPhoneNumber(phoneNumber);
+        manager.setManager(true);
         basicFunction(manager, bundle);
         log.info("User is verified, Phone number: {} | Customer: {}",
             phoneNumber, manager);

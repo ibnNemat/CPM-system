@@ -1,14 +1,18 @@
 package uz.devops.intern.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uz.devops.intern.domain.Customers;
 import uz.devops.intern.domain.Groups;
 import uz.devops.intern.repository.GroupsRepository;
+import uz.devops.intern.service.CustomersService;
 import uz.devops.intern.service.GroupsService;
+import uz.devops.intern.service.dto.CustomersDTO;
 import uz.devops.intern.service.dto.GroupsDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 import uz.devops.intern.service.mapper.GroupMapper;
@@ -20,23 +24,22 @@ import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+
+import static uz.devops.intern.constants.ResponseCodeConstants.NOT_FOUND;
+import static uz.devops.intern.constants.ResponseCodeConstants.OK;
 
 /**
  * Service Implementation for managing {@link Groups}.
  */
 @Service
+@RequiredArgsConstructor
 public class GroupsServiceImpl implements GroupsService {
-    private final EntityManager entityManager;
     private final Logger log = LoggerFactory.getLogger(GroupsServiceImpl.class);
     private final GroupsRepository groupsRepository;
     private final GroupsMapper groupsMapper;
+    private final CustomersService customersService;
     private static final String ENTITY_NAME = "groups";
-    public GroupsServiceImpl(EntityManager entityManager, GroupsRepository groupsRepository, GroupsMapper groupsMapper) {
-        this.entityManager = entityManager;
-        this.groupsRepository = groupsRepository;
-        this.groupsMapper = groupsMapper;
-    }
-
     @Override
     public List<GroupsDTO> findOnlyManagerGroups() {
         String ownerName = ContextHolderUtil.getUsernameFromContextHolder();
@@ -74,14 +77,7 @@ public class GroupsServiceImpl implements GroupsService {
         }
 
         Optional<Groups> groupsOptional = groupsRepository.findByName(name);
-        if(groupsOptional.isEmpty()){
-            return ResponseDTO.<GroupsDTO>builder()
-                .success(false).message("Data is not found!").build();
-        }
-
-        GroupsDTO group = groupsOptional.map(GroupMapper::toDto).get();
-        return ResponseDTO.<GroupsDTO>builder()
-            .success(true).message("OK").responseData(group).build();
+        return getGroupsDTOResponseDTO(groupsOptional);
     }
 
     @Override
@@ -92,6 +88,10 @@ public class GroupsServiceImpl implements GroupsService {
         }
 
         Optional<Groups> groupsOptional = groupsRepository.findByCustomerId(customerId);
+        return getGroupsDTOResponseDTO(groupsOptional);
+    }
+
+    private ResponseDTO<GroupsDTO> getGroupsDTOResponseDTO(Optional<Groups> groupsOptional) {
         if(groupsOptional.isEmpty()){
             return ResponseDTO.<GroupsDTO>builder()
                 .success(false).message("Data is not found!").build();
@@ -99,6 +99,27 @@ public class GroupsServiceImpl implements GroupsService {
         GroupsDTO group = groupsOptional.map(GroupMapper::toDto).get();
         return ResponseDTO.<GroupsDTO>builder()
             .success(true).message("OK").responseData(group).build();
+    }
+
+    @Override
+    public int countAllByGroupsId(Set<Long> groupsId) {
+        return groupsRepository.countAllByIdIn(groupsId);
+    }
+
+    @Override
+    public ResponseDTO<GroupsDTO> addNewCustomerToGroup(String phoneNumberCustomer, Long groupId) {
+        log.debug("Request to add new customer to existing group. Customer phone number: {} | GroupId: {}", phoneNumberCustomer, groupId);
+
+        Optional<Groups> optionalGroups = groupsRepository.findById(groupId);
+        if (optionalGroups.isEmpty()) return ResponseDTO.<GroupsDTO>builder().code(NOT_FOUND).success(false).message("group not found").build();
+        Optional<Customers> optionalCustomers = customersService.findByPhoneNumber(phoneNumberCustomer);
+        if (optionalCustomers.isEmpty()) return ResponseDTO.<GroupsDTO>builder().code(NOT_FOUND).success(false).message("customer not found").build();
+        Groups group = optionalGroups.get();
+        Customers customer = optionalCustomers.get();
+        Set<Customers> customersSet = group.getCustomers();
+        customersSet.add(customer);
+        group.setCustomers(customersSet);
+        return ResponseDTO.<GroupsDTO>builder().code(OK).success(true).message("successfully saved").build();
     }
 
     @Override
@@ -170,6 +191,12 @@ public class GroupsServiceImpl implements GroupsService {
     public Optional<GroupsDTO> findOne(Long id) {
         log.debug("Request to get Groups : {}", id);
         return groupsRepository.findById(id).map(GroupMapper::toDto);
+    }
+
+    @Override
+    public Optional<Groups> findById(Long id) {
+        log.debug("Request to get Groups : {}", id);
+        return groupsRepository.findById(id);
     }
 
     @Override

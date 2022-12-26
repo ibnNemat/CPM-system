@@ -81,6 +81,8 @@ public class ResourceBundleConstants {
     public static final String MAIL_MESSAGE_DEBTS = "mail.message.debts";
     public static final String MAIL_MESSAGE_DEBTS_DESCRIPTION = "mail.message.debts.description";
     public static final String MAIL_MESSAGE_PDF_TITLE = "mail.message.pdf.title";
+    public static final String MAIL_MESSAGE_FOR_COMMUNICATION = "mail.message.for.communication";
+    public static final String MAIL_MESSAGE_RESPONSIBLE_PERSON = "mail.message.responsible.person";
     public static final String MAIL_MESSAGE_NUMBER_DEBTS = "mail.message.number.debts";
     public static final String MAIL_MESSAGE_CUSTOMER_USERNAME = "mail.message.customer.username";
     public static final String MAIL_MESSAGE_STARTED_TIME_PAYMENT = "mail.message.started.time.payment";

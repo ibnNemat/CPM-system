@@ -105,10 +105,6 @@ public class CustomersServiceImpl implements CustomersService {
         return customersRepository.findAll(pageable).map(customersMapper::toDto);
     }
 
-//    public Page<CustomersDTO> findAllWithEagerRelationships(Pageable pageable) {
-//        return customersRepository.findAllWithEagerRelationships(pageable).map(customersMapper::toDto);
-//    }
-
     @Override
     @Transactional(readOnly = true)
     public Optional<CustomersDTO> findOne(Long id) {

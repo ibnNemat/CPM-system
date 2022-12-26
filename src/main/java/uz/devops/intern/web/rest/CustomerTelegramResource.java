@@ -38,8 +38,3 @@ public class CustomerTelegramResource {
         if(update.hasMessage()) botAddGroup.execute(update, botId);
     }
 }
-
-
-
-
-

@@ -26,6 +26,14 @@
       "fieldType": "Long"
     },
     {
+      "fieldName": "isManager",
+      "fieldType": "boolean"
+    },
+    {
+      "fieldName": "isVerified",
+      "fieldType": "boolean"
+    },
+    {
       "fieldName": "phoneNumber",
       "fieldType": "String",
       "fieldValidateRules": ["unique"]

@@ -1,6 +1,7 @@
 package uz.devops.intern.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Builder;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -10,6 +11,7 @@ import javax.validation.constraints.*;
 /**
  * A DTO for the {@link uz.devops.intern.domain.Payment} entity.
  */
+
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class PaymentDTO implements Serializable {
     private Long id;
