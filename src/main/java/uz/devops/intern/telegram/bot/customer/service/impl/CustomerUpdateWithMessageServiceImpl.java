@@ -492,7 +492,6 @@ public class CustomerUpdateWithMessageServiceImpl implements CustomerUpdateWithM
         String groupReplyButton = resourceBundle.getString(BOT_GROUP_BUTTON);
         String backHomeMenuButton = resourceBundle.getString(BOT_BACK_HOME_BUTTON);
 
-
         if(groupReplyButton.equals(buttonMessage)) return sendCustomerGroups(telegramUser, customerTelegram);
         if(payReplyButton.equals(buttonMessage)) return sendCustomerPayments(telegramUser, customerTelegram, message);
         if(paymentReplyButton.equals(buttonMessage)) return  sendAllCustomerPayments(telegramUser, customerTelegram);
@@ -503,7 +502,6 @@ public class CustomerUpdateWithMessageServiceImpl implements CustomerUpdateWithM
         log.warn("sendMessage unknown command");
         return sendMessage(telegramUser.getId(), resourceBundle.getString(BOT_UNKNOWN_COMMAND));
     }
-
 
     @Override
     public SendMessage payRequestForService(String paymentSum, User telegramUser, CustomerTelegram customerTelegram) {
