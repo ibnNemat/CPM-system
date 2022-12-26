@@ -17,6 +17,12 @@
             <column name="is_bot" type="boolean">
                 <constraints nullable="true" />
             </column>
+            <column name="is_verified" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="is_manager" type="boolean">
+                <constraints nullable="true" />
+            </column>
             <column name="firstname" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
@@ -95,6 +101,8 @@
             <column name="can_join_groups" type="boolean"/>
             <column name="language_code" type="string"/>
             <column name="is_active" type="boolean"/>
+            <column name="is_verified" type="boolean"/>
+            <column name="is_manager" type="boolean"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

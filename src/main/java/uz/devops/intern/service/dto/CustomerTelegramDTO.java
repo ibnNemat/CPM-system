@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
@@ -25,6 +26,9 @@ public class CustomerTelegramDTO implements Serializable {
     private Boolean isBot;
 
     private String firstname;
+    private Boolean isVerified;
+
+    private Boolean isManager;
 
     private String lastname;
 
@@ -45,6 +49,38 @@ public class CustomerTelegramDTO implements Serializable {
     private CustomersDTO customer;
 
     private Set<TelegramGroupDTO> telegramGroups = new HashSet<>();
+
+    public Boolean getBot() {
+        return isBot;
+    }
+
+    public void setBot(Boolean bot) {
+        isBot = bot;
+    }
+
+    public Boolean getVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(Boolean verified) {
+        isVerified = verified;
+    }
+
+    public Boolean getManager() {
+        return isManager;
+    }
+
+    public void setManager(Boolean manager) {
+        isManager = manager;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
 
     public Long getId() {
         return id;

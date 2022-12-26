@@ -2,6 +2,10 @@ package uz.devops.intern.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import javax.persistence.*;
@@ -11,6 +15,9 @@ import javax.validation.constraints.*;
  * A Payment.
  */
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "payment")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Payment implements Serializable {
@@ -52,6 +59,7 @@ public class Payment implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties(value = { "customers", "organization", "services" }, allowSetters = true)
     private Groups group;
+
 
     public Groups getGroup() {
         return group;

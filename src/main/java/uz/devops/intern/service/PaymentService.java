@@ -11,12 +11,14 @@ import uz.devops.intern.domain.Payment;
 import uz.devops.intern.domain.Services;
 import uz.devops.intern.service.dto.PaymentDTO;
 import uz.devops.intern.service.dto.PaymentHistoryDTO;
+import uz.devops.intern.service.dto.PaymentRequestParamDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
 
 /**
  * Service Interface for managing {@link uz.devops.intern.domain.Payment}.
  */
 public interface PaymentService {
+    ResponseDTO<PaymentDTO> includePaymentToNewCustomer(PaymentRequestParamDTO requestParamDTO);
     List<PaymentDTO> findAllByCustomerAndGroupAndServiceAndStartedPeriodAndIsPaidFalse(Customers customers, Services service, Groups group, LocalDate startedPeriod);
     List<PaymentDTO> getAllCustomerPaymentsPayedIsFalse(Customers customer);
     ResponseDTO<List<PaymentDTO>> getAllCustomerPayments();

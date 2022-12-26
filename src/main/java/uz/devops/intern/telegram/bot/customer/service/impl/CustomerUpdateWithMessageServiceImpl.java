@@ -105,10 +105,11 @@ public class CustomerUpdateWithMessageServiceImpl implements CustomerUpdateWithM
         log.info("Started working method executeCommandStepByStep. Params requestMessage: {}, telegramUser: {}, update: {}",
             requestMessage, telegramUser, update);
         Optional<CustomerTelegram> optional = customerTelegramRepository.findByTelegramId(telegramUser.getId());
-//        if (optional.isPresent() && optional.get().getCustomer() == null){
-//            log.warn("Send forbidden message. Not found 'Customer' role for CustomerTelegram: {}", optional.get());
-//            return forbiddenMessage(telegramUser);
-//        }
+
+        if (optional.isPresent() && optional.get().getManager()){
+            log.warn("Send forbidden message. Not found 'Customer' role for CustomerTelegram: {}", optional.get());
+            return forbiddenMessageWithoutButton(telegramUser);
+        }
 
         if (optional.isPresent()) {
             CustomerTelegram customerTelegram = optional.get();
@@ -253,6 +254,14 @@ public class CustomerUpdateWithMessageServiceImpl implements CustomerUpdateWithM
         ResourceBundle resourceBundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(telegramUser.getLanguageCode());
         String sendStringMessage = "\uD83D\uDEAB " + resourceBundle.getString( BOT_AUTHORITY_NOT_EXISTS);
         SendMessage sendMessage = sendMessage(telegramUser.getId(), sendStringMessage, sendMarkup(telegramUser));
+        log.info("Message send successfully! User id: {} | Message text: {}", telegramUser, sendMessage);
+        return sendMessage;
+    }
+
+    private SendMessage forbiddenMessageWithoutButton(User telegramUser){
+        ResourceBundle resourceBundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(telegramUser.getLanguageCode());
+        String sendStringMessage = "\uD83D\uDEAB " + resourceBundle.getString( BOT_AUTHORITY_NOT_EXISTS);
+        SendMessage sendMessage = sendMessage(telegramUser.getId(), sendStringMessage);
         log.info("Message send successfully! User id: {} | Message text: {}", telegramUser, sendMessage);
         return sendMessage;
     }

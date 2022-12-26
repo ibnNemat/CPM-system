@@ -5,10 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import uz.devops.intern.telegram.bot.customer.command.invoker.InvokerBotCommand;
-import uz.devops.intern.feign.CustomerFeign;
 import uz.devops.intern.service.BotTokenService;
 import uz.devops.intern.service.dto.BotTokenDTO;
 import uz.devops.intern.telegram.bot.service.register.BotAddGroup;
@@ -40,8 +38,3 @@ public class CustomerTelegramResource {
         if(update.hasMessage()) botAddGroup.execute(update, botId);
     }
 }
-
-
-
-
-

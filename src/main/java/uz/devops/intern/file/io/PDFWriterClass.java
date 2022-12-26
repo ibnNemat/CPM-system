@@ -1,76 +1,54 @@
 package uz.devops.intern.file.io;
 
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfBody;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.TextField;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.openxml4j.exceptions.NotOfficeXmlFileException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.attoparser.dom.Text;
 import org.springframework.stereotype.Service;
-import uz.devops.intern.domain.Customers;
-import uz.devops.intern.domain.Groups;
-import uz.devops.intern.domain.Services;
-import uz.devops.intern.service.PaymentService;
 import uz.devops.intern.service.dto.PaymentDTO;
 
-import javax.annotation.PostConstruct;
 import java.io.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.ResourceBundle;
 
-import static uz.devops.intern.constants.ResourceBundleConstants.MAIL_MESSAGE_PDF_TITLE;
+import static uz.devops.intern.constants.ResourceBundleConstants.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ConvertExcelToPDF {
-    private final WriteCustomerDebtsToExcel writeCustomerDebtsToExcel;
-    private final PaymentService paymentService;
-//    @PostConstruct
-//    private void createPDF() throws DocumentException, IOException {
-//        Customers customer = new Customers().id(6L);
-//        Services service = new Services().id(402L);
-//        Groups group = new Groups().id(352L);
-//
-//        List<PaymentDTO> paymentDTOList = paymentService.findAllByCustomerAndGroupAndServiceAndStartedPeriodAndIsPaidFalse(
-//            customer, service, group, LocalDate.of(2022,9,1)
-//        );
-//        convertToPDFFromExcel(paymentDTOList, ResourceBundle.getBundle("message", new Locale("uz")));
-//    }
+public class PDFWriterClass {
+    private final WriterCustomerDebtsToWorkbook writerCustomerDebtsToWorkbook;
+    public void convertToPDFFromExcel(List<PaymentDTO> paymentDTOList, ResourceBundle resourceBundle) throws NotOfficeXmlFileException {
+        XSSFWorkbook workbook = writerCustomerDebtsToWorkbook.writeCustomerDebtsToExcelFile(paymentDTOList, resourceBundle);
+        log.info("current thread while writing to PDF: {}" ,Thread.currentThread().getName());
 
-    public void convertToPDFFromExcel(List<PaymentDTO> paymentDTOList, ResourceBundle resourceBundle) {
-        writeCustomerDebtsToExcel.writeCustomerDebtsToExcelFile(paymentDTOList, resourceBundle);
-
-        File file = new File("src/main/resources/templates/excel.xlsx");
-        FileInputStream fileInputStream = null;
-        Workbook workbook = null;
         try {
-            fileInputStream = new FileInputStream(file);
-            workbook = new XSSFWorkbook(fileInputStream);
             Sheet sheet = workbook.getSheetAt(0);
             List<String> headerList = getRow(0, sheet);
 
             Document document = new Document();
+            document.addLanguage("ru");
             String fileName = "src/main/resources/templates/customer_debts.pdf";
 
             PdfWriter.getInstance(document, new FileOutputStream(fileName));
-            Font boldFont = new Font(Font.FontFamily.TIMES_ROMAN, 32, Font.BOLD);
-            Paragraph title = new Paragraph(resourceBundle.getString(MAIL_MESSAGE_PDF_TITLE) + "\n\n");
-            title.setFont(boldFont);
+            Paragraph title = new Paragraph(resourceBundle.getString(MAIL_MESSAGE_PDF_TITLE), new Font(Font.FontFamily.HELVETICA, 30, Font.BOLD));
             title.setIndentationLeft(30);
 
             document.open();
             document.addTitle("Info customer debts");
             document.top(50);
             document.add(title);
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph(" "));
 
             PdfPTable table = new PdfPTable(sheet.getRow(0).getPhysicalNumberOfCells());
             table.setWidthPercentage(100);
@@ -84,16 +62,16 @@ public class ConvertExcelToPDF {
                 addPDFData(false, rowList, table);
                 document.add(table);
             }
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph(resourceBundle.getString(MAIL_MESSAGE_FOR_COMMUNICATION) + "  +998950645097"));
+            document.add(new Paragraph(resourceBundle.getString(MAIL_MESSAGE_RESPONSIBLE_PERSON) + "  D.To'lqinjonov"));
 
             document.close();
-            file.delete();
-//            workbook.close();
-//            fileInputStream.close();
+            workbook.close();
         } catch (DocumentException | IOException e) {
             log.error(e.getMessage());
         }
         log.info("Successfully successfully converting excel file to PDF");
-
     }
 
     public static List<String> getRow(int index, Sheet sheet) {

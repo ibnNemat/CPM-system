@@ -64,6 +64,28 @@ public class TelegramCustomerUtils {
             DateUtils.parseToStringFromLocalDate(payment.getFinishedPeriod())));
     }
 
+    public static void buildCustomerPaymentsToSendEmailMessage(PaymentDTO payment, StringBuilder buildCustomerPayments, String languageCode) {
+        ResourceBundle resourceBundle = getResourceBundleUsingLanguageCode(languageCode);
+        buildCustomerPayments.append(String.format("%s: %d\n", resourceBundle.getString(BOT_NUMBER_DEBTS),payment.getId()));
+        buildCustomerPayments.append(String.format("%s: %s\n", resourceBundle.getString(BOT_TYPE_SERVICE), payment.getService().getName()));
+        buildCustomerPayments.append(String.format("%s: %s\n", resourceBundle.getString(BOT_ORGANIZATION_NAME), payment.getGroup().getOrganization().getName()));
+        buildCustomerPayments.append(String.format("%s: %s\n", resourceBundle.getString(BOT_GROUP_NAME), payment.getGroup().getName()));
+        buildCustomerPayments.append(String.format("%s: %.2f sum\n", resourceBundle.getString(BOT_SERVICE_PRICE), payment.getPaymentForPeriod()));
+        buildCustomerPayments.append(String.format("%s: %.2f sum\n", resourceBundle.getString(BOT_PAID_MONEY), payment.getPaidMoney()));
+
+        buildCustomerPayments.append(String.format("""
+                %s:
+                %s: %s
+                %s: %s
+
+                """,
+            resourceBundle.getString(BOT_TIME_PAYMENT),
+            resourceBundle.getString(BOT_STARTED_TIME_PAYMENT),
+            DateUtils.parseToStringFromLocalDate(payment.getStartedPeriod()),
+            resourceBundle.getString(BOT_FINISHED_TIME_PAYMENT),
+            DateUtils.parseToStringFromLocalDate(payment.getFinishedPeriod())));
+    }
+
     public static InlineKeyboardMarkup paymentOfCustomerInlineMarkupWithLeftAndRightButton(PaymentDTO currentPaymentDTO, Long indexOfLeftPaymentDTO, Long indexOfRightPaymentDTO, CustomerTelegram customerTelegram, String backHomeMenuButton, String dataBackToHome) {
         ResourceBundle resourceBundle = getResourceBundleUsingCustomerTelegram(customerTelegram);
         InlineKeyboardButton payButton = new InlineKeyboardButton(resourceBundle.getString(BOT_PAY_BUTTON));

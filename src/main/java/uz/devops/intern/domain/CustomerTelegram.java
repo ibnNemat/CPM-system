@@ -1,6 +1,8 @@
 package uz.devops.intern.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,7 +38,11 @@ public class CustomerTelegram implements Serializable {
 
     @Column(name = "telegram_id")
     private Long telegramId;
+    @Column(name = "is_verified")
+    private Boolean isVerified;
 
+    @Column(name = "is_manager")
+    private Boolean isManager;
     @Column(name = "phone_number", unique = true)
     private String phoneNumber;
 
@@ -100,6 +106,38 @@ public class CustomerTelegram implements Serializable {
     public CustomerTelegram isBot(Boolean isBot) {
         this.setIsBot(isBot);
         return this;
+    }
+
+    public Boolean getBot() {
+        return isBot;
+    }
+
+    public void setBot(Boolean bot) {
+        isBot = bot;
+    }
+
+    public Boolean getVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(Boolean verified) {
+        isVerified = verified;
+    }
+
+    public Boolean getManager() {
+        return isManager;
+    }
+
+    public void setManager(Boolean manager) {
+        isManager = manager;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
     }
 
     public void setIsBot(Boolean isBot) {
@@ -179,6 +217,12 @@ public class CustomerTelegram implements Serializable {
         this.setStep(step);
         return this;
     }
+
+    public CustomerTelegram manager(Boolean isManager) {
+        this.setManager(isManager);
+        return this;
+    }
+
 
     public void setStep(Integer step) {
         this.step = step;

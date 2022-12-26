@@ -2,6 +2,8 @@ package uz.devops.intern.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import uz.devops.intern.domain.Groups;
@@ -60,6 +62,7 @@ public interface GroupsService {
      * @return the entity.
      */
     Optional<GroupsDTO> findOne(Long id);
+    Optional<Groups> findById(Long id);
 
     /**
      * Delete the "id" groups.
@@ -75,4 +78,7 @@ public interface GroupsService {
     ResponseDTO<GroupsDTO> findByName(String name);
 
     ResponseDTO<GroupsDTO> findByCustomerId(Long customerId);
+
+    int countAllByGroupsId(Set<Long> groupsId);
+    ResponseDTO<GroupsDTO> addNewCustomerToGroup(String phoneNumberCustomer, Long groupId);
 }

@@ -4,6 +4,7 @@ import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.devops.intern.constants.ResponseMessageConstants;
@@ -11,6 +12,7 @@ import uz.devops.intern.domain.*;
 import uz.devops.intern.repository.CustomerTelegramRepository;
 import uz.devops.intern.service.*;
 import uz.devops.intern.service.dto.*;
+import uz.devops.intern.service.manualMappper.CustomerTelegramsMapper;
 import uz.devops.intern.service.mapper.*;
 import static uz.devops.intern.constants.ResponseCodeConstants.NOT_FOUND;
 import static uz.devops.intern.constants.ResponseCodeConstants.OK;
@@ -25,6 +27,8 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     private final CustomerTelegramRepository customerTelegramRepository;
     private final CustomerTelegramMapper customerTelegramMapper;
 
+    @Autowired
+    private CustomerTelegramsMapper customerTelegramsMapper;
     @Override
     public ResponseDTO<List<CustomerTelegramDTO>> getCustomerTgByChatId(Long chatId) {
         log.info("request to get CustomerTelegramDTOList by chatId: {}", chatId);
@@ -72,7 +76,6 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         return customerTelegramRepository.findByTelegramId(telegramId);
     }
 
-
     @Override
     public List<CustomerTelegramDTO> findByTelegramGroupTelegramId(Long telegramId) {
         log.info("request to get list of CustomerTelegram by telegramId: {}", telegramId);
@@ -83,6 +86,15 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
         return customerTelegramList.stream()
             .map(customerTelegramMapper::toDto)
             .toList();
+    }
+
+    @Override
+    public List<CustomerTelegram> findByTelegramGroupChatId(Long chatId) {
+        log.info("request to get list of CustomerTelegram by telegramId: {}", chatId);
+        List<CustomerTelegram> customerTelegramList = customerTelegramRepository.findAllByTelegramGroupsChatId(chatId);
+        if (customerTelegramList.size() == 0)
+            return null;
+        return customerTelegramList;
     }
 
     @Override
@@ -143,19 +155,19 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             .code(OK)
             .message(ResponseMessageConstants.OK)
             .success(true)
-            .responseData(customerTelegramMapper.toDto(customerTelegram))
+            .responseData(customerTelegramsMapper.toDto(customerTelegram))
             .build();
     }
     @Override
     public ResponseDTO<CustomerTelegramDTO> findByBotTgId(Long botId) {
         log.info("request to get customerTelegram by telegram botId: {}", botId);
-        Optional<CustomerTelegram> customerTelegramOptional = customerTelegramRepository.findByBot(botId);
+        Optional<CustomerTelegram>customerTelegramOptional = customerTelegramRepository.findByBot(botId);
         if (customerTelegramOptional.isEmpty()) return ResponseDTO.<CustomerTelegramDTO>builder().code(NOT_FOUND).success(false).message(ResponseMessageConstants.NOT_FOUND).build();
         return ResponseDTO.<CustomerTelegramDTO>builder()
             .code(OK)
             .message(ResponseMessageConstants.OK)
             .success(true)
-            .responseData(customerTelegramMapper.toDto(customerTelegramOptional.get()))
+            .responseData(customerTelegramsMapper.toDto(customerTelegramOptional.get()))
             .build();
     }
 }

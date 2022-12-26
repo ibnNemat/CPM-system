@@ -21,11 +21,11 @@ logging:
     uz.devops.intern: INFO
 
 telegram:
-  username: "@UzExpo_centre_bot"
-  token: 5225793240:AAEDojpbQM780zRMWIvmJXCIGeEBXWoY6RM
+  username: "@cpm_systembot"
+  token: 5926613188:AAF3AKO0Yfwc5dk-oFiMvAPDvMGztkGCTkc
   api: https://api.telegram.org/bot
 ngrok:
-  url: https://771f-83-221-180-161.in.ngrok.io
+  url: https://0e8b-83-221-180-161.eu.ngrok.io
 
 spring:
   devtools:
@@ -39,7 +39,7 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://localhost:5432/cpm_bot
+    url: jdbc:postgresql://localhost:5432/cpm_system
     username: postgres
     password:
     hikari:
@@ -69,7 +69,7 @@ spring:
     cache: false
 
 server:
-  port: 8443
+  port: 80
 
 # ===================================================================
 # JHipster specific properties

@@ -14,6 +14,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import uz.devops.intern.domain.BotToken;
+import uz.devops.intern.domain.CustomerTelegram;
+import uz.devops.intern.domain.Customers;
 import uz.devops.intern.domain.ResponseFromTelegram;
 import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.feign.CustomerFeignClient;
@@ -33,6 +35,7 @@ import uz.devops.intern.web.rest.utils.WebUtils;
 
 import java.net.URI;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

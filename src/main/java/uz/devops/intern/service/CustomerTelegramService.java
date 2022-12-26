@@ -18,7 +18,7 @@ import java.util.Optional;
  */
 public interface CustomerTelegramService {
     ResponseDTO<CustomerTelegramDTO> findByTelegramId(Long telegramId);
-    List<CustomerTelegramDTO> findByTelegramGroupTelegramId(Long telegramId);
+    List<CustomerTelegramDTO> findByTelegramGroupTelegramId(Long chatId);
     List<CustomerTelegramDTO> findAllByIsActiveTrue();
     List<CustomerTelegramDTO> findAll();
     void setFalseToTelegramCustomerProfile(List<Long> ids);
@@ -33,4 +33,5 @@ public interface CustomerTelegramService {
     ResponseDTO<List<CustomerTelegramDTO>> getCustomerTgByChatId(Long chatId);
 
     Optional<CustomerTelegram> findByCustomer(Customers customer);
+    List<CustomerTelegram> findByTelegramGroupChatId(Long chatId);
 }

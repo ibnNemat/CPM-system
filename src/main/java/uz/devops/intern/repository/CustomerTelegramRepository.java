@@ -15,7 +15,6 @@ import java.util.Optional;
 @SuppressWarnings("unused")
 @Repository
 public interface CustomerTelegramRepository extends JpaRepository<CustomerTelegram, Long> {
-
     @Query("SELECT ct FROM CustomerTelegram ct WHERE ct.telegramId = :telegramId")
     Optional<CustomerTelegram> findByTelegramId(@Param("telegramId") Long telegramId);
 
@@ -26,9 +25,8 @@ public interface CustomerTelegramRepository extends JpaRepository<CustomerTelegr
         "    r ON ct.phone_number = r.created_by", nativeQuery = true)
     Optional<CustomerTelegram> findByBot(@Param("botId") Long botId);
 
-    @Query(value = "SELECT * FROM customer_telegram WHERE id IN (SELECT customer_telegram_id FROM rel_customer_telegram__telegram_group WHERE telegram_group_id = :telegramGroupId)", nativeQuery = true)
-    List<CustomerTelegram> getCustomersByChatId(@Param("telegramGroupId") Long telegramGroupId);
-
+    @Query(value = "SELECT * FROM customer_telegram WHERE id IN (SELECT customer_telegram_id FROM rel_customer_telegram__telegram_group WHERE telegram_group_id = :chatId)", nativeQuery = true)
+    List<CustomerTelegram> getCustomersByChatId(@Param("chatId") Long chatId);
     List<CustomerTelegram> findAllByTelegramGroupsChatId(Long chatId);
     List<CustomerTelegram> findAllByIsActiveTrue();
     boolean existsByTelegramId(Long telegramId);
@@ -40,7 +38,4 @@ public interface CustomerTelegramRepository extends JpaRepository<CustomerTelegr
     void deleteAllByIdInAndIsActiveFalse(List<Long> ids);
 
     Optional<CustomerTelegram> findByCustomer(Customers customer);
-
-//    @Query(nativeQuery = true,
-//    value = "SELECT * FROM customer_telegram WHERE id IN (SELECT customer_telegram_id FROM rel_customer_telegram__telegram_group WHERE )")
 }

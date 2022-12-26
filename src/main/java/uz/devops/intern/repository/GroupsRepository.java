@@ -2,6 +2,8 @@ package uz.devops.intern.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
@@ -41,4 +43,6 @@ public interface GroupsRepository extends GroupsRepositoryWithBagRelationships, 
     @Query(value = "SELECT * FROM Groups g WHERE id = (SELECT groups_id FROM rel_groups__customers WHERE customers_id = :customerId)"
         ,nativeQuery = true)
     Optional<Groups> findByCustomerId(@Param("customerId") Long customerId);
+
+    int countAllByIdIn(Set<Long> groupsId);
 }
