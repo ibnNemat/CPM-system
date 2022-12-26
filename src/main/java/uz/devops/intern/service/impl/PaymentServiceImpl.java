@@ -207,19 +207,11 @@ public class PaymentServiceImpl implements PaymentService {
         Integer countPeriod = service.getCountPeriod();
 
         switch (service.getPeriodType()) {
-            case DAY -> {
-                // next finished period
-                payment.setFinishedPeriod(payment.getStartedPeriod().plusDays(countPeriod));
-            }
-            case WEEK -> {
-                payment.setFinishedPeriod(payment.getStartedPeriod().plusWeeks(countPeriod));
-            }
-            case MONTH -> {
-                payment.setFinishedPeriod(payment.getStartedPeriod().plusMonths(countPeriod));
-            }
-            case YEAR -> {
-                payment.setFinishedPeriod(payment.getStartedPeriod().plusYears(countPeriod));
-            }
+            // next finished period
+            case DAY -> payment.setFinishedPeriod(payment.getStartedPeriod().plusDays(countPeriod));
+            case WEEK -> payment.setFinishedPeriod(payment.getStartedPeriod().plusWeeks(countPeriod));
+            case MONTH -> payment.setFinishedPeriod(payment.getStartedPeriod().plusMonths(countPeriod));
+            case YEAR -> payment.setFinishedPeriod(payment.getStartedPeriod().plusYears(countPeriod));
         }
     }
 

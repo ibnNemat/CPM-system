@@ -1,7 +1,6 @@
 package uz.devops.intern.telegram.bot.customer.command.enumeration;
 
 import lombok.Getter;
-import org.apache.commons.lang3.EnumUtils;
 
 @Getter
 public enum CommandsName {
