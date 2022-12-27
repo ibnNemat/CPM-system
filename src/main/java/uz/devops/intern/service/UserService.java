@@ -369,6 +369,22 @@ public class UserService {
             .success(true).message("OK").responseData(userOptional.get()).build();
     }
 
+    public ResponseDTO<User> getUserByLogin(String login){
+        if(Objects.isNull(login) || login.trim().isEmpty()){
+            return ResponseDTO.<User>builder()
+                .success(false).message("Parameter \"Login\" is null or empty!").build();
+        }
+
+        Optional<User> userOptional = userRepository.findOneByLogin(login);
+        if(userOptional.isEmpty()){
+            return ResponseDTO.<User>builder()
+                .success(false).message("Data is not found!").build();
+        }
+
+        return ResponseDTO.<User>builder()
+            .success(true).message("OK").responseData(userOptional.get()).build();
+    }
+
     public ResponseDTO<User> getUserByPhoneNumber(String phoneNumber){
         if(phoneNumber == null || phoneNumber.trim().isEmpty()){
             return ResponseDTO.<User>builder()

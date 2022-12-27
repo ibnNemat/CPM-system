@@ -74,5 +74,7 @@ public interface PaymentService {
 
     ResponseDTO<PaymentDTO> getByCustomerId(Long customerId);
 
-    ResponseDTO<PaymentDTO> getByUserLogin(String login);
+    ResponseDTO<List<PaymentDTO>> getByUserLogin(String login);
+
+    ResponseDTO<List<PaymentDTO>> getByUserLogin(String login, Pageable pageable);
 }

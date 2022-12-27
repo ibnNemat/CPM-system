@@ -2,10 +2,18 @@ package uz.devops.intern.telegram.bot.service.payments;
 
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import tech.jhipster.web.util.PaginationUtil;
+import uz.devops.intern.domain.Payment;
 import uz.devops.intern.domain.User;
 import uz.devops.intern.service.*;
 import uz.devops.intern.service.dto.*;
@@ -14,6 +22,7 @@ import uz.devops.intern.telegram.bot.dto.EditMessageTextDTO;
 import uz.devops.intern.telegram.bot.dto.UpdateType;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.service.menu.CustomerPayments;
+import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 import uz.devops.intern.web.rest.utils.WebUtils;
 
 import java.util.*;
@@ -65,8 +74,9 @@ public class CustomerPaymentsHistory extends BotStrategyAbs {
         }
         String customerLogin = callbackData;
 
-        ResponseDTO<PaymentDTO> response = paymentService.getByUserLogin(customerLogin);
-        if(!response.getSuccess() || response.getResponseData() == null){
+        PageRequest pagination = PageRequest.of(0, 10);
+        ResponseDTO<List<PaymentDTO>> response = paymentService.getByUserLogin(customerLogin, pagination);
+        if(!response.getSuccess() || response.getResponseData().isEmpty()){
             String newMessage = String.format(bundle.getString("bot.admin.error.groups.are.not.attached.to.service"), bundle.getString("bot.admin.keyboard.for.back"));
             EditMessageTextDTO editMessageTextDTO = createEditMessage(update.getCallbackQuery(), update.getCallbackQuery().getMessage().getReplyMarkup(), newMessage);
             adminFeign.editMessageText(editMessageTextDTO);
@@ -74,13 +84,13 @@ public class CustomerPaymentsHistory extends BotStrategyAbs {
             return false;
         }
 
-        PaymentDTO payment = response.getResponseData();
-        String newMessage = createText(manager, payment);
-        if(Objects.isNull(newMessage)){
+        List<PaymentDTO> payment = response.getResponseData();
+        boolean result = sendPaymentsListAsMessage(manager, payment, customerLogin);
+        if(!result){
             return false;
         }
-        InlineKeyboardMarkup markup = createInlineButtons(customerLogin, bundle);
-        EditMessageTextDTO editMessageTextDTO = createEditMessage(update.getCallbackQuery(), markup, newMessage);
+//        InlineKeyboardMarkup markup = createInlineButtons(customerLogin, bundle);
+        EditMessageTextDTO editMessageTextDTO = createEditMessage(update.getCallbackQuery(), new InlineKeyboardMarkup(), update.getCallbackQuery().getMessage().getText());
         try {
             adminFeign.editMessageText(editMessageTextDTO);
             manager.setStep(NEXT_STEP);
@@ -148,27 +158,24 @@ public class CustomerPaymentsHistory extends BotStrategyAbs {
         return InlineKeyboardMarkup.builder().keyboard(keyboards).build();
     }
 
-    private String createText(CustomerTelegramDTO manager, PaymentDTO payment){
+    private boolean sendPaymentsListAsMessage(CustomerTelegramDTO manager, List<PaymentDTO> payments, String customerLogin){
         ResourceBundle bundle = ResourceBundleUtils.getResourceBundleUsingLanguageCode(manager.getLanguageCode());
-        Optional<ServicesDTO> serviceOptional = servicesService.findOne(payment.getService().getId());
-        if(serviceOptional.isEmpty()){
-            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.services.are.not.found"));
-            log.warn("Services are not found! Manager id: {} | Service id: {}", manager.getTelegramId(), payment.getService().getId());
-            return null;
-        }
         ResponseDTO<User> response =
-            userService.getUserByPhoneNumber(payment.getCustomer().getPhoneNumber());
+            userService.getUserByLogin(customerLogin);
         if(!response.getSuccess() || Objects.isNull(response.getResponseData())){
             wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.user.is.not.found"));
-            log.warn("Manager customer is not found! Manager id: {} | Customer phone number: {} ",
-                manager.getTelegramId(), payment.getCustomer().getPhoneNumber());
-            return null;
+            log.warn("Manager customer is not found! Manager id: {} | Customer login: {} ",
+                manager.getTelegramId(), customerLogin);
+            return false;
         }
 
-        ServicesDTO service = serviceOptional.get();
         User user = response.getResponseData();
 
-        return String.format(bundle.getString("bot.admin.send.text.customer.payment.history"),
+        PaymentDTO payment = payments.get(0);
+        InlineKeyboardMarkup markup = createPaymentsHistoryPagination(bundle, payments, user.getLogin());
+        ServicesDTO service = payment.getService();
+
+        String messageText = String.format(bundle.getString("bot.admin.send.text.customer.payment.history"),
             user.getFirstName() + " " + user.getLastName(),
             user.getCreatedBy(),
             service.getName(),
@@ -176,6 +183,62 @@ public class CustomerPaymentsHistory extends BotStrategyAbs {
             payment.getPaidMoney(),
             service.getPrice(),
             service.getPrice() - payment.getPaidMoney());
+        SendMessage sendMessage = TelegramsUtil.sendMessage(manager.getTelegramId(), messageText, markup);
+        adminFeign.sendMessage(sendMessage);
+        log.info("Customer's payments list send as message, Manager id: {} | Customer login: {}",
+            manager.getTelegramId(), customerLogin);
+        return true;
+    }
+
+
+    private ReplyKeyboardMarkup createMenuReplyButton(ResourceBundle bundle){
+        KeyboardButton button = KeyboardButton.builder()
+            .text(bundle.getString("bot.admin.keyboard.for.menu"))
+            .build();
+        KeyboardRow row = new KeyboardRow();
+        row.add(button);
+
+        return ReplyKeyboardMarkup.builder()
+            .keyboard(
+                List.of(
+                    row
+                ))
+            .build();
+    }
+
+    private InlineKeyboardMarkup createPaymentsHistoryPagination(ResourceBundle bundle, List<PaymentDTO> payments, String customerLogin){
+
+        List<List<InlineKeyboardButton>> inlineKeyboardButtons = new ArrayList<>();
+        List<InlineKeyboardButton> row = new ArrayList<>();
+        int i = 1;
+
+        for(PaymentDTO payment: payments){
+            row.add(
+                InlineKeyboardButton.builder()
+                    .text(String.valueOf(i))
+                    .callbackData(payment.getId() + ":" + i++ + ":" + customerLogin)
+                    .build()
+            );
+
+            if(row.size() == 5){
+                inlineKeyboardButtons.add(row);
+                row = new ArrayList<>();
+            }
+        }
+
+        if(!row.isEmpty()){
+            inlineKeyboardButtons.add(row);
+        }
+
+        List<InlineKeyboardButton> footer = List.of(
+            InlineKeyboardButton.builder().text("⬅️").callbackData(0 + ":LEFT" + ":" + customerLogin).build(),
+            InlineKeyboardButton.builder().text(bundle.getString("bot.admin.keyboard.for.menu.only.text")).callbackData("HOME").build(),
+            InlineKeyboardButton.builder().text("➡️").callbackData(1 + ":RIGHT" + ":" + customerLogin).build()
+        );
+
+        inlineKeyboardButtons.add(footer);
+
+        return InlineKeyboardMarkup.builder().keyboard(inlineKeyboardButtons).build();
     }
 
 }

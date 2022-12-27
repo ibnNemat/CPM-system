@@ -1,5 +1,6 @@
 package uz.devops.intern.repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -42,6 +43,9 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     Optional<Payment> findByCustomerId(Long customerId);
 
-    @Query("SELECT p FROM Payment p WHERE p.customer.id = (SELECT c.id FROM Customers c WHERE c.user.id =  (SELECT u.id FROM User u WHERE u.login = :login))")
-    Optional<Payment> findByUserLogin(@Param("login") String login);
+    @Query("SELECT p FROM Payment p WHERE p.customer.id = (SELECT c.id FROM Customers c WHERE c.user.id =  (SELECT u.id FROM User u WHERE u.login = :login)) ORDER BY p.id")
+    List<Payment> findByUserLogin(@Param("login") String login);
+
+    List<Payment> findAllByCustomer_User_Login(Pageable pageable, String login);
+
 }

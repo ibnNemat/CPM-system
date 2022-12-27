@@ -60,7 +60,7 @@ public class ServicePriceState extends State<ServiceFSM>{
         Long managerId = message.getFrom().getId();
 
         Integer integerPrice = null;
-        if(messageText.length() <= 7){
+        if(messageText.length() <= 9){
             try{
                 integerPrice = Integer.parseInt(messageText);
             }catch (NumberFormatException e){

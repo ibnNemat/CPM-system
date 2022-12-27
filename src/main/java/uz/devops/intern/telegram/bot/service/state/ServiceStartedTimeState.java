@@ -99,14 +99,16 @@ public class ServiceStartedTimeState extends State<ServiceFSM>{
             log.warn("Date's year is invalid! User id: {} | Year: {}", managerId, year);
             return false;
         }
-        if(month < LocalDate.now().getMonth().getValue()){
-            wrongValue(managerId, bundle.getString("bot.admin.error.start.time.is.invalid.month"));
-            log.warn("Date's month is invalid! User id: {} | Month: {}", managerId, month);
-            return false;
+
+        boolean areMonthAndDayValid = false;
+        boolean yearIsNow = year == LocalDate.now().getYear();
+        if(yearIsNow){
+            areMonthAndDayValid = yearIsEqualToCurrentYear(manager, month, day);
+        }else{
+            areMonthAndDayValid = yearIsNotEqualToCurrentYear(manager, month, day);
         }
-        if(day < LocalDate.now().getDayOfMonth()){
-            wrongValue(managerId, bundle.getString("bot.admin.error.start.time.is.invalid.day"));
-            log.warn("Date's day in invalid! User id: {} | Day: {}", managerId, day);
+
+        if(!areMonthAndDayValid){
             return false;
         }
 
@@ -120,6 +122,42 @@ public class ServiceStartedTimeState extends State<ServiceFSM>{
         SendMessage sendMessage = TelegramsUtil.sendMessage(managerId, newMessage, markup);
         adminFeign.sendMessage(sendMessage);
         context.changeState(servicePeriodTypeState);
+        return true;
+    }
+
+    private boolean yearIsEqualToCurrentYear(CustomerTelegramDTO manager, Integer month, Integer day){
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleUsingLanguageCode(manager.getLanguageCode());
+        Long managerId = manager.getTelegramId();
+
+        if(month < LocalDate.now().getMonth().getValue()){
+            wrongValue(managerId, bundle.getString("bot.admin.error.start.time.is.invalid.month"));
+            log.warn("Date's month is invalid! User id: {} | Month: {}", managerId, month);
+            return false;
+        }
+        if(day < LocalDate.now().getDayOfMonth()){
+            wrongValue(managerId, bundle.getString("bot.admin.error.start.time.is.invalid.day"));
+            log.warn("Date's day in invalid! User id: {} | Day: {}", managerId, day);
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean yearIsNotEqualToCurrentYear(CustomerTelegramDTO manager, Integer month, Integer day){
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleUsingLanguageCode(manager.getLanguageCode());
+        Long managerId = manager.getTelegramId();
+
+        if(!(month >= 1 && month <= 12)){
+            wrongValue(managerId, bundle.getString("bot.admin.error.start.time.is.invalid.month"));
+            log.warn("Date's month is invalid! User id: {} | Month: {}", managerId, month);
+            return false;
+        }
+        if(!(day >= 1 && day <= 31)){
+            wrongValue(managerId, bundle.getString("bot.admin.error.start.time.is.invalid.day"));
+            log.warn("Date's day in invalid! User id: {} | Day: {}", managerId, day);
+            return false;
+        }
+
         return true;
     }
 }

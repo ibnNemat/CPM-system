@@ -48,6 +48,7 @@ public class ServiceNameState extends State<ServiceFSM> {
 
         Message message = update.getMessage();
         String messageText = message.getText();
+        // Unique likga tekshirish
         Long managerId = message.getFrom().getId();
 
         ReplyKeyboardMarkup markup = TelegramsUtil.createCancelButton(bundle);

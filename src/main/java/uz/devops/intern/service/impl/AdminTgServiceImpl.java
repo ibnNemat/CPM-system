@@ -12,7 +12,7 @@ import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.service.*;
 import uz.devops.intern.service.dto.*;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
-import uz.devops.intern.telegram.bot.annotations.AnnotationTestArea;
+//import uz.devops.intern.telegram.bot.annotations.AnnotationTestArea;
 import uz.devops.intern.telegram.bot.dto.BotCommandDTO;
 import uz.devops.intern.telegram.bot.dto.BotCommandsMenuDTO;
 import uz.devops.intern.telegram.bot.dto.UpdateType;
@@ -20,6 +20,7 @@ import uz.devops.intern.telegram.bot.service.BotCommand;
 import uz.devops.intern.telegram.bot.service.BotCommandAbs;
 import uz.devops.intern.telegram.bot.service.BotStrategy;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
+import uz.devops.intern.telegram.bot.service.register.OnlyMessageAnnAspect;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
 
@@ -35,25 +36,27 @@ public class AdminTgServiceImpl implements AdminTgService {
     private final CustomerTelegramService customerTelegramService;
     private final AdminFeign adminFeign;
     @Autowired
+    private OnlyMessageAnnAspect aspect;
+    @Autowired
     @Qualifier("strategy-objects-map")
     private Map<Integer, BotStrategyAbs> map;
     @Autowired
     @Qualifier("command-objects-map")
     private Map<String, BotCommandAbs> commandsMap;
-    @Autowired
-    private AnnotationTestArea annotationTestArea;
+//    @Autowired
+//    private AnnotationTestArea annotationTestArea;
 
     public AdminTgServiceImpl(CustomerTelegramService customerTelegramService, AdminFeign adminFeign) {
         this.customerTelegramService = customerTelegramService;
         this.adminFeign = adminFeign;
     }
 
-    @PostConstruct
-    public void test() throws NoSuchMethodException {
-        annotationTestArea.checkAnnotationInteger(1);
-        annotationTestArea.checkAnnotationInteger("12");
-//        annotationTestArea.checkAnnotationWithString("Something");
-    }
+//    @PostConstruct
+//    public void test() throws NoSuchMethodException {
+//        annotationTestArea.checkAnnotationInteger(1);
+//        annotationTestArea.checkAnnotationInteger("12");
+////        annotationTestArea.checkAnnotationWithString("Something");
+//    }
 
     @PreDestroy
     public void destroy(){
@@ -63,6 +66,7 @@ public class AdminTgServiceImpl implements AdminTgService {
 
     @Override
     public boolean main(Update update) {
+        aspect.run(update);
         Long userId = update.hasMessage()?
             update.getMessage().getFrom().getId(): update.hasCallbackQuery()?
             update.getCallbackQuery().getFrom().getId(): null;

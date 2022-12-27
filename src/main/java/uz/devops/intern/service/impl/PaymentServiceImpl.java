@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static uz.devops.intern.constants.ResponseCodeConstants.*;
 
@@ -347,21 +348,41 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public ResponseDTO<PaymentDTO> getByUserLogin(String login){
+    public ResponseDTO<List<PaymentDTO>> getByUserLogin(String login){
         if(login == null || login.trim().isEmpty()){
-            return ResponseDTO.<PaymentDTO>builder()
+            return ResponseDTO.<List<PaymentDTO>>builder()
                 .success(false).message("Parameter \"Login\" is null or empty!").build();
         }
 
-        Optional<Payment> paymentOptional = paymentRepository.findByUserLogin(login);
-        if(paymentOptional.isEmpty()){
-            return ResponseDTO.<PaymentDTO>builder()
-                .success(false).message("Data is not found!").build();
+        List<Payment> payments = paymentRepository.findByUserLogin(login);
+        if(payments.isEmpty()){
+            return ResponseDTO.<List<PaymentDTO>>builder()
+                .success(false).message("Payments list is empty!").responseData(List.of()).build();
         }
 
-        PaymentDTO dto = paymentOptional.map(PaymentsMapper::toDto).get();
-        return ResponseDTO.<PaymentDTO>builder()
-            .success(true).message("OK").responseData(dto).build();
+        List<PaymentDTO> paymentDTOList = payments.stream().map(PaymentsMapper::toDto).collect(Collectors.toList());
+        return ResponseDTO.<List<PaymentDTO>>builder()
+            .success(true).message("OK").responseData(paymentDTOList).build();
 
     }
+
+    @Override
+    public ResponseDTO<List<PaymentDTO>> getByUserLogin(String login, Pageable pageable){
+        if(login == null || login.trim().isEmpty()){
+            return ResponseDTO.<List<PaymentDTO>>builder()
+                .success(false).message("Parameter \"Login\" is null or empty!").build();
+        }
+
+        List<Payment> payments = paymentRepository.findAllByCustomer_User_Login(pageable, login);
+        if(payments.isEmpty()){
+            return ResponseDTO.<List<PaymentDTO>>builder()
+                .success(false).message("Payments list is empty!").responseData(List.of()).build();
+        }
+
+        List<PaymentDTO> paymentDTOList = payments.stream().map(PaymentsMapper::toDto).collect(Collectors.toList());
+        return ResponseDTO.<List<PaymentDTO>>builder()
+            .success(true).message("OK").responseData(paymentDTOList).build();
+
+    }
+
 }
