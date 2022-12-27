@@ -106,8 +106,8 @@ public class PaymentServiceImpl implements PaymentService {
         Double requestPaidMoney = requestPayment.getPaidMoney();
         List<Payment> customerPayments = paymentRepository.findAllByCustomerAndGroupAndServiceAndIsPaidFalseOrderByStartedPeriod(customerPayer, group, service);
 
-        if (!customerPayments.get(0).getStartedPeriod().equals(service.getStartedPeriod())){
-            return new ResponseDTO<>(NOT_FOUND, "The customer must pay for the old service", false, null);
+        if (!customerPayments.get(0).getStartedPeriod().equals(startedDate)){
+            return new ResponseDTO<>(MISS_MATCHING, "The customer must pay for the old service", false, null);
         }
 
         AtomicDouble atomicDouble = new AtomicDouble();

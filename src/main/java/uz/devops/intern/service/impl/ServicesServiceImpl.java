@@ -64,6 +64,7 @@ public class ServicesServiceImpl implements ServicesService {
             return new ResponseDTO<ServicesDTO>(ResponseCodeConstants.NOT_FOUND, "some group not found", false, null);
         }
 
+        services.setTotalCountService(1);
         services = servicesRepository.save(services);
         ResponseDTO responseDTO = createPaymentEachCustomers(services);
         if (!responseDTO.getSuccess())
