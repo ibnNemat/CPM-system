@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import uz.devops.intern.domain.Customers;
 import uz.devops.intern.domain.User;
+import uz.devops.intern.repository.CustomersRepository;
 import uz.devops.intern.service.*;
 import uz.devops.intern.service.dto.*;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
@@ -22,6 +24,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class CustomerPaymentsHistory extends BotStrategyAbs {
     private final UpdateType SUPPORTED_TYPE = UpdateType.CALLBACK_QUERY;
+    private final CustomersRepository customersRepository;
     private final String STATE = "CURRENT_CUSTOMER_PAYMENTS";
     private final Integer STEP = 14;
     private final Integer NEXT_STEP = 15;
@@ -64,8 +67,10 @@ public class CustomerPaymentsHistory extends BotStrategyAbs {
             return true;
         }
         String customerLogin = callbackData;
+        Customers customers = customersRepository.findByUsername(customerLogin).get();
 
-        ResponseDTO<PaymentDTO> response = paymentService.getByUserLogin(customerLogin);
+        ResponseDTO<PaymentDTO> response = paymentService.getByCustomerId(customers.getId());
+
         if(!response.getSuccess() || response.getResponseData() == null){
             String newMessage = String.format(bundle.getString("bot.admin.error.groups.are.not.attached.to.service"), bundle.getString("bot.admin.keyboard.for.back"));
             EditMessageTextDTO editMessageTextDTO = createEditMessage(update.getCallbackQuery(), update.getCallbackQuery().getMessage().getReplyMarkup(), newMessage);
@@ -75,7 +80,7 @@ public class CustomerPaymentsHistory extends BotStrategyAbs {
         }
 
         PaymentDTO payment = response.getResponseData();
-        String newMessage = createText(manager, payment);
+        String newMessage = createText(manager, payment, customers);
         if(Objects.isNull(newMessage)){
             return false;
         }
@@ -148,25 +153,10 @@ public class CustomerPaymentsHistory extends BotStrategyAbs {
         return InlineKeyboardMarkup.builder().keyboard(keyboards).build();
     }
 
-    private String createText(CustomerTelegramDTO manager, PaymentDTO payment){
+    private String createText(CustomerTelegramDTO manager, PaymentDTO payment, Customers customer){
         ResourceBundle bundle = ResourceBundleUtils.getResourceBundleUsingLanguageCode(manager.getLanguageCode());
-        Optional<ServicesDTO> serviceOptional = servicesService.findOne(payment.getService().getId());
-        if(serviceOptional.isEmpty()){
-            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.services.are.not.found"));
-            log.warn("Services are not found! Manager id: {} | Service id: {}", manager.getTelegramId(), payment.getService().getId());
-            return null;
-        }
-        ResponseDTO<User> response =
-            userService.getUserByPhoneNumber(payment.getCustomer().getPhoneNumber());
-        if(!response.getSuccess() || Objects.isNull(response.getResponseData())){
-            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.user.is.not.found"));
-            log.warn("Manager customer is not found! Manager id: {} | Customer phone number: {} ",
-                manager.getTelegramId(), payment.getCustomer().getPhoneNumber());
-            return null;
-        }
-
-        ServicesDTO service = serviceOptional.get();
-        User user = response.getResponseData();
+        User user = customer.getUser();
+        ServicesDTO service = payment.getService();
 
         return String.format(bundle.getString("bot.admin.send.text.customer.payment.history"),
             user.getFirstName() + " " + user.getLastName(),
@@ -177,5 +167,4 @@ public class CustomerPaymentsHistory extends BotStrategyAbs {
             service.getPrice(),
             service.getPrice() - payment.getPaidMoney());
     }
-
 }

@@ -11,7 +11,7 @@ import uz.devops.intern.telegram.bot.customer.service.TranslateCommandService;
 import java.net.URI;
 @Service
 @RequiredArgsConstructor
-public class TranslateCommandIntoUzbek implements ExecuteCommand {
+public class TranslateCommandIntoEnglish implements ExecuteCommand {
     private final TranslateCommandService translateCommandService;
     @Override
     public SendMessage execute(Update update, URI uri) {
@@ -20,6 +20,6 @@ public class TranslateCommandIntoUzbek implements ExecuteCommand {
 
     @Override
     public String commandName() {
-        return CommandsName.TRANSLATE_INTO_UZBEK.getCommandName();
+        return CommandsName.TRANSLATE_INTO_ENGLISH.getCommandName();
     }
 }

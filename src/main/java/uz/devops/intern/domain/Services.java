@@ -47,6 +47,11 @@ public class Services implements Serializable {
 
     @NotNull
     @Min(value = 1)
+    @Column(name = "total_count_service", nullable = false)
+    private Integer totalCountService;
+
+    @NotNull
+    @Min(value = 1)
     @Column(name = "count_period", nullable = false)
     private Integer countPeriod;
 
@@ -60,6 +65,15 @@ public class Services implements Serializable {
     private Set<Groups> groups = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
+
+    public Integer getTotalCountService() {
+        return totalCountService;
+    }
+
+    public void setTotalCountService(Integer totalCountService) {
+        this.totalCountService = totalCountService;
+    }
 
     public Long getId() {
         return this.id;

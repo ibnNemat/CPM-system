@@ -59,10 +59,10 @@ public class StartCommandWithChatId implements ExecuteCommand {
     private void setBotCommandsAndSendToBotCommands(URI uri){
         List<BotCommandDTO> botCommandDTOList = List.of(
             new BotCommandDTO("/start", "start"),
-            new BotCommandDTO("/help", "help")
-//            new BotCommandDTO("/translate", "o'zbekchaga o'tkazish"),
-//            new BotCommandDTO("/translate", "перевод на русский"),
-//            new BotCommandDTO("/translate", "translate into english")
+            new BotCommandDTO("/help", "help"),
+            new BotCommandDTO("/translate_uz","o'zbekchaga o'tkazish"),
+            new BotCommandDTO("/translate_ru", "перевод на русский"),
+            new BotCommandDTO("translate_en", "translate into english")
         );
         BotCommandsMenuDTO commandsMenuDTO = new BotCommandsMenuDTO();
         commandsMenuDTO.setCommands(botCommandDTOList);

@@ -20,7 +20,8 @@ entity Services {
     price Double required min(10000)
     startedPeriod LocalDate required
     periodType PeriodType required
-    countPeriod Integer required min(1)
+    countPeriod Double required min(1)
+    totalCountService Double required
 }
 
 entity Payment {

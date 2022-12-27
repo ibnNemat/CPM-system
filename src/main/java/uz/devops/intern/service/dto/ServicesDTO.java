@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import javax.persistence.Column;
 import javax.validation.constraints.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -15,9 +16,7 @@ import uz.devops.intern.domain.enumeration.PeriodType;
  */
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ServicesDTO implements Serializable {
-
     private Long id;
-
     @NotNull
     private String name;
 
@@ -33,9 +32,21 @@ public class ServicesDTO implements Serializable {
 
     @NotNull
     @Min(value = 1)
+    private Integer totalCountService;
+
+    @NotNull
+    @Min(value = 1)
     private Integer countPeriod;
 
     private Set<GroupsDTO> groups = new HashSet<>();
+
+    public Integer getTotalCountService() {
+        return totalCountService;
+    }
+
+    public void setTotalCountService(Integer totalCountService) {
+        this.totalCountService = totalCountService;
+    }
 
     public Long getId() {
         return id;

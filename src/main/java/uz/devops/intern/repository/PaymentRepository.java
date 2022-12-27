@@ -22,6 +22,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
         Customers customer, Groups group, Services service, LocalDate startedDate
     );
 
+    List<Payment> findAllByCustomerAndGroupAndServiceAndIsPaidFalseOrderByStartedPeriod(Customers customer, Groups group, Services service);
+
     List<Payment> findAllByCustomerAndGroupAndServiceAndStartedPeriodAndIsPaidFalse(
         Customers customer, Groups group, Services service, LocalDate startedDate
     );
@@ -33,8 +35,11 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
         Double payment, Long customerId, Long groupId, Long serviceID, LocalDate startedPeriodDate
     );
 
+    boolean existsByCustomerAndGroupAndServiceAndStartedPeriodAndIsPaidFalse(Customers customer, Groups groups, Services services, LocalDate startedPeriod);
     @Query("select p from Payment p where p.group.groupOwnerName = ?1")
     List<Payment> findAllByGroupOwnerName(String managerName);
+
+    List<Payment> findAllByCustomer(Customers customers);
 
     List<Payment> findAllByCustomerOrderByStartedPeriod(Customers customer);
 

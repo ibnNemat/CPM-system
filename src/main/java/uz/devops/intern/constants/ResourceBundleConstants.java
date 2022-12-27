@@ -3,6 +3,7 @@ package uz.devops.intern.constants;
 public class ResourceBundleConstants {
     public static final String BOT_NOT_FOUND_MESSAGE = "bot.message.not.found.message";
     public static String BOT_PHONE_NUMBER_BUTTON = "bot.message.phone.number.button";
+    public static final String BOT_CHANGED_LANGUAGE = "bot.message.changed.language";
     public static final String BOT_NUMBER_PAYMENT_HISTORY = "bot.message.number.payment.history";
     public static final String BOT_TYPE_SERVICE = "bot.message.type.service";
     public static final String BOT_PAID_MONEY = "bot.message.paid.money";

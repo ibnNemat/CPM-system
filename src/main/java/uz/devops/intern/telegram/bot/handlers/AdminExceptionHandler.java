@@ -10,11 +10,12 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
-@ControllerAdvice
+//@ControllerAdvice
 public class AdminExceptionHandler {
     private final Logger log = LoggerFactory.getLogger(AdminExceptionHandler.class);
     @Autowired
     private AdminFeign adminFeign;
+
     @Value("${telegram.admin}")
     private Long adminTelegramId;
 

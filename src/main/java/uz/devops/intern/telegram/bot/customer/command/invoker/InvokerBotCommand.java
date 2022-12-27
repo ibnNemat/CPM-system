@@ -23,6 +23,7 @@ public class InvokerBotCommand {
     private final CustomerFeign customerFeign;
     private final CommandContainer commandContainer;
     private static final String prefixCommand = "/";
+    private static final String startsWithTranslate = "/translate_";
     private final Logger logger = LoggerFactory.getLogger(InvokerBotCommand.class);
     @PostConstruct
     public void init(){
@@ -31,10 +32,13 @@ public class InvokerBotCommand {
     public SendMessage getMessageCommand(Update update, URI uri){
         Message message = update.getMessage();
         String requestMessage = message.getText();
-        if (requestMessage != null && requestMessage.startsWith(prefixCommand)){
-            return commandContainer.getCommand(requestMessage.split("/start ")[0]).execute(update, uri);
+        if (requestMessage != null && requestMessage.startsWith(startsWithTranslate)) {
+            String languageCode = requestMessage.split(startsWithTranslate)[1];
+            update.getMessage().setText(languageCode);
+            return commandContainer.getCommand(languageCode).execute(update,uri);
         }
 
+        if (requestMessage != null && requestMessage.startsWith(prefixCommand)) return commandContainer.getCommand(requestMessage.split("/start ")[0]).execute(update, uri);
         return commandContainer
             .getCommand(CommandsName.COMMAND_WITH_MESSAGE.getCommandName())
             .execute(update, uri);

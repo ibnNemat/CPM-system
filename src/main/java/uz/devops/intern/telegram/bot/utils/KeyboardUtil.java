@@ -4,11 +4,13 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import uz.devops.intern.domain.CustomerTelegram;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
 
 import java.util.*;
 
 import static uz.devops.intern.constants.ResourceBundleConstants.BOT_PHONE_NUMBER_BUTTON;
+import static uz.devops.intern.service.utils.ResourceBundleUtils.getResourceBundleUsingCustomerTelegram;
 import static uz.devops.intern.service.utils.ResourceBundleUtils.getResourceBundleUsingTelegramUser;
 
 public class KeyboardUtil {
@@ -58,6 +60,15 @@ public class KeyboardUtil {
 
     public static ReplyKeyboardMarkup sendMarkup(User telegramUser){
         ResourceBundle resourceBundle = getResourceBundleUsingTelegramUser(telegramUser);
+        return getReplyKeyboardMarkup(resourceBundle);
+    }
+
+    public static ReplyKeyboardMarkup sendMarkup(CustomerTelegram customerTelegram){
+        ResourceBundle resourceBundle = getResourceBundleUsingCustomerTelegram(customerTelegram);
+        return getReplyKeyboardMarkup(resourceBundle);
+    }
+
+    private static ReplyKeyboardMarkup getReplyKeyboardMarkup(ResourceBundle resourceBundle) {
         KeyboardButton button = new KeyboardButton(resourceBundle.getString(BOT_PHONE_NUMBER_BUTTON));
         button.setRequestContact(true);
 

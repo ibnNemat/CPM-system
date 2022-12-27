@@ -33,6 +33,7 @@ public class TimerTaskToSendMessage {
 
     public void sendNotificationIfCustomerNotPaidForService(
         Customers customer, Groups group, Services service, LocalDate startedPeriod, LocalDate endPeriod){
+
         Timer timer = new Timer();
         TimerTask timerTask = new TimerTask() {
             @Override
@@ -60,13 +61,11 @@ public class TimerTaskToSendMessage {
                     }
                 }
 
-                if (startedPeriod.compareTo(endPeriod) == 0) {
-                    timer.cancel();
-                    timer.purge();
-                }
+                timer.cancel();
+                timer.purge();
             }
         };
         Date startedDate = Date.from(startedPeriod.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        timer.schedule(timerTask, startedDate, 1000 * 60 * 2);
+        timer.schedule(timerTask, startedDate, endPeriod.toEpochDay());
     }
 }

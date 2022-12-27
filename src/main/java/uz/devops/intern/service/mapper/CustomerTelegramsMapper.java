@@ -1,4 +1,4 @@
-package uz.devops.intern.service.manualMappper;
+package uz.devops.intern.service.mapper;
 
 import org.springframework.stereotype.Component;
 import uz.devops.intern.domain.CustomerTelegram;
@@ -64,5 +64,4 @@ public class CustomerTelegramsMapper {
 
         return telegramGroupDTO.build();
     }
-
 }
