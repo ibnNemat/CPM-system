@@ -14,11 +14,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import uz.devops.intern.domain.User;
 import uz.devops.intern.service.GroupsService;
+import uz.devops.intern.service.PaymentService;
 import uz.devops.intern.service.UserService;
-import uz.devops.intern.service.dto.CustomerTelegramDTO;
-import uz.devops.intern.service.dto.CustomersDTO;
-import uz.devops.intern.service.dto.GroupsDTO;
-import uz.devops.intern.service.dto.ResponseDTO;
+import uz.devops.intern.service.dto.*;
 import uz.devops.intern.service.utils.ResourceBundleUtils;
 import uz.devops.intern.telegram.bot.dto.EditMessageDTO;
 import uz.devops.intern.telegram.bot.dto.EditMessageTextDTO;
@@ -28,6 +26,7 @@ import uz.devops.intern.telegram.bot.keyboards.menu.AdminMenu;
 import uz.devops.intern.telegram.bot.service.BotStrategyAbs;
 import uz.devops.intern.telegram.bot.service.commands.MenuCommand;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
+import uz.devops.intern.web.rest.utils.WebUtils;
 
 import java.util.*;
 
@@ -43,15 +42,16 @@ public class ListGroupCustomers extends BotStrategyAbs {
     private final AdminMenuKeys adminMenuKeys;
     private final GroupsService groupsService;
     private final UserService userService;
+    private final PaymentService paymentService;
 
     @Override
     public boolean execute(Update update, CustomerTelegramDTO manager) {
         ResourceBundle bundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(manager.getLanguageCode());
-        if(!update.hasCallbackQuery()){
-            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.choose.up"));
-            log.warn("User didn't pressed inline buttons! Manager id: {} | Update: {}", manager.getTelegramId(), update);
-            return false;
-        }
+//        if(!update.hasCallbackQuery()){
+//            wrongValue(manager.getTelegramId(), bundle.getString("bot.admin.error.choose.up"));
+//            log.warn("User didn't pressed inline buttons! Manager id: {} | Update: {}", manager.getTelegramId(), update);
+//            return false;
+//        }
 
         String callbackData = update.getCallbackQuery().getData();
         if(callbackData.equals("BACK")){
@@ -154,12 +154,19 @@ public class ListGroupCustomers extends BotStrategyAbs {
             adminFeign.answerCallbackQuery(answerCallbackQuery);
             return null;
         }
+
         List<List<InlineKeyboardButton>> keyboardButtons = new ArrayList<>();
         for(User user: response.getResponseData()){
+            Double customerDebt = getCustomerSummaryDebt(user);
+
+            log.info("[Customer] First name: {} | Last name: {} | Summary debt: {}",
+                user.getFirstName(), user.getLastName(), customerDebt);
+
             keyboardButtons.add(
                 List.of(
                     InlineKeyboardButton.builder()
-                        .text(user.getFirstName() + " " + user.getLastName())
+                        .text(String.format("%s %s %.2f",
+                            user.getFirstName(), user.getLastName(), customerDebt))
                         .callbackData(user.getLogin())
                         .build()
                 )
@@ -173,6 +180,21 @@ public class ListGroupCustomers extends BotStrategyAbs {
         );
 
         return InlineKeyboardMarkup.builder().keyboard(keyboardButtons).build();
+    }
+
+    private Double getCustomerSummaryDebt(User customer){
+        ResponseDTO<List<PaymentDTO>> paymentsResponse = paymentService.getByUserLogin(customer.getLogin());
+        if(!paymentsResponse.getSuccess() || paymentsResponse.getResponseData().isEmpty()){
+            log.info("User has not any debts! Customer: {} | Response: {} ", customer, paymentsResponse);
+            return 0.0;
+        }
+
+        Double customerDebt = 0.0;
+        for(PaymentDTO payment: paymentsResponse.getResponseData()){
+            customerDebt += payment.getService().getPrice() - payment.getPaidMoney();
+        }
+
+        return customerDebt;
     }
 
 
