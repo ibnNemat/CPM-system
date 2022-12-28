@@ -12,7 +12,7 @@ import uz.devops.intern.domain.*;
 import uz.devops.intern.repository.CustomerTelegramRepository;
 import uz.devops.intern.service.*;
 import uz.devops.intern.service.dto.*;
-import uz.devops.intern.service.manualMappper.CustomerTelegramsMapper;
+import uz.devops.intern.service.mapper.CustomerTelegramsMapper;
 import uz.devops.intern.service.mapper.*;
 import static uz.devops.intern.constants.ResponseCodeConstants.NOT_FOUND;
 import static uz.devops.intern.constants.ResponseCodeConstants.OK;
@@ -26,7 +26,6 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
     private final Logger log = LoggerFactory.getLogger(CustomerTelegramServiceImpl.class);
     private final CustomerTelegramRepository customerTelegramRepository;
     private final CustomerTelegramMapper customerTelegramMapper;
-
     @Autowired
     private CustomerTelegramsMapper customerTelegramsMapper;
     @Override
@@ -39,7 +38,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
 
         List<CustomerTelegramDTO> customerTelegrams =
             customerTelegramRepository.getCustomersByChatId(chatId)
-                .stream().map(customerTelegramMapper::toDto).toList();
+                .stream().map(customerTelegramsMapper::toDto).toList();
 
         return ResponseDTO.<List<CustomerTelegramDTO>>builder()
             .success(true).message("OK").responseData(customerTelegrams).build();
@@ -65,7 +64,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             return ResponseDTO.<CustomerTelegramDTO>builder()
                 .success(false).message("Data is not found!").build();
         }
-        CustomerTelegramDTO  dto = customerTelegramOptional.map(customerTelegramMapper::toDto).orElse(null);
+        CustomerTelegramDTO  dto = customerTelegramOptional.map(customerTelegramsMapper::toDto).orElse(null);
         return ResponseDTO.<CustomerTelegramDTO>builder()
             .success(true).message("OK").responseData(dto).build();
     }
@@ -84,7 +83,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             return null;
 
         return customerTelegramList.stream()
-            .map(customerTelegramMapper::toDto)
+            .map(customerTelegramsMapper::toDto)
             .toList();
     }
 
@@ -105,7 +104,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             return null;
         }
         return customerTelegramList.stream()
-            .map(customerTelegramMapper::toDto)
+            .map(customerTelegramsMapper::toDto)
             .toList();
     }
 
@@ -117,7 +116,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             return null;
         }
         return customerTelegramList.stream()
-            .map(customerTelegramMapper::toDto)
+            .map(customerTelegramsMapper::toDto)
             .toList();
     }
 
@@ -142,7 +141,7 @@ public class CustomerTelegramServiceImpl implements CustomerTelegramService {
             .code(OK)
             .message(ResponseMessageConstants.OK)
             .success(true)
-            .responseData(customerTelegramMapper.toDto(customerTelegramOptional.get()))
+            .responseData(customerTelegramsMapper.toDto(customerTelegramOptional.get()))
             .build();
     }
 

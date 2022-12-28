@@ -13,7 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import uz.devops.intern.domain.User;
 import uz.devops.intern.feign.AdminFeign;
 import uz.devops.intern.feign.CustomerFeignClient;
-import uz.devops.intern.service.CustomerTelegramService;
+import uz.devops.intern.repository.CustomersRepository;import uz.devops.intern.service.CustomerTelegramService;
 import uz.devops.intern.service.UserService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 import uz.devops.intern.service.dto.ResponseDTO;
@@ -44,6 +44,7 @@ public abstract class BotStrategyAbs implements BotStrategy {
     private CustomerTelegramService customerTelegramService;
 
     abstract public boolean execute(Update update, CustomerTelegramDTO manager);
+
     abstract public String getState();
     abstract public Integer getStep();
 

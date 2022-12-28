@@ -14,28 +14,21 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRem
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import uz.devops.intern.domain.CustomerTelegram;
+import uz.devops.intern.service.CustomerTelegramService;
 import uz.devops.intern.service.dto.CustomerTelegramDTO;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
+import static uz.devops.intern.constants.ResourceBundleConstants.BOT_CHANGED_LANGUAGE;
 import static uz.devops.intern.telegram.bot.utils.KeyboardUtil.sendMarkup;
 
 
 public class TelegramsUtil {
     private static final Logger log = LoggerFactory.getLogger(TelegramsUtil.class);
     private static final String RESOURCE_BUNDLE_NAME = "message";
-
-//    public static ResourceBundle getResourceBundleByCustomerTgDTO(CustomerTelegramDTO customerTelegramDTO){
-//        Locale locale = new Locale(customerTelegramDTO.getLanguageCode());
-//        LocaleContextHolder.setLocale(locale);
-//        return ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME);
-//    }
 
     public static ResourceBundle getResourceBundleByCustomerTgDTO(CustomerTelegramDTO customerTelegramDTO){
         Locale locale = new Locale(customerTelegramDTO.getLanguageCode());
@@ -87,6 +80,7 @@ public class TelegramsUtil {
             .lastname(telegramUser.getFirstName())
             .username(telegramUser.getUserName())
             .languageCode(telegramUser.getLanguageCode())
+            .isManager(false)
             .step(1)
             .isActive(true)
             .telegramGroups(Set.of())

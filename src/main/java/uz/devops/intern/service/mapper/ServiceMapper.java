@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 public class ServiceMapper {
     public static Services toEntity(ServicesDTO servicesDTO){
         if (servicesDTO == null) return null;
+
         Services services = new Services();
         services.setId(servicesDTO.getId());
         services.setName(servicesDTO.getName());
@@ -17,6 +18,7 @@ public class ServiceMapper {
         services.setStartedPeriod(servicesDTO.getStartedPeriod());
         services.setPeriodType(servicesDTO.getPeriodType());
         services.setCountPeriod(servicesDTO.getCountPeriod());
+        services.setTotalCountService(servicesDTO.getTotalCountService());
         services.setGroups(GroupMapper.groupsEntitySet(servicesDTO.getGroups()));
         return services;
     }
@@ -31,6 +33,7 @@ public class ServiceMapper {
         services.setStartedPeriod(servicesDTO.getStartedPeriod());
         services.setPeriodType(servicesDTO.getPeriodType());
         services.setCountPeriod(servicesDTO.getCountPeriod());
+        services.setTotalCountService(servicesDTO.getTotalCountService());
         return services;
     }
 
@@ -63,6 +66,7 @@ public class ServiceMapper {
         servicesDTO.setPeriodType( s.getPeriodType() );
         servicesDTO.setCountPeriod( s.getCountPeriod() );
         servicesDTO.setStartedPeriod(s.getStartedPeriod());
+        servicesDTO.setTotalCountService(s.getTotalCountService());
         return servicesDTO;
     }
 

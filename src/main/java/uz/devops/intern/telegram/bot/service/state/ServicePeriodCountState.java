@@ -98,6 +98,7 @@ public class ServicePeriodCountState extends State<ServiceFSM>{
         }
 
         ServicesRedisDTO redisDTO = servicesRedisRepository.findById(managerId).get();
+        // TODO: 12/27/2022 countPeriod bilanmas, totalCountService ga set qilish
         redisDTO.getServicesDTO().setCountPeriod(count);
         servicesRedisRepository.save(redisDTO);
 
@@ -135,7 +136,7 @@ public class ServicePeriodCountState extends State<ServiceFSM>{
         List<List<InlineKeyboardButton>> label = new ArrayList<>();
         for(GroupsDTO group: groups){
 
-            InlineKeyboardButton button = new InlineKeyboardButton(group.getName());
+            InlineKeyboardButton button = new InlineKeyboardButton(group.getName().split(" ")[0]);
             button.setCallbackData(String.valueOf(group.getId()));
 
             List<InlineKeyboardButton> row = new ArrayList<>();

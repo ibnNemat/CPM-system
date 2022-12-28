@@ -20,12 +20,17 @@ logging:
     org.hibernate.SQL: INFO
     uz.devops.intern: INFO
 
+notion:
+  link:
+    new-telegram-bot: https://therapeutic-alibi-99c.notion.site/Docs-a08775163ab44313a57594871357ff15
+
 telegram:
   username: "@cpm_systembot"
   token: 5926613188:AAF3AKO0Yfwc5dk-oFiMvAPDvMGztkGCTkc
   api: https://api.telegram.org/bot
+  admin: 5344114476
 ngrok:
-  url: https://0e8b-83-221-180-161.eu.ngrok.io
+  url: https://5d33-83-221-180-161.eu.ngrok.io
 
 spring:
   devtools:

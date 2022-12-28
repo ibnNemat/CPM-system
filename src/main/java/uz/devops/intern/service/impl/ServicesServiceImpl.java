@@ -33,6 +33,7 @@ import java.util.*;
 import static uz.devops.intern.constants.ResponseMessageConstants.*;
 import static uz.devops.intern.constants.ResponseCodeConstants.OK;
 import static uz.devops.intern.domain.enumeration.PeriodType.ONETIME;
+import static uz.devops.intern.service.impl.PaymentServiceImpl.setNextFinishedPeriodToPayment;
 
 /**
  * Service Implementation for managing {@link Services}.
@@ -62,6 +63,8 @@ public class ServicesServiceImpl implements ServicesService {
             log.warn("Some groups id not exist in database. Request groups: {}", servicesDTO.getGroups());
             return new ResponseDTO<ServicesDTO>(ResponseCodeConstants.NOT_FOUND, "some group not found", false, null);
         }
+
+        services.setTotalCountService(1);
         services = servicesRepository.save(services);
         ResponseDTO responseDTO = createPaymentEachCustomers(services);
         if (!responseDTO.getSuccess())
@@ -72,48 +75,65 @@ public class ServicesServiceImpl implements ServicesService {
     }
 
     private ResponseDTO createPaymentEachCustomers(Services service) {
-        Payment paymentToSetPeriod = new Payment();
-        LocalDate startedPeriod = service.getStartedPeriod();
-        paymentToSetPeriod.setStartedPeriod(startedPeriod);
-        if (service.getPeriodType().equals(ONETIME)){
-            paymentToSetPeriod.setFinishedPeriod(startedPeriod);
-        }else{
-            PaymentServiceImpl.setNextFinishedPeriodToPayment(paymentToSetPeriod, service);
-        }
-        LocalDate endPeriod = paymentToSetPeriod.getFinishedPeriod();
-
-        Set<Groups> groupsForService = service.getGroups();
-        List<Payment> paymentList = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
-
+        Set<Groups> groupsForService = service.getGroups();
         for (Groups groupIncludeToPayment: groupsForService){
             ids.add(groupIncludeToPayment.getId());
         }
         List<Groups> groupsIncludeToPayment = groupService.getGroupsIncludeToPayment(ids);
-        if (groupsIncludeToPayment.size() == 0)
+        if (groupsIncludeToPayment.size() == 0) {
+            log.warn("Send group not found message while creating payment each customers. Service entity: {}", service);
             return new ResponseDTO<ServicesDTO>(ResponseCodeConstants.NOT_FOUND, "group not fond", false, null);
-
-        for (Groups group: groupsIncludeToPayment) {
-            if (group.getCustomers() == null) continue;
-            for (Customers customerForService : group.getCustomers()) {
-                Payment newPaymentForService = new Payment();
-                newPaymentForService.setService(service);
-                newPaymentForService.setGroup(group);
-                newPaymentForService.setCustomer(customerForService);
-                newPaymentForService.setStartedPeriod(startedPeriod);
-                newPaymentForService.setFinishedPeriod(endPeriod);
-                newPaymentForService.setIsPaid(false);
-                newPaymentForService.setPaidMoney(0D);
-                newPaymentForService.setPaymentForPeriod(service.getPrice());
-                paymentList.add(newPaymentForService);
-                taskToSendMessage.sendNotificationIfCustomerNotPaidForService(
-                    customerForService, group, service, startedPeriod, endPeriod
-                );
-            }
         }
-        paymentService.saveAll(paymentList);
 
+        List<Payment> paymentList = new ArrayList<>();
+        groupsIncludeToPayment.stream()
+            .filter(group -> group.getCustomers() != null)
+            .forEach(group -> group.getCustomers().forEach(
+                customerForService -> {
+                if (service.getPeriodType().equals(ONETIME)) {
+                    Payment newPaymentForService = createPaymentEntityAndRunTimerTask(service, group, customerForService, service.getStartedPeriod(), service.getStartedPeriod());
+                    paymentList.add(newPaymentForService);
+                }else{
+                    Payment paymentToSetPeriod = new Payment();
+                    LocalDate startedPeriod = service.getStartedPeriod();
+                    paymentToSetPeriod.setStartedPeriod(startedPeriod);
+                    setNextFinishedPeriodToPayment(paymentToSetPeriod, service);
+                    LocalDate endPeriod = paymentToSetPeriod.getFinishedPeriod();
+
+                    for(int i = 0; i < service.getTotalCountService(); i++){
+                        Payment newPaymentForService = createPaymentEntityAndRunTimerTask(service, group, customerForService, startedPeriod, endPeriod);
+                        paymentList.add(newPaymentForService);
+
+                        paymentToSetPeriod = new Payment();
+                        startedPeriod = newPaymentForService.getFinishedPeriod();
+                        paymentToSetPeriod.setStartedPeriod(startedPeriod);
+                        setNextFinishedPeriodToPayment(paymentToSetPeriod, service);
+                        endPeriod = paymentToSetPeriod.getFinishedPeriod();
+                    }
+                }
+            }));
+
+        paymentService.saveAll(paymentList);
         return new ResponseDTO<ServicesDTO>(OK, ResponseMessageConstants.OK, true, null);
+    }
+
+    private Payment createPaymentEntityAndRunTimerTask(Services service, Groups group, Customers customerForService, LocalDate startedPeriod, LocalDate endPeriod){
+        Payment newPaymentForService = new Payment();
+        newPaymentForService.setService(service);
+        newPaymentForService.setGroup(group);
+        newPaymentForService.setCustomer(customerForService);
+        newPaymentForService.setStartedPeriod(startedPeriod);
+        newPaymentForService.setFinishedPeriod(endPeriod);
+        newPaymentForService.setIsPaid(false);
+        newPaymentForService.setPaidMoney(0D);
+        newPaymentForService.setPaymentForPeriod(service.getPrice());
+
+        taskToSendMessage.sendNotificationIfCustomerNotPaidForService(
+            customerForService, group, service, startedPeriod, endPeriod
+        );
+
+        return newPaymentForService;
     }
 
     @Override

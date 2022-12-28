@@ -1,11 +1,1 @@
-id;name;price;started_period;period_type;count_period
-1;Cotton Helena Jewelery;82858;2022-11-21;ONETIME;71611
-2;customized applications;25553;2022-11-21;WEEK;92228
-3;Car Regional;96313;2022-11-21;ONETIME;90226
-4;deposit withdrawal edge;39512;2022-11-22;YEAR;83581
-5;Tokelau SAS Markets;62222;2022-11-22;MONTH;17927
-6;UIC-Franc;15916;2022-11-21;DAY;54321
-7;Consultant;82856;2022-11-22;ONETIME;65599
-8;Focused;43917;2022-11-21;ONETIME;23977
-9;Personal multi-byte Computer;37924;2022-11-21;WEEK;75763
-10;Buckinghamshire neural;89071;2022-11-21;ONETIME;4836
+id;name;price;started_period;period_type;count_period;total_count_service

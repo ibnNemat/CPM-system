@@ -32,6 +32,12 @@
       "fieldType": "Integer",
       "fieldValidateRules": ["required", "min"],
       "fieldValidateRulesMin": "1"
+    },
+    {
+      "fieldName": "totalCountService",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required", "min"],
+      "fieldValidateRulesMin": "1"
     }
   ],
   "fluentMethods": true,

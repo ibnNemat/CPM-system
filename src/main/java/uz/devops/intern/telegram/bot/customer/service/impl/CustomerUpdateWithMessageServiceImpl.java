@@ -108,7 +108,7 @@ public class CustomerUpdateWithMessageServiceImpl implements CustomerUpdateWithM
 
         if (optional.isPresent() && optional.get().getManager()){
             log.warn("Send forbidden message. Not found 'Customer' role for CustomerTelegram: {}", optional.get());
-            return forbiddenMessageWithoutButton(telegramUser);
+            return forbiddenMessage(telegramUser, optional.get());
         }
 
         if (optional.isPresent()) {
@@ -212,7 +212,7 @@ public class CustomerUpdateWithMessageServiceImpl implements CustomerUpdateWithM
         Customers customer = checkCustomerPhoneNumber(requestMessage);
         if (customer == null) {
             String sendStringMessage = resourceBundle.getString(BOT_CUSTOMER_NOT_REGISTERED);
-            sendMessage = sendMessage(telegramUser.getId(), sendStringMessage, sendMarkup(telegramUser));
+            sendMessage = sendMessage(telegramUser.getId(), sendStringMessage, sendMarkup(customerTelegram));
             log.warn("send message customer not registered yet User id: {} | Message text: {}", telegramUser, sendMessage);
             return sendMessage;
         }
@@ -258,8 +258,8 @@ public class CustomerUpdateWithMessageServiceImpl implements CustomerUpdateWithM
         return sendMessage;
     }
 
-    private SendMessage forbiddenMessageWithoutButton(User telegramUser){
-        ResourceBundle resourceBundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(telegramUser.getLanguageCode());
+    private SendMessage forbiddenMessage(User telegramUser, CustomerTelegram customerTelegram){
+        ResourceBundle resourceBundle = ResourceBundleUtils.getResourceBundleByUserLanguageCode(customerTelegram.getLanguageCode());
         String sendStringMessage = "\uD83D\uDEAB " + resourceBundle.getString( BOT_AUTHORITY_NOT_EXISTS);
         SendMessage sendMessage = sendMessage(telegramUser.getId(), sendStringMessage);
         log.info("Message send successfully! User id: {} | Message text: {}", telegramUser, sendMessage);

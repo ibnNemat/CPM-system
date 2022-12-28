@@ -1,6 +1,6 @@
 package uz.devops.intern.service.impl;
 
-import feign.Response;
+import com.google.common.util.concurrent.AtomicDouble;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,6 @@ import uz.devops.intern.service.utils.ContextHolderUtil;
 import uz.devops.intern.web.rest.errors.BadRequestAlertException;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -82,7 +81,6 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public ResponseDTO<PaymentHistoryDTO> payForService(PaymentDTO paymentDTO) {
         log.debug("Request to pay for Service : {}", paymentDTO);
-
         Payment requestPayment = PaymentsMapper.toEntity(paymentDTO);
         Groups group = requestPayment.getGroup();
         Customers customerPayer = authenticatedUserUtil.getAuthenticatedUser();
@@ -93,6 +91,12 @@ public class PaymentServiceImpl implements PaymentService {
         if (servicesOptional.isEmpty() || customerPayer == null) {
             return new ResponseDTO<>(NOT_FOUND, ResponseMessageConstants.NOT_FOUND, false, null);
         }
+        service = servicesOptional.get();
+        LocalDate startedDate = requestPayment.getStartedPeriod();
+        if (!paymentRepository.existsByCustomerAndGroupAndServiceAndStartedPeriodAndIsPaidFalse(
+            customerPayer, group, service, startedDate)){
+            return new ResponseDTO<>(NOT_FOUND, "customer payment not found", false, null);
+        }
 
         requestPayment.setCustomer(customerPayer);
         ResponseDTO<Double> responseDTO = checkCustomerBalance(requestPayment);
@@ -100,58 +104,46 @@ public class PaymentServiceImpl implements PaymentService {
             return new ResponseDTO<>(responseDTO.getCode(), responseDTO.getMessage(), false, null);
         }
 
-        service = servicesOptional.get();
-        LocalDate startedDate = requestPayment.getStartedPeriod();
         Double requestPaidMoney = requestPayment.getPaidMoney();
+        List<Payment> customerPayments = paymentRepository.findAllByCustomerAndGroupAndServiceAndIsPaidFalseOrderByStartedPeriod(customerPayer, group, service);
 
-        Optional<Payment> optionalPayment = paymentRepository
-            .findByCustomerAndGroupAndServiceAndStartedPeriodAndIsPaidFalse(
-            customerPayer, group, service, startedDate);
-        if (optionalPayment.isEmpty()) {
-            return new ResponseDTO<>(OK, "Looks like you already paid", false, null);
+        if (!customerPayments.get(0).getStartedPeriod().equals(startedDate)){
+            return new ResponseDTO<>(MISS_MATCHING, "The customer must pay for the old service", false, null);
         }
 
-        Payment paymentInDataBase = optionalPayment.get();
-        Double paymentForPeriod = paymentInDataBase.getPaymentForPeriod();
+        AtomicDouble atomicDouble = new AtomicDouble();
+        customerPayments.forEach(payment -> atomicDouble.addAndGet(payment.getPaymentForPeriod() - payment.getPaidMoney()));
+        Double sumAllPayments = atomicDouble.get();
+        Payment currenPayment = customerPayments.stream().filter(payment -> payment.getStartedPeriod().equals(startedDate)).findAny().orElseThrow();
+        Double paymentForPeriod = currenPayment.getPaymentForPeriod();
 
-        if (paymentInDataBase.getPaidMoney() + requestPaidMoney >= paymentForPeriod) {
-            Double owedMoney = paymentForPeriod - paymentInDataBase.getPaidMoney();
+        if (requestPaidMoney > sumAllPayments){
+            return new ResponseDTO<>(MORE_THEN_ENOUGH, "Entered too much money", false, null);
+        }
+
+        if (currenPayment.getPaidMoney() + requestPaidMoney >= paymentForPeriod) {
+            double owedMoney = paymentForPeriod - currenPayment.getPaidMoney();
             requestPaidMoney -= owedMoney;
 
-            List<Payment> paymentList = new ArrayList<>();
-            paymentInDataBase.setPaidMoney(paymentForPeriod);
-            paymentInDataBase.setIsPaid(true);
-            paymentList.add(paymentInDataBase);
+            currenPayment.setPaidMoney(currenPayment.getPaymentForPeriod());
+            currenPayment.setIsPaid(true);
 
-            LocalDate oldFinishedPeriodDateWithPlusDate = paymentInDataBase.getFinishedPeriod().plusDays(1);
-            Payment newPayment = new Payment();
-            boolean bool = false;
-
-            while(requestPaidMoney >= paymentForPeriod){
-                newPayment = buildNewPayment(service, paymentForPeriod, group, customerPayer, oldFinishedPeriodDateWithPlusDate);
+            int indexPayment = 1;
+            while(requestPaidMoney >= paymentForPeriod && indexPayment < customerPayments.size()){
+                customerPayments.get(indexPayment).setPaidMoney(paymentForPeriod);
+                customerPayments.get(indexPayment).setIsPaid(true);
                 requestPaidMoney -= paymentForPeriod;
-                paymentList.add(newPayment);
-                oldFinishedPeriodDateWithPlusDate = newPayment.getFinishedPeriod().plusDays(1);
-                bool = true;
+                indexPayment++;
             }
-
             if (requestPaidMoney != 0){
-                if (bool){
-                    oldFinishedPeriodDateWithPlusDate = newPayment.getFinishedPeriod().plusDays(1);
-                }
-                newPayment = buildNewPayment(service, paymentForPeriod, group, customerPayer, oldFinishedPeriodDateWithPlusDate);
-                newPayment.setIsPaid(false);
-                newPayment.setPaidMoney(requestPaidMoney);
-                paymentList.add(newPayment);
+                customerPayments.get(indexPayment).setPaidMoney(requestPaidMoney);
             }
-
-            paymentRepository.saveAll(paymentList);
             customersService.decreaseCustomerBalance(requestPaidMoney, customerPayer.getId());
             PaymentHistory paymentHistory = createPaymentHistory(service, customerPayer, group, requestPayment.getPaidMoney());
             return new ResponseDTO<>(OK, "Successfully payed", true, paymentHistoryMapper.toDto(paymentHistory));
         }
 
-        paymentInDataBase.setPaidMoney(paymentInDataBase.getPaidMoney()+requestPaidMoney);
+        currenPayment.setPaidMoney(currenPayment.getPaidMoney()+requestPaidMoney);
         customersService.decreaseCustomerBalance(requestPaidMoney, customerPayer.getId());
         PaymentHistory paymentHistory = createPaymentHistory(service, customerPayer, group, requestPayment.getPaidMoney());
 
@@ -209,19 +201,11 @@ public class PaymentServiceImpl implements PaymentService {
         Integer countPeriod = service.getCountPeriod();
 
         switch (service.getPeriodType()) {
-            case DAY -> {
-                // next finished period
-                payment.setFinishedPeriod(payment.getStartedPeriod().plusDays(countPeriod));
-            }
-            case WEEK -> {
-                payment.setFinishedPeriod(payment.getStartedPeriod().plusWeeks(countPeriod));
-            }
-            case MONTH -> {
-                payment.setFinishedPeriod(payment.getStartedPeriod().plusMonths(countPeriod));
-            }
-            case YEAR -> {
-                payment.setFinishedPeriod(payment.getStartedPeriod().plusYears(countPeriod));
-            }
+            // next finished period
+            case DAY -> payment.setFinishedPeriod(payment.getStartedPeriod().plusDays(countPeriod));
+            case WEEK -> payment.setFinishedPeriod(payment.getStartedPeriod().plusWeeks(countPeriod));
+            case MONTH -> payment.setFinishedPeriod(payment.getStartedPeriod().plusMonths(countPeriod));
+            case YEAR -> payment.setFinishedPeriod(payment.getStartedPeriod().plusYears(countPeriod));
         }
     }
 

@@ -13,7 +13,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import uz.devops.intern.domain.User;
 
-import javax.swing.text.html.Option;
 
 /**
  * Spring Data JPA repository for the {@link User} entity.
