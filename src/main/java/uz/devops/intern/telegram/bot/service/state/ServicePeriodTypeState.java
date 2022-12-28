@@ -1,5 +1,6 @@
 package uz.devops.intern.telegram.bot.service.state;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -17,6 +18,7 @@ import uz.devops.intern.telegram.bot.keyboards.AdminMenuKeys;
 import uz.devops.intern.telegram.bot.keyboards.ServicePeriodsKeys;
 import uz.devops.intern.telegram.bot.utils.TelegramsUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -32,6 +34,10 @@ public class ServicePeriodTypeState extends State<ServiceFSM>{
     private final ServicePeriodCountState servicePeriodCountState;
     private final AdminMenuKeys adminMenuKeys;
     private CustomerTelegramService customerTelegramService;
+//    @Autowired
+//    private ServiceGroupState serviceGroupState;
+    @Autowired
+    private ServiceTotalCountState serviceTotalCountState;
 
     public ServicePeriodTypeState(ServiceFSM context, ServicePeriodCountState servicePeriodCountState) {
         super(context, context.getAdminFeign());
@@ -51,13 +57,7 @@ public class ServicePeriodTypeState extends State<ServiceFSM>{
 
         boolean isTrue = isManagerPressCancelButton(update, manager);
         if(isTrue){
-            ReplyKeyboardMarkup menuMarkup = adminMenuKeys.createMenu(manager.getLanguageCode());
-            String newMessage = bundle.getString("bot.admin.service.process.is.canceled");
-            SendMessage sendMessage = TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage, menuMarkup);
-            adminFeign.sendMessage(sendMessage);
-            manager.setStep(7);
-            customerTelegramService.update(manager);
-            context.changeState(new ServiceNameState(context));
+            throwToMenu(manager, bundle);
             return false;
         }
         Message message = update.getMessage();
@@ -78,12 +78,25 @@ public class ServicePeriodTypeState extends State<ServiceFSM>{
             return false;
         }
 
+        List<String> buttons = getOneTimePeriodButtonText();
+        if(buttons.contains(messageText)){
+            ServicesRedisDTO redisDTO = servicesRedisRepository.findById(managerId).get();
+            redisDTO.getServicesDTO().setPeriodType(getPeriodType(bundle, messageText));
+            redisDTO.getServicesDTO().setCountPeriod(1);
+            redisDTO.getServicesDTO().setTotalCountService(1);
+            servicesRedisRepository.save(redisDTO);
+
+            serviceTotalCountState.basicFuntion(manager, bundle);
+//            context.changeState(serviceGroupState);
+            return true;
+        }
+
         ServicesRedisDTO redisDTO = servicesRedisRepository.findById(managerId).get();
         redisDTO.getServicesDTO().setPeriodType(getPeriodType(bundle, messageText));
         servicesRedisRepository.save(redisDTO);
 
         ReplyKeyboardMarkup markup = TelegramsUtil.createCancelButton(bundle);
-        String newMessage = bundle.getString("bot.admin.send.service.how.long");
+        String newMessage = String.format(bundle.getString("bot.admin.send.service.how.long"), messageText.toLowerCase());
         SendMessage sendMessage =
             TelegramsUtil.sendMessage(managerId, newMessage, markup);
         adminFeign.sendMessage(sendMessage);
@@ -101,6 +114,31 @@ public class ServicePeriodTypeState extends State<ServiceFSM>{
         );
 
         return periodsEnum.getOrDefault(period, PeriodType.MONTH);
+    }
+
+    private void throwToMenu(CustomerTelegramDTO manager, ResourceBundle bundle){
+        ReplyKeyboardMarkup menuMarkup = adminMenuKeys.createMenu(manager.getLanguageCode());
+        String newMessage = bundle.getString("bot.admin.service.process.is.canceled");
+        SendMessage sendMessage = TelegramsUtil.sendMessage(manager.getTelegramId(), newMessage, menuMarkup);
+        adminFeign.sendMessage(sendMessage);
+        manager.setStep(7);
+        customerTelegramService.update(manager);
+        context.changeState(new ServiceNameState(context));
+    }
+
+    private List<String> getOneTimePeriodButtonText(){
+        List<String> buttonTexts = new ArrayList<>();
+
+        ResourceBundle bundle = ResourceBundleUtils.getResourceBundleUsingLanguageCode("uz");
+        buttonTexts.add(bundle.getString("bot.admin.keyboards.service.period.one.time"));
+
+        bundle = ResourceBundleUtils.getResourceBundleUsingLanguageCode("ru");
+        buttonTexts.add(bundle.getString("bot.admin.keyboards.service.period.one.time"));
+
+        bundle = ResourceBundleUtils.getResourceBundleUsingLanguageCode("en");
+        buttonTexts.add(bundle.getString("bot.admin.keyboards.service.period.one.time"));
+
+        return buttonTexts;
     }
 
 }

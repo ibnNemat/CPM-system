@@ -300,6 +300,6 @@ public class BotAddGroup extends BotStrategyAbs {
 
     @Override
     public String getErrorMessage(ResourceBundle bundle) {
-        return bundle.getString("bot.admin.error.only.message");
+        return bundle.getString("bot.admin.error.bot.add.group");
     }
 }

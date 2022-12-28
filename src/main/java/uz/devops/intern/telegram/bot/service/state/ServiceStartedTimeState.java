@@ -100,13 +100,25 @@ public class ServiceStartedTimeState extends State<ServiceFSM>{
             return false;
         }
 
-        boolean areMonthAndDayValid = false;
+        if(!(month >= 1 && month <= 12)){
+            wrongValue(managerId, bundle.getString("bot.admin.error.start.time.is.invalid.month"));
+            log.warn("Date's month is invalid! User id: {} | Month: {}", managerId, month);
+            return false;
+        }
+        if(!(day >= 1 && day <= 31)){
+            wrongValue(managerId, bundle.getString("bot.admin.error.start.time.is.invalid.day"));
+            log.warn("Date's day in invalid! User id: {} | Day: {}", managerId, day);
+            return false;
+        }
+
+        boolean areMonthAndDayValid = true;
         boolean yearIsNow = year == LocalDate.now().getYear();
         if(yearIsNow){
             areMonthAndDayValid = yearIsEqualToCurrentYear(manager, month, day);
-        }else{
-            areMonthAndDayValid = yearIsNotEqualToCurrentYear(manager, month, day);
         }
+//        else{
+//            areMonthAndDayValid = yearIsNotEqualToCurrentYear(manager, month, day);
+//        }
 
         if(!areMonthAndDayValid){
             return false;
@@ -134,12 +146,13 @@ public class ServiceStartedTimeState extends State<ServiceFSM>{
             log.warn("Date's month is invalid! User id: {} | Month: {}", managerId, month);
             return false;
         }
+
         if(day < LocalDate.now().getDayOfMonth()){
             wrongValue(managerId, bundle.getString("bot.admin.error.start.time.is.invalid.day"));
             log.warn("Date's day in invalid! User id: {} | Day: {}", managerId, day);
             return false;
         }
-
+//
         return true;
     }
 
@@ -147,16 +160,7 @@ public class ServiceStartedTimeState extends State<ServiceFSM>{
         ResourceBundle bundle = ResourceBundleUtils.getResourceBundleUsingLanguageCode(manager.getLanguageCode());
         Long managerId = manager.getTelegramId();
 
-        if(!(month >= 1 && month <= 12)){
-            wrongValue(managerId, bundle.getString("bot.admin.error.start.time.is.invalid.month"));
-            log.warn("Date's month is invalid! User id: {} | Month: {}", managerId, month);
-            return false;
-        }
-        if(!(day >= 1 && day <= 31)){
-            wrongValue(managerId, bundle.getString("bot.admin.error.start.time.is.invalid.day"));
-            log.warn("Date's day in invalid! User id: {} | Day: {}", managerId, day);
-            return false;
-        }
+
 
         return true;
     }
