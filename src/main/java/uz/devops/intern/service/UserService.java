@@ -412,7 +412,6 @@ public class UserService {
         }
 
         Optional<User> userOptional = userRepository.findByCreatedBy(phoneNumber);
-
         if(userOptional.isEmpty()){
             return ResponseDTO.<Set<Authority>>builder()
                 .success(false).message("Data is not found! Phone number: " + phoneNumber).build();

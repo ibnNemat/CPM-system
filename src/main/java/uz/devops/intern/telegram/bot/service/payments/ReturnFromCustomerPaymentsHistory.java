@@ -237,7 +237,7 @@ public class ReturnFromCustomerPaymentsHistory extends BotStrategyAbs {
 //        page = rightOrLeft.equals("RIGHT")? page + 1: page - 1;
         List<PaymentDTO> customerPayments = getUserPayments(userLogin, page);
         if(Objects.isNull(customerPayments))return null;
-        InlineKeyboardMarkup markup = createPaymentsHistoryPagination(bundle, customerPayments, userLogin, page);
+        InlineKeyboardMarkup markup = createPaymentsHistoryPagination(bundle, customerPayments, userLogin, page, rightOrLeft.equals("RIGHT"));
         String messageText = createText(customerPayments.get(0), userResponse.getResponseData(),bundle);
 
         return createEditMessage(callback, markup, messageText);
@@ -265,11 +265,11 @@ public class ReturnFromCustomerPaymentsHistory extends BotStrategyAbs {
         }
     }
 
-    private InlineKeyboardMarkup createPaymentsHistoryPagination(ResourceBundle bundle, List<PaymentDTO> payments, String customerLogin, Integer page){
+    private InlineKeyboardMarkup createPaymentsHistoryPagination(ResourceBundle bundle, List<PaymentDTO> payments, String customerLogin, Integer page, boolean increase){
 
         List<List<InlineKeyboardButton>> inlineKeyboardButtons = new ArrayList<>();
         List<InlineKeyboardButton> row = new ArrayList<>();
-        int i = 1;
+        int i = page * 10 + 1;
 
         for(PaymentDTO payment: payments){
             row.add(
@@ -278,6 +278,7 @@ public class ReturnFromCustomerPaymentsHistory extends BotStrategyAbs {
                     .callbackData(payment.getId() + ":" + i++ + ":" + customerLogin)
                     .build()
             );
+
 
             if(row.size() == 5){
                 inlineKeyboardButtons.add(row);

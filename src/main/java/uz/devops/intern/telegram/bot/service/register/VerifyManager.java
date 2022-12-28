@@ -68,9 +68,9 @@ public class VerifyManager extends BotStrategyAbs {
             wrongValue(userId, phoneNumber);
             return false;
         }
-
         ResponseDTO<Set<Authority>> response =
             userService.getUserAuthorityByCreatedBy(phoneNumber);
+
 
         if(!response.getSuccess()){
             log.warn("{}", response.getMessage());

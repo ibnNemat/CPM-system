@@ -95,7 +95,7 @@ public class AdminTgServiceImpl implements AdminTgService {
                     update.getMessage().getContact().getPhoneNumber(): null;
 
 
-            if(messageText.contains("/")){
+            if(update.hasMessage() && update.getMessage().hasText() && update.getMessage().getText().contains("/")){
                 log.info("\"/\" contains in Message!");
                 BotCommand command = commandsMap.getOrDefault(messageText, commandsMap.get("/unknown"));
                 return command.executeCommand(update, userId);
