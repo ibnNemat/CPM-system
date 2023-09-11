@@ -2,15 +2,14 @@ package uz.devops.intern.config;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.CompositeConverter;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiElement;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiStyle;
+
+import java.util.Map;
 
 public class CRLFLogConverter extends CompositeConverter<ILoggingEvent> {
 
@@ -20,15 +19,15 @@ public class CRLFLogConverter extends CompositeConverter<ILoggingEvent> {
     private static final Map<String, AnsiElement> ELEMENTS;
 
     static {
-        Map<String, AnsiElement> ansiElements = new HashMap<>();
-        ansiElements.put("faint", AnsiStyle.FAINT);
-        ansiElements.put("red", AnsiColor.RED);
-        ansiElements.put("green", AnsiColor.GREEN);
-        ansiElements.put("yellow", AnsiColor.YELLOW);
-        ansiElements.put("blue", AnsiColor.BLUE);
-        ansiElements.put("magenta", AnsiColor.MAGENTA);
-        ansiElements.put("cyan", AnsiColor.CYAN);
-        ELEMENTS = Collections.unmodifiableMap(ansiElements);
+        ELEMENTS = Map.of(
+                "faint", AnsiStyle.FAINT,
+                "red", AnsiColor.RED,
+                "green", AnsiColor.GREEN,
+                "yellow", AnsiColor.YELLOW,
+                "blue", AnsiColor.BLUE,
+                "magenta", AnsiColor.MAGENTA,
+                "cyan", AnsiColor.CYAN
+        );
     }
 
     @Override
